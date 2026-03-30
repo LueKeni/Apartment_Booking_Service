@@ -1,0 +1,13 @@
+DATABASE ENTITIES (JPA / MySQL):
+
+1. User: id(PK), email(unique), password, fullName, phone, avatar, role(USER/AGENT/ADMIN), status(ACTIVE/BANNED), createdAt.
+2. AgentProfile: id(PK), userId(FK), location, bio, responseRate, activeListings, successDeals, verifiedStatus(Boolean).
+3. Apartment: id(PK), agentId(FK), title, transactionType(SALE/RENT), price, pricePerM2, area, locationAddress, locationDistrict, legalStatus, bedrooms, bathrooms, furnitureStatus, doorDirection, balconyDirection, floorNumber, buildingBlock, description, status(AVAILABLE/PENDING/SOLD/RENTED/HIDDEN).
+   - Images: Managed via @ElementCollection in 'apartment_images' table.
+4. Appointment: id(PK), userId(FK), agentId(FK), apartmentId(FK), scheduledDate, scheduledTime, status(PENDING/CONFIRMED/CANCELLED/COMPLETED), userNote, agentNote.
+5. AgentSchedule: id(PK), agentId(FK), availableDate.
+   - TimeSlots: Managed via @ElementCollection (e.g., ["08:00", "14:00"]).
+6. Review: id(PK), userId(FK), agentId(FK), appointmentId(FK), rating(1-5), comment.
+7. Favorite: id(PK), userId(FK), apartmentId(FK).
+8. Notification: id(PK), recipientId(FK), title, message, type(BOOKING/CHAT/SYSTEM), isRead.
+9. Conversation & Message: For real-time chat between User and Agent regarding an Apartment.

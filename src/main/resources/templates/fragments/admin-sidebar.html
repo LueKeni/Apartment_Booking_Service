@@ -1,0 +1,21 @@
+<aside th:fragment="adminSidebar(activePage)" class="glass-card sticky top-24 h-fit p-4">
+  <p class="text-xs uppercase tracking-[0.14em] text-slate-500">Admin Workspace</p>
+  <h2 class="mt-1 text-lg font-semibold text-ink">Control Menu</h2>
+  <nav class="mt-4 space-y-2 text-sm font-semibold">
+    <a href="/admin/dashboard"
+       class="block rounded-xl border px-3 py-2"
+       th:classappend="${activePage == 'dashboard'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Dashboard</a>
+    <a href="/admin/users"
+       class="block rounded-xl border px-3 py-2"
+       th:classappend="${activePage == 'users'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Users</a>
+    <a href="/admin/listings"
+       class="block rounded-xl border px-3 py-2"
+       th:classappend="${activePage == 'listings'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Listings</a>
+    <a href="/admin/appointments"
+       class="block rounded-xl border px-3 py-2"
+       th:classappend="${activePage == 'appointments'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Bookings</a>
+    <a href="/admin/conversations"
+       class="block rounded-xl border px-3 py-2"
+       th:classappend="${activePage == 'conversations'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Chat Logs</a>
+  </nav>
+</aside>
