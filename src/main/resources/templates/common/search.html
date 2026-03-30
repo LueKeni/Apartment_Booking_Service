@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100">
+  <div th:replace="~{fragments/header :: siteHeader}"></div>
+
+  <main class="mx-auto max-w-6xl px-4 py-8">
+    <section class="rounded-xl bg-white p-4 shadow">
+      <form action="/search" method="get" class="grid gap-3 md:grid-cols-4">
+        <input name="district" placeholder="District" class="rounded border border-slate-300 px-3 py-2" />
+        <select name="transactionType" class="rounded border border-slate-300 px-3 py-2">
+          <option value="">Transaction Type</option>
+          <option value="SALE">Sale</option>
+          <option value="RENT">Rent</option>
+        </select>
+        <select name="status" class="rounded border border-slate-300 px-3 py-2">
+          <option value="">Status</option>
+          <option value="AVAILABLE">Available</option>
+          <option value="PENDING">Pending</option>
+        </select>
+        <button class="rounded bg-slate-900 px-4 py-2 text-white">Search</button>
+      </form>
+    </section>
+
+    <section class="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <article th:each="apartment : ${apartments}" class="rounded-xl bg-white p-4 shadow">
+        <h3 class="text-lg font-semibold" th:text="${apartment.title}"></h3>
+        <p class="text-sm text-slate-500" th:text="${apartment.locationAddress}"></p>
+        <p class="mt-2 text-lg font-semibold text-emerald-600" th:text="${apartment.price}"></p>
+        <a th:href="@{/apartments/{id}(id=${apartment.id})}" class="mt-3 inline-block rounded bg-slate-900 px-3 py-1.5 text-sm text-white">Open</a>
+      </article>
+    </section>
+  </main>
+
+  <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

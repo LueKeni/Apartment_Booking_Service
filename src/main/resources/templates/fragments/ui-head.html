@@ -1,0 +1,26 @@
+<head th:fragment="uiHead(pageTitle)">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title th:text="${pageTitle}">Apartment Booking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#12211e',
+            tealdeep: '#146c72',
+            teallite: '#4fb4b8',
+            sand: '#f4efe6',
+            coral: '#e36a3c'
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="/css/app.css" />
+  <script defer src="/js/app.js"></script>
+</head>

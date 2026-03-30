@@ -1,0 +1,29 @@
+<header th:fragment="siteHeader" class="top-shell sticky top-0 z-30">
+  <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4">
+    <a href="/" class="brand-title text-xl font-semibold tracking-tight text-ink">VistaNest Booking</a>
+
+    <nav class="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-700">
+      <a href="/" class="pill">Home</a>
+      <a href="/search" class="pill">Search</a>
+
+      <a th:if="${hasRoleUser}" href="/user/dashboard" class="pill">User Hub</a>
+      <a th:if="${hasRoleUser}" href="/user/favorites" class="pill">Favorites</a>
+      <a th:if="${hasRoleUser}" href="/user/appointments" class="pill">Appointments</a>
+      <a th:if="${hasRoleUser}" href="/user/notifications" class="pill">Notifications</a>
+
+      <a th:if="${hasRoleAgent}" href="/agent/dashboard" class="pill">Agent Hub</a>
+      <a th:if="${hasRoleAgent}" href="/agent/bookings" class="pill">Agent Bookings</a>
+
+      <a th:if="${hasRoleAdmin}" href="/admin/dashboard" class="pill">Admin Hub</a>
+      <a th:if="${hasRoleAdmin}" href="/admin/users" class="pill">Admin Users</a>
+    </nav>
+
+    <div class="flex items-center gap-2 text-sm">
+      <span th:if="${isAuthenticated}" class="hidden rounded-full bg-white/80 px-3 py-1.5 text-slate-700 md:inline" th:text="${currentEmail}"></span>
+      <a th:if="${!isAuthenticated}" href="/auth/login" class="rounded-full bg-tealdeep px-4 py-2 font-semibold text-white">Login</a>
+      <form th:if="${isAuthenticated}" method="post" action="/auth/logout">
+        <button type="submit" class="rounded-full border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700">Logout</button>
+      </form>
+    </div>
+  </div>
+</header>

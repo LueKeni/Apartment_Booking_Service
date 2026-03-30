@@ -1,0 +1,10 @@
+DEVELOPMENT RULES:
+1. Environment: JDK 21, Spring Boot 3.x, MySQL (Laragon).
+2. Database: Use Spring Data JPA. Set `hibernate.ddl-auto=update`.
+3. Security: Spring Security for RBAC. Password encoding with BCrypt.
+4. UI: Thymeleaf templates. TailwindCSS for styling. Use Fragments for Navbar/Footer.
+5. Clean Code: 
+   - Use Lombok (@Data, @Builder) to reduce boilerplate.
+   - NO verbose comments. 
+   - Controllers should only handle routing; Business logic goes to ServiceImpl.
+6. DB Connection: Host: 127.0.0.1, Port: 3306, User: root, Pass: "", DB Name: apartment_booking_db.

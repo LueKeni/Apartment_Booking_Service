@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/ui-head :: uiHead('Admin Listing Moderation')}"></head>
+<body>
+  <div th:replace="~{fragments/header :: siteHeader}"></div>
+
+  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
+    <div class="workspace-grid">
+      <div th:replace="~{fragments/admin-sidebar :: adminSidebar('listings')}"></div>
+
+      <div>
+      <section class="glass-card p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 class="text-3xl font-semibold text-ink">Listing Moderation</h1>
+            <p class="mt-1 text-sm text-slate-600">Review and control listing visibility across the platform.</p>
+          </div>
+          <a href="/admin/dashboard" class="pill">Back to Dashboard</a>
+        </div>
+      </section>
+
+      <div th:if="${param.updated}" class="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Listing status updated.</div>
+
+      <section class="mt-6 glass-card p-6" data-table>
+        <div class="table-toolbar">
+          <input data-table-search type="text" placeholder="Search title, district or address..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
+          <select data-table-filter-key="status" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
+            <option value="">All status</option>
+            <option value="AVAILABLE">AVAILABLE</option>
+            <option value="PENDING">PENDING</option>
+            <option value="SOLD">SOLD</option>
+            <option value="RENTED">RENTED</option>
+            <option value="HIDDEN">HIDDEN</option>
+          </select>
+          <select data-table-filter-key="transaction" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
+            <option value="">All types</option>
+            <option value="SALE">SALE</option>
+            <option value="RENT">RENT</option>
+          </select>
+          <select data-table-sort class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
+            <option value="">Sort by</option>
+            <option value="title:asc">Title A-Z</option>
+            <option value="title:desc">Title Z-A</option>
+            <option value="price:asc">Price Low-High</option>
+            <option value="price:desc">Price High-Low</option>
+          </select>
+        </div>
+
+        <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
+          <table class="min-w-full divide-y divide-slate-200 text-sm">
+            <thead class="bg-slate-50 text-left text-slate-600">
+              <tr>
+                <th class="px-4 py-3 font-semibold">Title</th>
+                <th class="px-4 py-3 font-semibold">Type</th>
+                <th class="px-4 py-3 font-semibold">District</th>
+                <th class="px-4 py-3 font-semibold">Price</th>
+                <th class="px-4 py-3 font-semibold">Status</th>
+                <th class="px-4 py-3 font-semibold">Moderate</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 bg-white/80" data-table-body>
+              <tr th:if="${#lists.isEmpty(apartments)}">
+                <td class="px-4 py-4 text-slate-500" colspan="6">No listings found.</td>
+              </tr>
+              <tr data-row
+                  th:each="apartment : ${apartments}"
+                  th:attr="data-search=${apartment.title + ' ' + apartment.locationDistrict + ' ' + apartment.locationAddress},data-status=${apartment.status},data-transaction=${apartment.transactionType},data-title=${apartment.title},data-price=${apartment.price}">
+                <td class="px-4 py-3 font-semibold text-ink" th:text="${apartment.title}"></td>
+                <td class="px-4 py-3 text-slate-600" th:text="${apartment.transactionType}"></td>
+                <td class="px-4 py-3 text-slate-600" th:text="${apartment.locationDistrict}"></td>
+                <td class="px-4 py-3 text-slate-600" th:text="${apartment.price}"></td>
+                <td class="px-4 py-3"><span class="pill" th:text="${apartment.status}"></span></td>
+                <td class="px-4 py-3">
+                  <form th:action="@{/admin/listings/{id}/status(id=${apartment.id})}" method="post" class="flex gap-2">
+                    <select name="status" class="rounded-xl border border-slate-300 bg-white px-2 py-1.5">
+                      <option value="AVAILABLE">AVAILABLE</option>
+                      <option value="PENDING">PENDING</option>
+                      <option value="SOLD">SOLD</option>
+                      <option value="RENTED">RENTED</option>
+                      <option value="HIDDEN">HIDDEN</option>
+                    </select>
+                    <button class="rounded-xl bg-tealdeep px-3 py-1.5 text-white">Apply</button>
+                  </form>
+                </td>
+              </tr>
+              <tr data-table-empty class="hidden">
+                <td class="px-4 py-4 text-slate-500" colspan="6">No listing matches current filters.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </div>
+    </div>
+  </main>
+
+  <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>
