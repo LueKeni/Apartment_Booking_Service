@@ -71,6 +71,12 @@ public class Apartment {
     private String roomType;
 
     @Column
+    private Double latitude;
+
+    @Column
+    private Double longitude;
+
+    @Column
     private Integer bedrooms;
 
     @Column

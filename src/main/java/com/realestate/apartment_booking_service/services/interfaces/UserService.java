@@ -20,4 +20,6 @@ public interface UserService {
     User verifyAgent(Long userId, boolean verified);
 
     User updateUserRole(Long userId, Role role);
+
+    User updateProfile(Long userId, String fullName, String phone, String avatar);
 }

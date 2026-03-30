@@ -44,6 +44,13 @@
         </select>
         <input name="locationAddress" placeholder="Street address" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
         <input name="locationDistrict" placeholder="District" class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <div class="md:col-span-2">
+          <label class="mb-1 block text-sm font-medium text-slate-700">Pick Location on Map</label>
+          <div id="createMapPicker" class="h-72 w-full rounded-xl border border-slate-300"></div>
+          <p class="mt-1 text-xs text-slate-500">Click on the map to set product location.</p>
+        </div>
+        <input id="createLatitude" name="latitude" type="number" step="0.000001" placeholder="Latitude" readonly class="rounded-xl border border-slate-300 bg-slate-100 px-3 py-2" />
+        <input id="createLongitude" name="longitude" type="number" step="0.000001" placeholder="Longitude" readonly class="rounded-xl border border-slate-300 bg-slate-100 px-3 py-2" />
         <textarea name="description" placeholder="Listing description" class="md:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2"></textarea>
         <div class="md:col-span-2">
           <label for="imageFiles" class="mb-1 block text-sm font-medium text-slate-700">Listing Images</label>
@@ -82,6 +89,13 @@
         </select>
         <input name="locationAddress" th:value="${editApartment.locationAddress}" placeholder="Street address" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
         <input name="locationDistrict" th:value="${editApartment.locationDistrict}" placeholder="District" class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <div class="md:col-span-2">
+          <label class="mb-1 block text-sm font-medium text-slate-700">Pick Location on Map</label>
+          <div id="editMapPicker" class="h-72 w-full rounded-xl border border-slate-300"></div>
+          <p class="mt-1 text-xs text-slate-500">Click on the map to update location.</p>
+        </div>
+        <input id="editLatitude" name="latitude" type="number" step="0.000001" th:value="${editApartment.latitude}" placeholder="Latitude" readonly class="rounded-xl border border-slate-300 bg-slate-100 px-3 py-2" />
+        <input id="editLongitude" name="longitude" type="number" step="0.000001" th:value="${editApartment.longitude}" placeholder="Longitude" readonly class="rounded-xl border border-slate-300 bg-slate-100 px-3 py-2" />
         <textarea name="description" placeholder="Listing description" class="md:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2" th:text="${editApartment.description}"></textarea>
         <div class="md:col-span-2">
           <label for="editImageFiles" class="mb-1 block text-sm font-medium text-slate-700">Replace Images (optional)</label>
@@ -187,6 +201,49 @@
       </div>
     </div>
   </main>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    (function () {
+      const defaultLat = 10.7769;
+      const defaultLng = 106.7009;
+
+      function initMapPicker(mapId, latInputId, lngInputId) {
+        const mapElement = document.getElementById(mapId);
+        const latInput = document.getElementById(latInputId);
+        const lngInput = document.getElementById(lngInputId);
+        if (!mapElement || !latInput || !lngInput || typeof L === "undefined") {
+          return;
+        }
+
+        const hasExisting = latInput.value && lngInput.value;
+        const initialLat = hasExisting ? Number(latInput.value) : defaultLat;
+        const initialLng = hasExisting ? Number(lngInput.value) : defaultLng;
+
+        const map = L.map(mapId).setView([initialLat, initialLng], hasExisting ? 15 : 12);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: "&copy; OpenStreetMap contributors"
+        }).addTo(map);
+
+        let marker = L.marker([initialLat, initialLng]).addTo(map);
+        latInput.value = initialLat.toFixed(6);
+        lngInput.value = initialLng.toFixed(6);
+
+        map.on("click", function (event) {
+          const lat = event.latlng.lat;
+          const lng = event.latlng.lng;
+          marker.setLatLng([lat, lng]);
+          latInput.value = lat.toFixed(6);
+          lngInput.value = lng.toFixed(6);
+        });
+      }
+
+      initMapPicker("createMapPicker", "createLatitude", "createLongitude");
+      initMapPicker("editMapPicker", "editLatitude", "editLongitude");
+    })();
+  </script>
 
   <div th:replace="~{fragments/footer :: siteFooter}"></div>
 </body>

@@ -27,6 +27,24 @@
       </div>
       <p class="mt-3 text-slate-700" th:text="${apartment.description}"></p>
 
+      <div class="mt-6 rounded-lg border border-slate-200 p-4" th:if="${apartment.latitude != null and apartment.longitude != null}">
+        <div class="mb-3 flex items-center justify-between gap-3">
+          <h2 class="font-semibold">Location Map</h2>
+          <a th:href="${'https://www.google.com/maps/search/?api=1&query=' + apartment.latitude + ',' + apartment.longitude}"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700">
+            Open in Google Maps
+          </a>
+        </div>
+        <iframe
+                class="h-72 w-full rounded-lg border border-slate-200"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                th:src="${'https://www.google.com/maps?q=' + apartment.latitude + ',' + apartment.longitude + '&z=15&output=embed'}">
+        </iframe>
+      </div>
+
       <div class="mt-6 grid gap-4 md:grid-cols-2">
         <div class="rounded-lg border border-slate-200 p-4">
           <h2 class="font-semibold">Agent</h2>
@@ -35,7 +53,7 @@
           <p class="text-sm text-slate-500" th:text="${agentProfile != null ? agentProfile.bio : ''}"></p>
         </div>
 
-        <div class="rounded-lg border border-slate-200 p-4">
+        <div class="rounded-lg border border-slate-200 p-4" th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}">
           <h2 class="font-semibold">Book Appointment</h2>
           <form action="/user/bookings" method="post" class="mt-3 space-y-3">
             <input type="hidden" name="apartmentId" th:value="${apartment.id}" />
@@ -57,6 +75,9 @@
           <form th:action="@{/user/favorites/{id}/toggle(id=${apartment.id})}" method="post" class="mt-3">
             <button class="rounded border border-slate-300 px-4 py-2">Toggle Favorite</button>
           </form>
+        </div>
+        <div class="rounded-lg border border-slate-200 p-4 text-sm text-slate-600" th:if="${!isAuthenticated or hasRoleAgent}">
+          Booking is available for user accounts only.
         </div>
       </div>
     </section>

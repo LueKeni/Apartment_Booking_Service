@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/ui-head :: uiHead('User Profile')}"></head>
+<body>
+  <div th:replace="~{fragments/header :: siteHeader}"></div>
+
+  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
+    <section class="glass-card p-6">
+      <h1 class="text-3xl font-semibold text-ink">User Profile</h1>
+      <p class="mt-1 text-sm text-slate-600">Update your personal account information.</p>
+    </section>
+
+    <div th:replace="~{fragments/user-tabs :: userTabs('profile')}"></div>
+
+    <div th:if="${param.updated}" class="mb-5 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Profile updated successfully.</div>
+
+    <section class="glass-card p-6">
+      <form action="/user/profile" method="post" class="grid gap-4 md:grid-cols-2">
+        <div class="md:col-span-2">
+          <label class="mb-1 block text-sm font-semibold text-slate-700">Email</label>
+          <input type="email"
+                 th:value="${userProfile.email}"
+                 readonly
+                 class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-slate-600" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-semibold text-slate-700">Full Name</label>
+          <input name="fullName"
+                 th:value="${userProfile.fullName}"
+                 required
+                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-semibold text-slate-700">Phone</label>
+          <input name="phone"
+                 th:value="${userProfile.phone}"
+                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="mb-1 block text-sm font-semibold text-slate-700">Avatar URL</label>
+          <input name="avatar"
+                 th:value="${userProfile.avatar}"
+                 placeholder="https://..."
+                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        </div>
+        <button class="md:col-span-2 rounded-xl bg-tealdeep px-4 py-2 font-semibold text-white">Save Profile</button>
+      </form>
+    </section>
+  </main>
+
+  <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

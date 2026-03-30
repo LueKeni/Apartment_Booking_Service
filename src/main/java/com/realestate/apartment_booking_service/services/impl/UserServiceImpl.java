@@ -97,6 +97,20 @@ public class UserServiceImpl implements UserService {
         return savedUser;
     }
 
+    @Override
+    public User updateProfile(Long userId, String fullName, String phone, String avatar) {
+        User user = findById(userId);
+
+        if (fullName == null || fullName.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Full name is required");
+        }
+
+        user.setFullName(fullName.trim());
+        user.setPhone(normalizeBlankToNull(phone));
+        user.setAvatar(normalizeBlankToNull(avatar));
+        return userRepository.save(user);
+    }
+
     private AgentProfile createDefaultAgentProfile(User user) {
         return AgentProfile.builder()
                 .user(user)
@@ -105,5 +119,12 @@ public class UserServiceImpl implements UserService {
                 .successDeals(0)
                 .verifiedStatus(false)
                 .build();
+    }
+
+    private String normalizeBlankToNull(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
     }
 }

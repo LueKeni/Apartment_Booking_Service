@@ -127,6 +127,22 @@ public class AgentController {
         return "redirect:/agent/bookings?statusUpdated";
     }
 
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        model.addAttribute("agentProfile", currentUser());
+        return "agent/profile";
+    }
+
+    @PostMapping("/profile")
+    public String updateProfile(
+            @RequestParam String fullName,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String avatar) {
+        User agent = currentUser();
+        userService.updateProfile(agent.getId(), fullName, phone, avatar);
+        return "redirect:/agent/profile?updated";
+    }
+
     private User currentUser() {
         String email = SecurityUtils.getCurrentUserEmail();
         if (email == null) {

@@ -2,16 +2,10 @@
   <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4">
     <a href="/" class="brand-title text-xl font-semibold tracking-tight text-ink">VistaNest Booking</a>
 
-    <nav class="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-700">
-      <a href="/" class="pill">Home</a>
-      <a href="/search" class="pill">Search</a>
-
+    <div class="flex items-center gap-2 text-sm">
       <a th:if="${hasRoleUser}"
          th:href="${hasRoleAdmin} ? @{/admin/dashboard} : (${hasRoleAgent} ? @{/agent/dashboard} : @{/user/dashboard})"
          class="pill">Dashboard</a>
-    </nav>
-
-    <div class="flex items-center gap-2 text-sm">
       <span th:if="${isAuthenticated}" class="hidden rounded-full bg-white/80 px-3 py-1.5 text-slate-700 md:inline" th:text="${currentEmail}"></span>
       <a th:if="${!isAuthenticated}" href="/auth/login" class="rounded-full bg-tealdeep px-4 py-2 font-semibold text-white">Login</a>
       <form th:if="${isAuthenticated}" method="post" action="/auth/logout">

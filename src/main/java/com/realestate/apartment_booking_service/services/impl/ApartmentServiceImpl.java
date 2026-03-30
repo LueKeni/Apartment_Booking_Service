@@ -70,6 +70,8 @@ public class ApartmentServiceImpl implements ApartmentService {
         apartment.setLocationDistrict(payload.getLocationDistrict());
         apartment.setLegalStatus(payload.getLegalStatus());
         apartment.setRoomType(payload.getRoomType());
+        apartment.setLatitude(payload.getLatitude());
+        apartment.setLongitude(payload.getLongitude());
         apartment.setBedrooms(payload.getBedrooms());
         apartment.setBathrooms(payload.getBathrooms());
         apartment.setFurnitureStatus(payload.getFurnitureStatus());
@@ -99,8 +101,13 @@ public class ApartmentServiceImpl implements ApartmentService {
 
     @Override
     public List<Apartment> search(ApartmentFilterRequest filterRequest) {
+        String keyword = normalizeBlankToNull(filterRequest.getKeyword());
+        String district = normalizeBlankToNull(filterRequest.getDistrict());
+        String roomType = normalizeBlankToNull(filterRequest.getRoomType());
         return apartmentRepository.search(
-                filterRequest.getDistrict(),
+                keyword,
+                district,
+                roomType,
                 filterRequest.getTransactionType(),
                 filterRequest.getStatus());
     }
@@ -199,5 +206,12 @@ public class ApartmentServiceImpl implements ApartmentService {
         if (!apartment.getAgent().getId().equals(agentId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No access to this apartment");
         }
+    }
+
+    private String normalizeBlankToNull(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        return value.trim();
     }
 }

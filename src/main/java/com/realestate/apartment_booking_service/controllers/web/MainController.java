@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,18 +21,26 @@ public class MainController {
     private final AgentProfileRepository agentProfileRepository;
 
     @GetMapping("/")
-    public String home(Model model) {
-        ApartmentFilterRequest filter = new ApartmentFilterRequest();
-        filter.setStatus(ApartmentStatus.AVAILABLE);
-        model.addAttribute("apartments", apartmentService.search(filter));
+    public String home(@ModelAttribute ApartmentFilterRequest filterRequest, Model model) {
+        if (filterRequest.getStatus() == null) {
+            filterRequest.setStatus(ApartmentStatus.AVAILABLE);
+        }
+        model.addAttribute("apartments", apartmentService.search(filterRequest));
+        model.addAttribute("filter", filterRequest);
         return "common/index";
     }
 
     @GetMapping("/search")
-    public String search(@ModelAttribute ApartmentFilterRequest filterRequest, Model model) {
-        model.addAttribute("apartments", apartmentService.search(filterRequest));
-        model.addAttribute("filter", filterRequest);
-        return "common/search";
+    public String search(@ModelAttribute ApartmentFilterRequest filterRequest, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addAttribute("keyword", filterRequest.getKeyword());
+        redirectAttributes.addAttribute("district", filterRequest.getDistrict());
+        redirectAttributes.addAttribute("roomType", filterRequest.getRoomType());
+        redirectAttributes.addAttribute(
+                "transactionType",
+                filterRequest.getTransactionType() == null ? null : filterRequest.getTransactionType().name());
+        redirectAttributes.addAttribute(
+                "status", filterRequest.getStatus() == null ? null : filterRequest.getStatus().name());
+        return "redirect:/";
     }
 
     @GetMapping("/apartments/{id}")

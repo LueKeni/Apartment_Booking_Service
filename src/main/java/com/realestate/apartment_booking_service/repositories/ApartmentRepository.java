@@ -25,12 +25,19 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
     @EntityGraph(attributePaths = {"agent", "images"})
     @Query("""
                 select a from Apartment a
-                where (:district is null or lower(a.locationDistrict) = lower(:district))
+                where (:keyword is null
+                       or lower(a.title) like lower(concat('%', :keyword, '%'))
+                       or lower(a.locationAddress) like lower(concat('%', :keyword, '%'))
+                       or lower(coalesce(a.locationDistrict, '')) like lower(concat('%', :keyword, '%')))
+                  and (:district is null or lower(a.locationDistrict) = lower(:district))
+                  and (:roomType is null or upper(a.roomType) = upper(:roomType))
                   and (:transactionType is null or a.transactionType = :transactionType)
                   and (:status is null or a.status = :status)
             """)
     List<Apartment> search(
+            @Param("keyword") String keyword,
             @Param("district") String district,
+            @Param("roomType") String roomType,
             @Param("transactionType") TransactionType transactionType,
             @Param("status") ApartmentStatus status);
 }

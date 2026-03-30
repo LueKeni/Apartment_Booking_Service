@@ -6,6 +6,7 @@ import com.realestate.apartment_booking_service.entities.Apartment;
 import com.realestate.apartment_booking_service.entities.Appointment;
 import com.realestate.apartment_booking_service.entities.Favorite;
 import com.realestate.apartment_booking_service.entities.User;
+import com.realestate.apartment_booking_service.enums.Role;
 import com.realestate.apartment_booking_service.enums.AppointmentStatus;
 import com.realestate.apartment_booking_service.repositories.FavoriteRepository;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
@@ -101,9 +102,28 @@ public class UserController {
         return "user/notifications";
     }
 
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        model.addAttribute("userProfile", currentUser());
+        return "user/profile";
+    }
+
+    @PostMapping("/profile")
+    public String updateProfile(
+            @RequestParam String fullName,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String avatar) {
+        User user = currentUser();
+        userService.updateProfile(user.getId(), fullName, phone, avatar);
+        return "redirect:/user/profile?updated";
+    }
+
     @PostMapping("/bookings")
     public String createBooking(@ModelAttribute BookingRequest request) {
         User user = currentUser();
+        if (user.getRole() == Role.AGENT) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Agent cannot create booking");
+        }
         bookingService.createBooking(user.getId(), request);
         return "redirect:/user/appointments";
     }
