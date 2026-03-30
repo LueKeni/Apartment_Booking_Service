@@ -21,10 +21,12 @@
 
     <div th:if="${param.saved}" class="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Listing created successfully.</div>
     <div th:if="${param.updated}" class="mt-4 rounded-2xl border border-sky-300 bg-sky-50 px-4 py-3 text-sm text-sky-700">Listing updated successfully.</div>
+    <div th:if="${param.statusUpdated}" class="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-700">Listing visibility updated.</div>
+    <div th:if="${param.deleted}" class="mt-4 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700">Listing deleted successfully.</div>
 
     <section class="mt-6 glass-card p-6">
       <h2 class="text-xl font-semibold">Create New Listing</h2>
-      <form action="/agent/listings" method="post" class="mt-4 grid gap-3 md:grid-cols-2">
+      <form action="/agent/listings" method="post" enctype="multipart/form-data" class="mt-4 grid gap-3 md:grid-cols-2">
         <input name="title" placeholder="Listing title" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
         <select name="transactionType" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
           <option value="SALE">Sale</option>
@@ -32,10 +34,66 @@
         </select>
         <input name="price" type="number" step="0.01" placeholder="Price" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
         <input name="area" type="number" step="0.1" placeholder="Area m2" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <select name="roomType" required class="rounded-xl border border-slate-300 bg-white px-3 py-2">
+          <option value="">Room type</option>
+          <option value="STUDIO">Studio</option>
+          <option value="1BR">1BR</option>
+          <option value="2BR">2BR</option>
+          <option value="3BR">3BR</option>
+          <option value="DUPLEX">Duplex</option>
+        </select>
         <input name="locationAddress" placeholder="Street address" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
         <input name="locationDistrict" placeholder="District" class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
         <textarea name="description" placeholder="Listing description" class="md:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2"></textarea>
+        <div class="md:col-span-2">
+          <label for="imageFiles" class="mb-1 block text-sm font-medium text-slate-700">Listing Images</label>
+          <input id="imageFiles"
+                 name="imageFiles"
+                 type="file"
+                 accept="image/*"
+                 multiple
+                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" />
+          <p class="mt-1 text-xs text-slate-500">Choose one or more images from your device (JPG, PNG, WEBP, GIF).</p>
+        </div>
         <button class="md:col-span-2 rounded-xl bg-tealdeep px-4 py-2 font-semibold text-white">Publish Listing</button>
+      </form>
+    </section>
+
+    <section th:if="${editApartment != null}" class="mt-6 glass-card p-6">
+      <div class="flex items-center justify-between gap-3">
+        <h2 class="text-xl font-semibold">Edit Listing</h2>
+        <a href="/agent/listings" class="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700">Cancel</a>
+      </div>
+      <form th:action="@{/agent/listings/{id}(id=${editApartment.id})}" method="post" enctype="multipart/form-data" class="mt-4 grid gap-3 md:grid-cols-2">
+        <input name="title" th:value="${editApartment.title}" placeholder="Listing title" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <select name="transactionType" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
+          <option value="SALE" th:selected="${editApartment.transactionType.name() == 'SALE'}">Sale</option>
+          <option value="RENT" th:selected="${editApartment.transactionType.name() == 'RENT'}">Rent</option>
+        </select>
+        <input name="price" type="number" step="0.01" th:value="${editApartment.price}" placeholder="Price" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <input name="area" type="number" step="0.1" th:value="${editApartment.area}" placeholder="Area m2" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <select name="roomType" required class="rounded-xl border border-slate-300 bg-white px-3 py-2">
+          <option value="">Room type</option>
+          <option value="STUDIO" th:selected="${editApartment.roomType == 'STUDIO'}">Studio</option>
+          <option value="1BR" th:selected="${editApartment.roomType == '1BR'}">1BR</option>
+          <option value="2BR" th:selected="${editApartment.roomType == '2BR'}">2BR</option>
+          <option value="3BR" th:selected="${editApartment.roomType == '3BR'}">3BR</option>
+          <option value="DUPLEX" th:selected="${editApartment.roomType == 'DUPLEX'}">Duplex</option>
+        </select>
+        <input name="locationAddress" th:value="${editApartment.locationAddress}" placeholder="Street address" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <input name="locationDistrict" th:value="${editApartment.locationDistrict}" placeholder="District" class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <textarea name="description" placeholder="Listing description" class="md:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2" th:text="${editApartment.description}"></textarea>
+        <div class="md:col-span-2">
+          <label for="editImageFiles" class="mb-1 block text-sm font-medium text-slate-700">Replace Images (optional)</label>
+          <input id="editImageFiles"
+                 name="imageFiles"
+                 type="file"
+                 accept="image/*"
+                 multiple
+                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" />
+          <p class="mt-1 text-xs text-slate-500">Upload new images only if you want to replace current ones.</p>
+        </div>
+        <button class="md:col-span-2 rounded-xl bg-ink px-4 py-2 font-semibold text-white">Save Changes</button>
       </form>
     </section>
 
@@ -70,28 +128,56 @@
         <table class="min-w-full divide-y divide-slate-200 text-sm">
           <thead class="bg-slate-50 text-left text-slate-600">
             <tr>
+              <th class="px-4 py-3 font-semibold">Image</th>
               <th class="px-4 py-3 font-semibold">Title</th>
               <th class="px-4 py-3 font-semibold">Type</th>
+              <th class="px-4 py-3 font-semibold">Room</th>
               <th class="px-4 py-3 font-semibold">District</th>
               <th class="px-4 py-3 font-semibold">Price</th>
               <th class="px-4 py-3 font-semibold">Status</th>
+              <th class="px-4 py-3 font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 bg-white/80" data-table-body>
             <tr th:if="${#lists.isEmpty(apartments)}">
-              <td class="px-4 py-4 text-slate-500" colspan="5">No listings yet.</td>
+              <td class="px-4 py-4 text-slate-500" colspan="8">No listings yet.</td>
             </tr>
             <tr data-row
                 th:each="apartment : ${apartments}"
                 th:attr="data-search=${apartment.title + ' ' + apartment.locationDistrict},data-status=${apartment.status},data-transaction=${apartment.transactionType},data-title=${apartment.title},data-price=${apartment.price}">
+              <td class="px-4 py-3">
+                <img th:if="${!#lists.isEmpty(apartment.images)}"
+                     th:src="${apartment.images[0]}"
+                     alt="Apartment image"
+                     class="h-12 w-16 rounded-lg object-cover" />
+                <span th:if="${#lists.isEmpty(apartment.images)}" class="text-xs text-slate-400">No image</span>
+              </td>
               <td class="px-4 py-3 font-semibold text-ink" th:text="${apartment.title}"></td>
               <td class="px-4 py-3 text-slate-600" th:text="${apartment.transactionType}"></td>
+              <td class="px-4 py-3 text-slate-600" th:text="${apartment.roomType != null ? apartment.roomType : '-'}"></td>
               <td class="px-4 py-3 text-slate-600" th:text="${apartment.locationDistrict}"></td>
               <td class="px-4 py-3 text-slate-600" th:text="${apartment.price}"></td>
               <td class="px-4 py-3"><span class="pill" th:text="${apartment.status}"></span></td>
+              <td class="px-4 py-3">
+                <div class="flex flex-wrap gap-2">
+                  <a th:href="@{/agent/listings(editId=${apartment.id})}"
+                     class="rounded-lg border border-sky-400 bg-white px-3 py-1.5 text-xs font-semibold text-sky-700">Edit</a>
+                  <form th:if="${apartment.status.name() != 'HIDDEN'}" th:action="@{/agent/listings/{id}/visibility(id=${apartment.id})}" method="post">
+                    <input type="hidden" name="hidden" value="true" />
+                    <button class="rounded-lg border border-amber-400 bg-white px-3 py-1.5 text-xs font-semibold text-amber-700">Hide</button>
+                  </form>
+                  <form th:if="${apartment.status.name() == 'HIDDEN'}" th:action="@{/agent/listings/{id}/visibility(id=${apartment.id})}" method="post">
+                    <input type="hidden" name="hidden" value="false" />
+                    <button class="rounded-lg border border-emerald-400 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700">Show</button>
+                  </form>
+                  <form th:action="@{/agent/listings/{id}/delete(id=${apartment.id})}" method="post" onsubmit="return confirm('Delete this listing?');">
+                    <button class="rounded-lg border border-rose-400 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700">Delete</button>
+                  </form>
+                </div>
+              </td>
             </tr>
             <tr data-table-empty class="hidden">
-              <td class="px-4 py-4 text-slate-500" colspan="5">No listing matches current filters.</td>
+              <td class="px-4 py-4 text-slate-500" colspan="8">No listing matches current filters.</td>
             </tr>
           </tbody>
         </table>

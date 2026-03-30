@@ -67,6 +67,9 @@ public class Apartment {
     @Column(length = 120)
     private String legalStatus;
 
+    @Column(length = 20)
+    private String roomType;
+
     @Column
     private Integer bedrooms;
 

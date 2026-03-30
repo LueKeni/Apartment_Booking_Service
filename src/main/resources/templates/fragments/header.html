@@ -6,16 +6,9 @@
       <a href="/" class="pill">Home</a>
       <a href="/search" class="pill">Search</a>
 
-      <a th:if="${hasRoleUser}" href="/user/dashboard" class="pill">User Hub</a>
-      <a th:if="${hasRoleUser}" href="/user/favorites" class="pill">Favorites</a>
-      <a th:if="${hasRoleUser}" href="/user/appointments" class="pill">Appointments</a>
-      <a th:if="${hasRoleUser}" href="/user/notifications" class="pill">Notifications</a>
-
-      <a th:if="${hasRoleAgent}" href="/agent/dashboard" class="pill">Agent Hub</a>
-      <a th:if="${hasRoleAgent}" href="/agent/bookings" class="pill">Agent Bookings</a>
-
-      <a th:if="${hasRoleAdmin}" href="/admin/dashboard" class="pill">Admin Hub</a>
-      <a th:if="${hasRoleAdmin}" href="/admin/users" class="pill">Admin Users</a>
+      <a th:if="${hasRoleUser}"
+         th:href="${hasRoleAdmin} ? @{/admin/dashboard} : (${hasRoleAgent} ? @{/agent/dashboard} : @{/user/dashboard})"
+         class="pill">Dashboard</a>
     </nav>
 
     <div class="flex items-center gap-2 text-sm">

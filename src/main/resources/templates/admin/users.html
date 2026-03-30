@@ -13,14 +13,15 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 class="text-3xl font-semibold text-ink">User Moderation</h1>
-            <p class="mt-1 text-sm text-slate-600">Ban/unban accounts and verify agent profiles.</p>
+            <p class="mt-1 text-sm text-slate-600">Ban/unban accounts and manage user roles.</p>
           </div>
           <a href="/admin/dashboard" class="pill">Back to Dashboard</a>
         </div>
       </section>
 
       <div th:if="${param.updated}" class="mt-4 rounded-2xl border border-sky-300 bg-sky-50 px-4 py-3 text-sm text-sky-700">User status updated.</div>
-      <div th:if="${param.verified}" class="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Agent verification updated.</div>
+      <div th:if="${param.roleUpdated}" class="mt-4 rounded-2xl border border-indigo-300 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">User role updated.</div>
+      <div th:if="${param.roleDenied}" class="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-700">You cannot change your own role.</div>
 
       <section class="mt-6 glass-card p-6" data-table>
         <div class="table-toolbar">
@@ -69,6 +70,20 @@
                 <td class="px-4 py-3"><span class="pill" th:text="${u.status}"></span></td>
                 <td class="px-4 py-3">
                   <div class="flex flex-wrap gap-2">
+                    <form th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post" class="flex items-center gap-2">
+                      <select name="role"
+                              class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
+                              th:disabled="${u.email == currentEmail}">
+                        <option th:each="r : ${T(com.realestate.apartment_booking_service.enums.Role).values()}"
+                                th:value="${r.name()}"
+                                th:text="${r.name()}"
+                                th:selected="${u.role == r}"></option>
+                      </select>
+                      <button class="rounded-lg border border-indigo-400 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-700"
+                              th:disabled="${u.email == currentEmail}">
+                        Set Role
+                      </button>
+                    </form>
                     <form th:if="${u.status.name() == 'ACTIVE'}" th:action="@{/admin/users/{id}/ban(id=${u.id})}" method="post">
                       <input type="hidden" name="banned" value="true" />
                       <button class="rounded-lg border border-rose-400 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700">Ban</button>
@@ -76,10 +91,6 @@
                     <form th:if="${u.status.name() == 'BANNED'}" th:action="@{/admin/users/{id}/ban(id=${u.id})}" method="post">
                       <input type="hidden" name="banned" value="false" />
                       <button class="rounded-lg border border-emerald-400 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700">Unban</button>
-                    </form>
-                    <form th:action="@{/admin/users/{id}/verify-agent(id=${u.id})}" method="post">
-                      <input type="hidden" name="verified" value="true" />
-                      <button class="rounded-lg bg-tealdeep px-3 py-1.5 text-xs font-semibold text-white">Verify Agent</button>
                     </form>
                   </div>
                 </td>

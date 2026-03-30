@@ -23,7 +23,8 @@ public class SecurityConfig {
                                 "/auth/**",
                                 "/css/**",
                                 "/js/**",
-                                "/images/**")
+                                "/images/**",
+                                "/uploads/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/agent/**").hasRole("AGENT")

@@ -47,13 +47,14 @@
                 <th class="px-4 py-3 font-semibold">Apartment</th>
                 <th class="px-4 py-3 font-semibold">Customer</th>
                 <th class="px-4 py-3 font-semibold">Schedule</th>
+                <th class="px-4 py-3 font-semibold">Booked At</th>
                 <th class="px-4 py-3 font-semibold">Status</th>
                 <th class="px-4 py-3 font-semibold">Action</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 bg-white/80" data-table-body>
               <tr th:if="${#lists.isEmpty(appointments)}">
-                <td class="px-4 py-4 text-slate-500" colspan="5">No booking requests yet.</td>
+                <td class="px-4 py-4 text-slate-500" colspan="6">No booking requests yet.</td>
               </tr>
               <tr data-row
                   th:each="appointment : ${appointments}"
@@ -61,6 +62,7 @@
                 <td class="px-4 py-3 font-semibold text-ink" th:text="${appointment.apartment.title}"></td>
                 <td class="px-4 py-3 text-slate-600" th:text="${appointment.user.fullName}"></td>
                 <td class="px-4 py-3 text-slate-600" th:text="${appointment.scheduledDate + ' ' + appointment.scheduledTime}"></td>
+                <td class="px-4 py-3 text-slate-600" th:text="${appointment.createdAt}"></td>
                 <td class="px-4 py-3"><span class="pill" th:text="${appointment.status}"></span></td>
                 <td class="px-4 py-3">
                   <form th:action="@{/agent/bookings/{id}/status(id=${appointment.id})}" method="post" class="grid gap-2 md:grid-cols-3">
@@ -76,7 +78,7 @@
                 </td>
               </tr>
               <tr data-table-empty class="hidden">
-                <td class="px-4 py-4 text-slate-500" colspan="5">No booking matches current filters.</td>
+                <td class="px-4 py-4 text-slate-500" colspan="6">No booking matches current filters.</td>
               </tr>
             </tbody>
           </table>

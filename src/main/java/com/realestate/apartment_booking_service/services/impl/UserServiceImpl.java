@@ -76,16 +76,34 @@ public class UserServiceImpl implements UserService {
         }
 
         AgentProfile profile = agentProfileRepository.findByUserId(userId)
-                .orElseGet(() -> AgentProfile.builder()
-                        .user(user)
-                        .responseRate(0.0)
-                        .activeListings(0)
-                        .successDeals(0)
-                        .verifiedStatus(false)
-                        .build());
+                .orElseGet(() -> createDefaultAgentProfile(user));
 
         profile.setVerifiedStatus(verified);
         agentProfileRepository.save(profile);
         return user;
+    }
+
+    @Override
+    public User updateUserRole(Long userId, Role role) {
+        User user = findById(userId);
+        user.setRole(role);
+        User savedUser = userRepository.save(user);
+
+        if (role == Role.AGENT) {
+            agentProfileRepository.findByUserId(userId)
+                    .orElseGet(() -> agentProfileRepository.save(createDefaultAgentProfile(savedUser)));
+        }
+
+        return savedUser;
+    }
+
+    private AgentProfile createDefaultAgentProfile(User user) {
+        return AgentProfile.builder()
+                .user(user)
+                .responseRate(0.0)
+                .activeListings(0)
+                .successDeals(0)
+                .verifiedStatus(false)
+                .build();
     }
 }

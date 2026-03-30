@@ -29,6 +29,10 @@
 
     <section class="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <article th:each="apartment : ${apartments}" class="rounded-xl bg-white p-4 shadow">
+        <img th:if="${!#lists.isEmpty(apartment.images)}"
+             th:src="${apartment.images[0]}"
+             alt="Apartment image"
+             class="mb-3 h-40 w-full rounded-lg object-cover" />
         <h3 class="text-lg font-semibold" th:text="${apartment.title}"></h3>
         <p class="text-sm text-slate-500" th:text="${apartment.locationAddress}"></p>
         <p class="mt-2 text-lg font-semibold text-emerald-600" th:text="${apartment.price}"></p>

@@ -22,4 +22,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             LocalDate scheduledDate,
             LocalTime scheduledTime,
             Collection<AppointmentStatus> statuses);
+
+    long deleteByApartmentId(Long apartmentId);
 }

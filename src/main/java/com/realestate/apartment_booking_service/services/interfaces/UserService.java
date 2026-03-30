@@ -2,6 +2,7 @@ package com.realestate.apartment_booking_service.services.interfaces;
 
 import com.realestate.apartment_booking_service.dto.RegisterRequest;
 import com.realestate.apartment_booking_service.entities.User;
+import com.realestate.apartment_booking_service.enums.Role;
 import java.util.List;
 
 public interface UserService {
@@ -17,4 +18,6 @@ public interface UserService {
     User updateUserStatus(Long userId, boolean banned);
 
     User verifyAgent(Long userId, boolean verified);
+
+    User updateUserRole(Long userId, Role role);
 }

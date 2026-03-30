@@ -13,13 +13,16 @@ import org.springframework.data.repository.query.Param;
 public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
 
     @Override
-    @EntityGraph(attributePaths = { "agent" })
+    @EntityGraph(attributePaths = {"agent", "images"})
     Optional<Apartment> findById(Long id);
 
+    @EntityGraph(attributePaths = {"agent", "images"})
     List<Apartment> findByAgentId(Long agentId);
 
+    @EntityGraph(attributePaths = {"agent", "images"})
     List<Apartment> findByStatus(ApartmentStatus status);
 
+    @EntityGraph(attributePaths = {"agent", "images"})
     @Query("""
                 select a from Apartment a
                 where (:district is null or lower(a.locationDistrict) = lower(:district))

@@ -1,18 +1,14 @@
 package com.realestate.apartment_booking_service.controllers.web;
 
-import com.realestate.apartment_booking_service.entities.AgentSchedule;
 import com.realestate.apartment_booking_service.entities.Apartment;
 import com.realestate.apartment_booking_service.entities.Appointment;
 import com.realestate.apartment_booking_service.entities.User;
 import com.realestate.apartment_booking_service.enums.ApartmentStatus;
 import com.realestate.apartment_booking_service.enums.AppointmentStatus;
-import com.realestate.apartment_booking_service.repositories.AgentScheduleRepository;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
 import com.realestate.apartment_booking_service.services.interfaces.BookingService;
 import com.realestate.apartment_booking_service.services.interfaces.UserService;
 import com.realestate.apartment_booking_service.utils.SecurityUtils;
-import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,7 +30,6 @@ public class AgentController {
 
     private final ApartmentService apartmentService;
     private final BookingService bookingService;
-    private final AgentScheduleRepository agentScheduleRepository;
     private final UserService userService;
 
     @GetMapping("/dashboard")
@@ -41,11 +37,6 @@ public class AgentController {
         User agent = currentUser();
         List<Appointment> appointments = bookingService.getAgentAppointments(agent.getId());
         List<Apartment> apartments = apartmentService.findByAgent(agent.getId());
-        List<AgentSchedule> upcomingSchedules = agentScheduleRepository
-                .findByAgentIdAndAvailableDateGreaterThanEqualOrderByAvailableDateAsc(agent.getId(), LocalDate.now())
-                .stream()
-                .limit(5)
-                .toList();
 
         long completed = appointments
                 .stream()
@@ -67,30 +58,56 @@ public class AgentController {
         model.addAttribute("hiddenListingCount", hiddenListings);
         model.addAttribute("recentAppointments", appointments.stream().limit(6).toList());
         model.addAttribute("recentListings", apartments.stream().limit(6).toList());
-        model.addAttribute("upcomingSchedules", upcomingSchedules);
         return "agent/dashboard";
     }
 
     @GetMapping("/listings")
-    public String listings(Model model) {
+    public String listings(@RequestParam(required = false) Long editId, Model model) {
         User agent = currentUser();
         model.addAttribute("apartments", apartmentService.findByAgent(agent.getId()));
         model.addAttribute("apartment", new Apartment());
+
+        if (editId != null) {
+            Apartment editApartment = apartmentService.findById(editId);
+            if (!editApartment.getAgent().getId().equals(agent.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No access to this apartment");
+            }
+            model.addAttribute("editApartment", editApartment);
+        }
         return "agent/listings";
     }
 
     @PostMapping("/listings")
-    public String saveListing(@ModelAttribute Apartment apartment) {
+    public String saveListing(
+            @ModelAttribute Apartment apartment,
+            @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles) {
         User agent = currentUser();
-        apartmentService.createApartment(apartment, agent.getId());
+        apartmentService.createApartment(apartment, agent.getId(), imageFiles);
         return "redirect:/agent/listings?saved";
     }
 
     @PostMapping("/listings/{id}")
-    public String updateListing(@PathVariable Long id, @ModelAttribute Apartment apartment) {
+    public String updateListing(
+            @PathVariable Long id,
+            @ModelAttribute Apartment apartment,
+            @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles) {
         User agent = currentUser();
-        apartmentService.updateApartment(id, apartment, agent.getId());
+        apartmentService.updateApartment(id, apartment, agent.getId(), imageFiles);
         return "redirect:/agent/listings?updated";
+    }
+
+    @PostMapping("/listings/{id}/visibility")
+    public String updateListingVisibility(@PathVariable Long id, @RequestParam boolean hidden) {
+        User agent = currentUser();
+        apartmentService.updateStatusForAgent(id, hidden ? ApartmentStatus.HIDDEN : ApartmentStatus.AVAILABLE, agent.getId());
+        return "redirect:/agent/listings?statusUpdated";
+    }
+
+    @PostMapping("/listings/{id}/delete")
+    public String deleteListing(@PathVariable Long id) {
+        User agent = currentUser();
+        apartmentService.deleteApartment(id, agent.getId());
+        return "redirect:/agent/listings?deleted";
     }
 
     @GetMapping("/bookings")
@@ -108,39 +125,6 @@ public class AgentController {
         User agent = currentUser();
         bookingService.updateBookingStatus(agent.getId(), id, status, agentNote);
         return "redirect:/agent/bookings?statusUpdated";
-    }
-
-    @GetMapping("/schedule")
-    public String schedule(Model model) {
-        User agent = currentUser();
-        model.addAttribute(
-                "schedules",
-                agentScheduleRepository.findByAgentIdAndAvailableDateGreaterThanEqualOrderByAvailableDateAsc(
-                        agent.getId(), LocalDate.now()));
-        return "agent/schedule";
-    }
-
-    @PostMapping("/schedule")
-    public String saveSchedule(@RequestParam LocalDate availableDate, @RequestParam List<String> timeSlots) {
-        User agent = currentUser();
-        List<String> normalizedSlots = normalizeSlots(timeSlots);
-
-        AgentSchedule schedule = agentScheduleRepository.findByAgentIdAndAvailableDate(agent.getId(), availableDate)
-                .orElseGet(() -> AgentSchedule.builder().agent(agent).availableDate(availableDate).build());
-
-        schedule.setTimeSlots(normalizedSlots);
-        agentScheduleRepository.save(schedule);
-
-        return "redirect:/agent/schedule?saved";
-    }
-
-    private List<String> normalizeSlots(List<String> rawSlots) {
-        return rawSlots.stream()
-                .flatMap(raw -> Arrays.stream(raw.split(",")))
-                .map(String::trim)
-                .filter(value -> !value.isBlank())
-                .distinct()
-                .toList();
     }
 
     private User currentUser() {

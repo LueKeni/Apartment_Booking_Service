@@ -1,14 +1,12 @@
 package com.realestate.apartment_booking_service.controllers.web;
 
-import com.realestate.apartment_booking_service.entities.Appointment;
-import com.realestate.apartment_booking_service.entities.Conversation;
 import com.realestate.apartment_booking_service.entities.User;
 import com.realestate.apartment_booking_service.enums.ApartmentStatus;
+import com.realestate.apartment_booking_service.enums.Role;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
 import com.realestate.apartment_booking_service.services.interfaces.UserService;
+import com.realestate.apartment_booking_service.utils.SecurityUtils;
 import com.realestate.apartment_booking_service.repositories.ApartmentRepository;
-import com.realestate.apartment_booking_service.repositories.AppointmentRepository;
-import com.realestate.apartment_booking_service.repositories.ConversationRepository;
 import com.realestate.apartment_booking_service.repositories.UserRepository;
 import java.util.Comparator;
 import java.util.List;
@@ -30,29 +28,12 @@ public class AdminController {
     private final ApartmentService apartmentService;
     private final UserRepository userRepository;
     private final ApartmentRepository apartmentRepository;
-    private final AppointmentRepository appointmentRepository;
-    private final ConversationRepository conversationRepository;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         List<User> latestUsers = userRepository.findAll()
                 .stream()
                 .sorted(Comparator.comparing(User::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder()))
-                        .reversed())
-                .limit(6)
-                .toList();
-
-        List<Appointment> latestAppointments = appointmentRepository.findAll()
-                .stream()
-                .sorted(Comparator.comparing(Appointment::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder()))
-                        .reversed())
-                .limit(6)
-                .toList();
-
-        List<Conversation> latestConversations = conversationRepository.findAll()
-                .stream()
-                .sorted(Comparator
-                        .comparing(Conversation::getLastMessageAt, Comparator.nullsLast(Comparator.naturalOrder()))
                         .reversed())
                 .limit(6)
                 .toList();
@@ -64,12 +45,8 @@ public class AdminController {
 
         model.addAttribute("userCount", userRepository.count());
         model.addAttribute("listingCount", apartmentRepository.count());
-        model.addAttribute("appointmentCount", appointmentRepository.count());
-        model.addAttribute("conversationCount", conversationRepository.count());
         model.addAttribute("hiddenListingCount", hiddenListings);
         model.addAttribute("latestUsers", latestUsers);
-        model.addAttribute("latestAppointments", latestAppointments);
-        model.addAttribute("latestConversations", latestConversations);
         return "admin/dashboard";
     }
 
@@ -91,6 +68,18 @@ public class AdminController {
         return "redirect:/admin/users?verified";
     }
 
+    @PostMapping("/users/{id}/role")
+    public String updateUserRole(@PathVariable Long id, @RequestParam Role role) {
+        User targetUser = userService.findById(id);
+        String currentUserEmail = SecurityUtils.getCurrentUserEmail();
+        if (currentUserEmail != null && currentUserEmail.equalsIgnoreCase(targetUser.getEmail())) {
+            return "redirect:/admin/users?roleDenied";
+        }
+
+        userService.updateUserRole(id, role);
+        return "redirect:/admin/users?roleUpdated";
+    }
+
     @GetMapping("/listings")
     public String listings(Model model) {
         model.addAttribute("apartments", apartmentRepository.findAll());
@@ -103,15 +92,4 @@ public class AdminController {
         return "redirect:/admin/listings?updated";
     }
 
-    @GetMapping("/appointments")
-    public String appointments(Model model) {
-        model.addAttribute("appointments", appointmentRepository.findAll());
-        return "admin/appointments";
-    }
-
-    @GetMapping("/conversations")
-    public String conversations(Model model) {
-        model.addAttribute("conversations", conversationRepository.findAll());
-        return "admin/conversations";
-    }
 }
