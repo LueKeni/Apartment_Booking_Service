@@ -109,7 +109,8 @@ public class AgentController {
     @PostMapping("/listings/{id}/visibility")
     public String updateListingVisibility(@PathVariable Long id, @RequestParam boolean hidden) {
         User agent = currentUser();
-        apartmentService.updateStatusForAgent(id, hidden ? ApartmentStatus.HIDDEN : ApartmentStatus.AVAILABLE, agent.getId());
+        apartmentService.updateStatusForAgent(id, hidden ? ApartmentStatus.HIDDEN : ApartmentStatus.AVAILABLE,
+                agent.getId());
         return "redirect:/agent/listings?statusUpdated";
     }
 

@@ -50,16 +50,15 @@ public class MomoServiceImpl implements MomoService {
 
         long points = resolvePoints(request);
         String orderInfo = "Khach hang: " + request.getFullName() + ". Noi dung: " + request.getOrderInfo();
-        String rawData =
-                "partnerCode=" + options.getPartnerCode()
-                        + "&accessKey=" + options.getAccessKey()
-                        + "&requestId=" + orderId
-                        + "&amount=" + request.getAmount()
-                        + "&orderId=" + orderId
-                        + "&orderInfo=" + orderInfo
-                        + "&returnUrl=" + options.getReturnUrl()
-                        + "&notifyUrl=" + options.getNotifyUrl()
-                        + "&extraData=";
+        String rawData = "partnerCode=" + options.getPartnerCode()
+                + "&accessKey=" + options.getAccessKey()
+                + "&requestId=" + orderId
+                + "&amount=" + request.getAmount()
+                + "&orderId=" + orderId
+                + "&orderInfo=" + orderInfo
+                + "&returnUrl=" + options.getReturnUrl()
+                + "&notifyUrl=" + options.getNotifyUrl()
+                + "&extraData=";
 
         String signature = computeHmacSha256(rawData, options.getSecretKey());
 
@@ -90,8 +89,8 @@ public class MomoServiceImpl implements MomoService {
                 .build();
         pointTopUpRepository.save(topUp);
 
-        ResponseEntity<MomoCreatePaymentResponseModel> response =
-                restTemplate.postForEntity(options.getApiUrl(), entity, MomoCreatePaymentResponseModel.class);
+        ResponseEntity<MomoCreatePaymentResponseModel> response = restTemplate.postForEntity(options.getApiUrl(),
+                entity, MomoCreatePaymentResponseModel.class);
         MomoCreatePaymentResponseModel body = response.getBody();
         if (body == null || body.getPayUrl() == null || body.getPayUrl().isBlank()) {
             topUp.setStatus(PaymentStatus.FAILED);
