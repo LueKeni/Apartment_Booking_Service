@@ -38,6 +38,11 @@ public class NotificationRestController {
         notificationService.markRead(notificationId, currentUser().getId());
     }
 
+    @PostMapping("/read-all")
+    public void markAllRead() {
+        notificationService.markAllRead(currentUser().getId());
+    }
+
     private User currentUser() {
         String email = SecurityUtils.getCurrentUserEmail();
         if (email == null) {

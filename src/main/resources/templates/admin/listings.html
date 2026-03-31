@@ -23,7 +23,7 @@
 
       <section class="mt-6 glass-card p-6" data-table>
         <div class="table-toolbar">
-          <input data-table-search type="text" placeholder="Search title, district or address..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
+          <input data-table-search type="text" placeholder="Search title, area or address..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
           <select data-table-filter-key="status" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
             <option value="">All status</option>
             <option value="AVAILABLE">AVAILABLE</option>
@@ -52,7 +52,7 @@
               <tr>
                 <th class="px-4 py-3 font-semibold">Title</th>
                 <th class="px-4 py-3 font-semibold">Type</th>
-                <th class="px-4 py-3 font-semibold">District</th>
+                <th class="px-4 py-3 font-semibold">Area</th>
                 <th class="px-4 py-3 font-semibold">Price</th>
                 <th class="px-4 py-3 font-semibold">Status</th>
                 <th class="px-4 py-3 font-semibold">Moderate</th>
@@ -64,10 +64,10 @@
               </tr>
               <tr data-row
                   th:each="apartment : ${apartments}"
-                  th:attr="data-search=${apartment.title + ' ' + apartment.locationDistrict + ' ' + apartment.locationAddress},data-status=${apartment.status},data-transaction=${apartment.transactionType},data-title=${apartment.title},data-price=${apartment.price}">
+                  th:attr="data-search=${apartment.title + ' ' + (apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '') + ' ' + apartment.locationAddress},data-status=${apartment.status},data-transaction=${apartment.transactionType},data-title=${apartment.title},data-price=${apartment.price}">
                 <td class="px-4 py-3 font-semibold text-ink" th:text="${apartment.title}"></td>
                 <td class="px-4 py-3 text-slate-600" th:text="${apartment.transactionType}"></td>
-                <td class="px-4 py-3 text-slate-600" th:text="${apartment.locationDistrict}"></td>
+                <td class="px-4 py-3 text-slate-600" th:text="${apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '-'}"></td>
                 <td class="px-4 py-3 text-slate-600" th:text="${apartment.price}"></td>
                 <td class="px-4 py-3"><span class="pill" th:text="${apartment.status}"></span></td>
                 <td class="px-4 py-3">

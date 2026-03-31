@@ -42,7 +42,7 @@
                th:value="${filter != null ? filter.keyword : ''}"
                class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
         <input name="district"
-               placeholder="District"
+             placeholder="Area (ward/district/city)"
                th:value="${filter != null ? filter.district : ''}"
                class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
         <select name="roomType" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
@@ -78,7 +78,7 @@
                alt="Apartment image"
                class="mb-3 h-40 w-full rounded-2xl object-cover" />
           <h3 class="text-lg font-semibold text-ink" th:text="${apartment.title}"></h3>
-          <p class="mt-1 text-sm text-slate-600" th:text="${apartment.locationDistrict}"></p>
+          <p class="mt-1 text-sm text-slate-600" th:text="${apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '-'}"></p>
           <p class="mt-3 text-xl font-bold text-tealdeep" th:text="${apartment.price}"></p>
           <a th:href="@{/apartments/{id}(id=${apartment.id})}" class="mt-4 inline-block rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">View Details</a>
         </article>

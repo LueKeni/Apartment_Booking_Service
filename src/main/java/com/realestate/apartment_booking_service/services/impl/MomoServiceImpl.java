@@ -6,10 +6,12 @@ import com.realestate.apartment_booking_service.dto.MomoExecuteResponseModel;
 import com.realestate.apartment_booking_service.dto.MomoOrderInfoRequest;
 import com.realestate.apartment_booking_service.entities.PointTopUp;
 import com.realestate.apartment_booking_service.entities.User;
+import com.realestate.apartment_booking_service.enums.NotificationType;
 import com.realestate.apartment_booking_service.enums.PaymentStatus;
 import com.realestate.apartment_booking_service.repositories.PointTopUpRepository;
 import com.realestate.apartment_booking_service.repositories.UserRepository;
 import com.realestate.apartment_booking_service.services.interfaces.MomoService;
+import com.realestate.apartment_booking_service.services.interfaces.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import java.nio.charset.StandardCharsets;
@@ -34,6 +36,7 @@ public class MomoServiceImpl implements MomoService {
     private final MomoOptionModel options;
     private final PointTopUpRepository pointTopUpRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
@@ -128,6 +131,12 @@ public class MomoServiceImpl implements MomoService {
                     }
                     user.setPoints(user.getPoints() + topUp.getPoints());
                     userRepository.save(user);
+
+                    notificationService.createNotification(
+                            user.getId(),
+                            "Top-up successful",
+                            "You received " + topUp.getPoints() + " points from order " + topUp.getOrderId() + ".",
+                            NotificationType.POINTS);
                 } else if (!success) {
                     topUp.setStatus(PaymentStatus.FAILED);
                 }

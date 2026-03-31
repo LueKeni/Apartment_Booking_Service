@@ -63,7 +63,7 @@
       <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         <article th:each="apartment : ${recentListings}" class="rounded-2xl border border-slate-200 bg-white/75 p-4">
           <h3 class="font-semibold text-ink" th:text="${apartment.title}"></h3>
-          <p class="mt-1 text-sm text-slate-600" th:text="${apartment.locationDistrict}"></p>
+          <p class="mt-1 text-sm text-slate-600" th:text="${apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '-'}"></p>
           <p class="mt-2 text-sm font-semibold text-tealdeep" th:text="${apartment.status}"></p>
         </article>
       </div>

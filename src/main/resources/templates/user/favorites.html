@@ -14,7 +14,7 @@
 
     <section class="glass-card p-6" data-table>
       <div class="table-toolbar">
-        <input data-table-search type="text" placeholder="Search title or district..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
+        <input data-table-search type="text" placeholder="Search title or area..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
         <select data-table-sort class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
           <option value="">Sort by</option>
           <option value="title:asc">Title A-Z</option>
@@ -29,7 +29,7 @@
           <thead class="bg-slate-50 text-left text-slate-600">
             <tr>
               <th class="px-4 py-3 font-semibold">Listing</th>
-              <th class="px-4 py-3 font-semibold">District</th>
+              <th class="px-4 py-3 font-semibold">Area</th>
               <th class="px-4 py-3 font-semibold">Price</th>
               <th class="px-4 py-3 font-semibold">Action</th>
             </tr>
@@ -40,9 +40,9 @@
             </tr>
             <tr data-row
                 th:each="favorite : ${favorites}"
-                th:attr="data-search=${favorite.apartment.title + ' ' + favorite.apartment.locationDistrict},data-title=${favorite.apartment.title},data-price=${favorite.apartment.price}">
+                th:attr="data-search=${favorite.apartment.title + ' ' + (favorite.apartment.locationAreaLabel != null ? favorite.apartment.locationAreaLabel : '')},data-title=${favorite.apartment.title},data-price=${favorite.apartment.price}">
               <td class="px-4 py-3 font-semibold text-ink" th:text="${favorite.apartment.title}"></td>
-              <td class="px-4 py-3 text-slate-600" th:text="${favorite.apartment.locationDistrict}"></td>
+              <td class="px-4 py-3 text-slate-600" th:text="${favorite.apartment.locationAreaLabel != null ? favorite.apartment.locationAreaLabel : '-'}"></td>
               <td class="px-4 py-3 text-slate-600" th:text="${favorite.apartment.price}"></td>
               <td class="px-4 py-3">
                 <div class="flex flex-wrap gap-2">

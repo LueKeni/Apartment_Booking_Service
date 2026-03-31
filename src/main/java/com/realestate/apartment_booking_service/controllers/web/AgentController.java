@@ -9,6 +9,7 @@ import com.realestate.apartment_booking_service.dto.MomoOrderInfoRequest;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
 import com.realestate.apartment_booking_service.services.interfaces.BookingService;
 import com.realestate.apartment_booking_service.services.interfaces.MomoService;
+import com.realestate.apartment_booking_service.services.interfaces.NotificationService;
 import com.realestate.apartment_booking_service.services.interfaces.ReviewService;
 import com.realestate.apartment_booking_service.services.interfaces.UserService;
 import com.realestate.apartment_booking_service.utils.SecurityUtils;
@@ -38,6 +39,7 @@ public class AgentController {
     private final ReviewService reviewService;
     private final UserService userService;
     private final MomoService momoService;
+    private final NotificationService notificationService;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -171,6 +173,14 @@ public class AgentController {
         return "agent/points";
     }
 
+    @GetMapping("/notifications")
+    public String notifications(Model model) {
+        User agent = currentUser();
+        model.addAttribute("notifications", notificationService.getNotifications(agent.getId()));
+        model.addAttribute("unreadNotificationCount", notificationService.countUnread(agent.getId()));
+        return "agent/notifications";
+    }
+
     @PostMapping("/points/momo")
     public String createMomoPayment(MomoOrderInfoRequest request) {
         User agent = currentUser();
@@ -189,6 +199,20 @@ public class AgentController {
         model.addAttribute("agentProfile", agent);
         model.addAttribute("currentPoints", agent.getPoints());
         return "agent/points";
+    }
+
+    @PostMapping("/notifications/{id}/read")
+    public String markNotificationRead(@PathVariable Long id) {
+        User agent = currentUser();
+        notificationService.markRead(id, agent.getId());
+        return "redirect:/agent/notifications?updated";
+    }
+
+    @PostMapping("/notifications/read-all")
+    public String markAllNotificationsRead() {
+        User agent = currentUser();
+        notificationService.markAllRead(agent.getId());
+        return "redirect:/agent/notifications?updated";
     }
 
     @PostMapping("/profile")

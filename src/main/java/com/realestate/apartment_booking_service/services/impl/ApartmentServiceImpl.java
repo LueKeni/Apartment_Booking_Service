@@ -37,8 +37,8 @@ public class ApartmentServiceImpl implements ApartmentService {
     private final AppointmentRepository appointmentRepository;
     private final FavoriteRepository favoriteRepository;
     private final ReviewRepository reviewRepository;
-    private static final List<String> ALLOWED_IMAGE_CONTENT_TYPES =
-            List.of("image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif");
+    private static final List<String> ALLOWED_IMAGE_CONTENT_TYPES = List.of("image/jpeg", "image/jpg", "image/png",
+            "image/webp", "image/gif");
     private static final String UPLOAD_DIR = "uploads";
 
     @Override
@@ -52,12 +52,14 @@ public class ApartmentServiceImpl implements ApartmentService {
         if (apartment.getStatus() == null) {
             apartment.setStatus(ApartmentStatus.AVAILABLE);
         }
+        normalizeLocationFields(apartment);
 
         return apartmentRepository.save(apartment);
     }
 
     @Override
-    public Apartment updateApartment(Long apartmentId, Apartment payload, Long agentId, List<MultipartFile> imageFiles) {
+    public Apartment updateApartment(Long apartmentId, Apartment payload, Long agentId,
+            List<MultipartFile> imageFiles) {
         Apartment apartment = findById(apartmentId);
         validateOwnership(apartment, agentId);
 
@@ -67,7 +69,12 @@ public class ApartmentServiceImpl implements ApartmentService {
         apartment.setPricePerM2(payload.getPricePerM2());
         apartment.setArea(payload.getArea());
         apartment.setLocationAddress(payload.getLocationAddress());
+        apartment.setLocationProvinceCode(payload.getLocationProvinceCode());
+        apartment.setLocationProvince(payload.getLocationProvince());
+        apartment.setLocationDistrictCode(payload.getLocationDistrictCode());
         apartment.setLocationDistrict(payload.getLocationDistrict());
+        apartment.setLocationWardCode(payload.getLocationWardCode());
+        apartment.setLocationWard(payload.getLocationWard());
         apartment.setLegalStatus(payload.getLegalStatus());
         apartment.setRoomType(payload.getRoomType());
         apartment.setLatitude(payload.getLatitude());
@@ -80,6 +87,7 @@ public class ApartmentServiceImpl implements ApartmentService {
         apartment.setFloorNumber(payload.getFloorNumber());
         apartment.setBuildingBlock(payload.getBuildingBlock());
         apartment.setDescription(payload.getDescription());
+        normalizeLocationFields(apartment);
         List<String> uploadedImages = storeImageFiles(imageFiles);
         if (!uploadedImages.isEmpty()) {
             List<String> mergedImages = new ArrayList<>();
@@ -203,7 +211,8 @@ public class ApartmentServiceImpl implements ApartmentService {
             try {
                 Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException exception) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot store image file", exception);
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot store image file",
+                        exception);
             }
             imageUrls.add("/uploads/" + storedFileName);
         }
@@ -246,5 +255,16 @@ public class ApartmentServiceImpl implements ApartmentService {
             return null;
         }
         return value.trim();
+    }
+
+    private void normalizeLocationFields(Apartment apartment) {
+        apartment.setLocationAddress(normalizeBlankToNull(apartment.getLocationAddress()));
+        apartment.setLocationProvinceCode(normalizeBlankToNull(apartment.getLocationProvinceCode()));
+        apartment.setLocationProvince(normalizeBlankToNull(apartment.getLocationProvince()));
+        apartment.setLocationWardCode(normalizeBlankToNull(apartment.getLocationWardCode()));
+        apartment.setLocationWard(normalizeBlankToNull(apartment.getLocationWard()));
+
+        apartment.setLocationDistrictCode(null);
+        apartment.setLocationDistrict(null);
     }
 }

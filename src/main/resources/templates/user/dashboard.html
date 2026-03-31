@@ -76,7 +76,7 @@
         <article th:if="${#lists.isEmpty(recentFavorites)}" class="rounded-xl border border-dashed border-slate-300 p-3 text-sm text-slate-500">No favorites yet.</article>
         <article th:each="favorite : ${recentFavorites}" class="rounded-2xl border border-slate-200 bg-white/75 p-3">
           <p class="font-semibold text-ink" th:text="${favorite.apartment.title}"></p>
-          <p class="text-sm text-slate-600" th:text="${favorite.apartment.locationDistrict}"></p>
+          <p class="text-sm text-slate-600" th:text="${favorite.apartment.locationAreaLabel != null ? favorite.apartment.locationAreaLabel : '-'}"></p>
           <a th:href="@{/apartments/{id}(id=${favorite.apartment.id})}" class="mt-2 inline-block text-sm font-semibold text-tealdeep">View</a>
         </article>
       </div>

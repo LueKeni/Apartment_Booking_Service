@@ -45,8 +45,21 @@
           <option value="3BR">3BR</option>
           <option value="DUPLEX">Duplex</option>
         </select>
-        <input name="locationAddress" placeholder="Street address" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
-        <input name="locationDistrict" placeholder="District" class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <input id="createStreetAddress" name="locationAddress" placeholder="Street address" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <div>
+          <select id="createProvinceCode" name="locationProvinceCode" data-location="province" required class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2">
+            <option value="">Select city/province</option>
+          </select>
+          <input type="hidden" id="createProvinceName" name="locationProvince" data-location-name="province" />
+        </div>
+        <div>
+          <select id="createWardCode" name="locationWardCode" data-location="ward" required class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2" disabled>
+            <option value="">Select ward/commune</option>
+          </select>
+          <input type="hidden" id="createWardName" name="locationWard" data-location-name="ward" />
+        </div>
+        <input type="hidden" name="locationDistrictCode" value="" />
+        <input type="hidden" name="locationDistrict" value="" />
         <div class="md:col-span-2">
           <label class="mb-1 block text-sm font-medium text-slate-700">Pick Location on Map</label>
           <div id="createMapPicker" class="h-72 w-full rounded-xl border border-slate-300"></div>
@@ -90,8 +103,32 @@
           <option value="3BR" th:selected="${editApartment.roomType == '3BR'}">3BR</option>
           <option value="DUPLEX" th:selected="${editApartment.roomType == 'DUPLEX'}">Duplex</option>
         </select>
-        <input name="locationAddress" th:value="${editApartment.locationAddress}" placeholder="Street address" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
-        <input name="locationDistrict" th:value="${editApartment.locationDistrict}" placeholder="District" class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <input id="editStreetAddress" name="locationAddress" th:value="${editApartment.locationAddress}" placeholder="Street address" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <div>
+          <select id="editProvinceCode"
+                  name="locationProvinceCode"
+                  data-location="province"
+                  th:attr="data-existing-code=${editApartment.locationProvinceCode},data-existing-name=${editApartment.locationProvince}"
+                  required
+                  class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2">
+            <option value="">Select city/province</option>
+          </select>
+          <input type="hidden" id="editProvinceName" name="locationProvince" data-location-name="province" th:value="${editApartment.locationProvince}" />
+        </div>
+        <div>
+          <select id="editWardCode"
+                  name="locationWardCode"
+                  data-location="ward"
+                  th:attr="data-existing-code=${editApartment.locationWardCode},data-existing-name=${editApartment.locationWard}"
+                  required
+                  class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2"
+                  disabled>
+            <option value="">Select ward/commune</option>
+          </select>
+          <input type="hidden" id="editWardName" name="locationWard" data-location-name="ward" th:value="${editApartment.locationWard}" />
+        </div>
+        <input type="hidden" name="locationDistrictCode" value="" />
+        <input type="hidden" name="locationDistrict" value="" />
         <div class="md:col-span-2">
           <label class="mb-1 block text-sm font-medium text-slate-700">Pick Location on Map</label>
           <div id="editMapPicker" class="h-72 w-full rounded-xl border border-slate-300"></div>
@@ -119,7 +156,7 @@
       <p class="mt-1 text-sm text-slate-600">Available points: <span th:text="${currentPoints != null ? currentPoints : 0}">0</span></p>
       <div class="mt-4" data-table>
       <div class="table-toolbar">
-        <input data-table-search type="text" placeholder="Search title or district..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
+        <input data-table-search type="text" placeholder="Search title or area..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
         <select data-table-filter-key="status" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
           <option value="">All status</option>
           <option value="AVAILABLE">AVAILABLE</option>
@@ -150,7 +187,7 @@
               <th class="px-4 py-3 font-semibold">Title</th>
               <th class="px-4 py-3 font-semibold">Type</th>
               <th class="px-4 py-3 font-semibold">Room</th>
-              <th class="px-4 py-3 font-semibold">District</th>
+              <th class="px-4 py-3 font-semibold">Area</th>
               <th class="px-4 py-3 font-semibold">Price</th>
               <th class="px-4 py-3 font-semibold">Status</th>
               <th class="px-4 py-3 font-semibold">Boost</th>
@@ -163,7 +200,7 @@
             </tr>
             <tr data-row
                 th:each="apartment : ${apartments}"
-                th:attr="data-search=${apartment.title + ' ' + apartment.locationDistrict},data-status=${apartment.status},data-transaction=${apartment.transactionType},data-title=${apartment.title},data-price=${apartment.price}">
+                th:attr="data-search=${apartment.title + ' ' + (apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '')},data-status=${apartment.status},data-transaction=${apartment.transactionType},data-title=${apartment.title},data-price=${apartment.price}">
               <td class="px-4 py-3">
                 <img th:if="${!#lists.isEmpty(apartment.images)}"
                      th:src="${apartment.images[0]}"
@@ -174,7 +211,7 @@
               <td class="px-4 py-3 font-semibold text-ink" th:text="${apartment.title}"></td>
               <td class="px-4 py-3 text-slate-600" th:text="${apartment.transactionType}"></td>
               <td class="px-4 py-3 text-slate-600" th:text="${apartment.roomType != null ? apartment.roomType : '-'}"></td>
-              <td class="px-4 py-3 text-slate-600" th:text="${apartment.locationDistrict}"></td>
+              <td class="px-4 py-3 text-slate-600" th:text="${apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '-'}"></td>
               <td class="px-4 py-3 text-slate-600" th:text="${apartment.price}"></td>
               <td class="px-4 py-3"><span class="pill" th:text="${apartment.status}"></span></td>
               <td class="px-4 py-3">
@@ -225,40 +262,410 @@
     (function () {
       const defaultLat = 10.7769;
       const defaultLng = 106.7009;
+      const addressKitBaseApi = "/api/address-kit";
+      const addressKitEffectiveDate = "2025-07-01";
+      const geocodingApi = "https://nominatim.openstreetmap.org/search";
+      const fallbackGeocodingApi = "https://photon.komoot.io/api/";
+      const wardsByProvince = new Map();
 
-      function initMapPicker(mapId, latInputId, lngInputId) {
-        const mapElement = document.getElementById(mapId);
-        const latInput = document.getElementById(latInputId);
-        const lngInput = document.getElementById(lngInputId);
-        if (!mapElement || !latInput || !lngInput || typeof L === "undefined") {
+      function hasText(value) {
+        return typeof value === "string" && value.trim().length > 0;
+      }
+
+      function normalizeText(value) {
+        if (!hasText(value)) {
+          return "";
+        }
+        return value
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .trim()
+          .toLowerCase();
+      }
+
+      function createOption(value, label) {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        return option;
+      }
+
+      function chooseCodeByCodeOrName(items, preferredCode, preferredName) {
+        if (hasText(preferredCode)) {
+          const preferredCodeText = String(preferredCode).trim();
+          const exactCodeMatch = items.find(function (item) {
+            return String(item.code) === preferredCodeText;
+          });
+          if (exactCodeMatch) {
+            return String(exactCodeMatch.code);
+          }
+
+          const normalizedPreferredCode = preferredCodeText.replace(/^0+/, "");
+          if (hasText(normalizedPreferredCode)) {
+            const relaxedCodeMatch = items.find(function (item) {
+              return String(item.code).replace(/^0+/, "") === normalizedPreferredCode;
+            });
+            if (relaxedCodeMatch) {
+              return String(relaxedCodeMatch.code);
+            }
+          }
+        }
+        const normalizedPreferredName = normalizeText(preferredName);
+        if (!normalizedPreferredName) {
+          return "";
+        }
+        const matchedItem = items.find(function (item) {
+          return normalizeText(item.name) === normalizedPreferredName;
+        });
+        return matchedItem ? String(matchedItem.code) : "";
+      }
+
+      function setSelectOptions(selectElement, items, placeholder, selectedCode) {
+        selectElement.innerHTML = "";
+        selectElement.appendChild(createOption("", placeholder));
+        items.forEach(function (item) {
+          selectElement.appendChild(createOption(String(item.code), item.name));
+        });
+        if (hasText(selectedCode)) {
+          selectElement.value = String(selectedCode);
+        }
+        if (!hasText(selectElement.value)) {
+          selectElement.value = "";
+        }
+        selectElement.disabled = items.length === 0;
+      }
+
+      async function fetchJson(url) {
+        const response = await fetch(url, {
+          headers: {
+            Accept: "application/json"
+          }
+        });
+        if (!response.ok) {
+          throw new Error("Request failed: " + response.status);
+        }
+        return response.json();
+      }
+
+      function toArray(value) {
+        return Array.isArray(value) ? value : [];
+      }
+
+      function buildAddressKitUrl(path) {
+        return addressKitBaseApi + "/" + addressKitEffectiveDate + path;
+      }
+
+      function extractProvinces(data) {
+        return toArray(data && data.provinces);
+      }
+
+      function extractCommunes(data) {
+        return toArray(data && data.communes);
+      }
+
+      function toCoordinateValue(value) {
+        return Number(value).toFixed(6);
+      }
+
+      function initLocationMap(config) {
+        const mapElement = document.getElementById(config.mapId);
+        const latInput = document.getElementById(config.latInputId);
+        const lngInput = document.getElementById(config.lngInputId);
+        const streetInput = document.getElementById(config.streetInputId);
+        const provinceSelect = document.getElementById(config.provinceSelectId);
+        const wardSelect = document.getElementById(config.wardSelectId);
+        const provinceNameInput = document.getElementById(config.provinceNameInputId);
+        const wardNameInput = document.getElementById(config.wardNameInputId);
+
+        if (!mapElement || !latInput || !lngInput || !streetInput || !provinceSelect || !wardSelect
+            || !provinceNameInput || !wardNameInput || typeof L === "undefined") {
           return;
         }
 
-        const hasExisting = latInput.value && lngInput.value;
-        const initialLat = hasExisting ? Number(latInput.value) : defaultLat;
-        const initialLng = hasExisting ? Number(lngInput.value) : defaultLng;
+        const hasExistingCoordinates = hasText(latInput.value) && hasText(lngInput.value);
+        const initialLat = hasExistingCoordinates ? Number(latInput.value) : defaultLat;
+        const initialLng = hasExistingCoordinates ? Number(lngInput.value) : defaultLng;
 
-        const map = L.map(mapId).setView([initialLat, initialLng], hasExisting ? 15 : 12);
+        const map = L.map(config.mapId).setView([initialLat, initialLng], hasExistingCoordinates ? 15 : 12);
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           maxZoom: 19,
           attribution: "&copy; OpenStreetMap contributors"
         }).addTo(map);
 
         let marker = L.marker([initialLat, initialLng]).addTo(map);
-        latInput.value = initialLat.toFixed(6);
-        lngInput.value = initialLng.toFixed(6);
+        latInput.value = toCoordinateValue(initialLat);
+        lngInput.value = toCoordinateValue(initialLng);
+
+        function setMarkerPosition(lat, lng, zoomLevel) {
+          marker.setLatLng([lat, lng]);
+          map.setView([lat, lng], zoomLevel || 16);
+          latInput.value = toCoordinateValue(lat);
+          lngInput.value = toCoordinateValue(lng);
+        }
+
+        function syncSelectedName(selectElement, hiddenInput) {
+          const selectedOption = selectElement.options[selectElement.selectedIndex];
+          hiddenInput.value = selectedOption && hasText(selectedOption.value) ? selectedOption.textContent.trim() : "";
+        }
+
+        async function loadProvinces() {
+          const provinceResponse = await fetchJson(buildAddressKitUrl("/provinces"));
+          const provinces = extractProvinces(provinceResponse).sort(function (left, right) {
+            return String(left.name || "").localeCompare(String(right.name || ""), "vi", { sensitivity: "base" });
+          });
+          const existingCode = provinceSelect.dataset.existingCode;
+          const existingName = provinceSelect.dataset.existingName || provinceNameInput.value;
+          const selectedCode = chooseCodeByCodeOrName(provinces, existingCode, existingName);
+          setSelectOptions(provinceSelect, provinces, "Select city/province", selectedCode);
+          syncSelectedName(provinceSelect, provinceNameInput);
+        }
+
+        function toWardItems(communes) {
+          const uniqueWards = new Map();
+          toArray(communes).forEach(function (commune) {
+            const wardCode = String(commune.code || "").trim();
+            if (!wardCode || uniqueWards.has(wardCode)) {
+              return;
+            }
+            uniqueWards.set(wardCode, {
+              code: wardCode,
+              name: commune.name || ""
+            });
+          });
+          return Array.from(uniqueWards.values()).sort(function (left, right) {
+            return left.name.localeCompare(right.name, "vi", { sensitivity: "base" });
+          });
+        }
+
+        async function loadWardsByProvince(provinceCode, preferredCode, preferredName) {
+          if (!hasText(provinceCode)) {
+            setSelectOptions(wardSelect, [], "Select ward/commune", "");
+            wardNameInput.value = "";
+            return;
+          }
+
+          let wards = wardsByProvince.get(provinceCode);
+          if (!wards) {
+            const wardResponse = await fetchJson(buildAddressKitUrl("/provinces/" + encodeURIComponent(String(provinceCode)) + "/communes"));
+            wards = toWardItems(extractCommunes(wardResponse));
+            wardsByProvince.set(provinceCode, wards);
+          }
+
+          const selectedCode = chooseCodeByCodeOrName(wards, preferredCode, preferredName);
+          setSelectOptions(wardSelect, wards, "Select ward/commune", selectedCode);
+          syncSelectedName(wardSelect, wardNameInput);
+        }
+
+        function buildGeocodingQueries() {
+          const street = hasText(streetInput.value) ? streetInput.value.trim() : "";
+          const ward = hasText(wardNameInput.value) ? wardNameInput.value.trim() : "";
+          const province = hasText(provinceNameInput.value) ? provinceNameInput.value.trim() : "";
+          const baseSegments = [street, ward, province].filter(function (value) {
+            return hasText(value);
+          });
+          if (baseSegments.length === 0) {
+            return [];
+          }
+
+          const candidates = [];
+          candidates.push(baseSegments.concat("Viet Nam").join(", "));
+
+          if (hasText(street) && hasText(province)) {
+            candidates.push([street, province, "Viet Nam"].join(", "));
+          }
+
+          if (hasText(street)) {
+            candidates.push([street, "Viet Nam"].join(", "));
+          }
+
+          if (hasText(ward) && hasText(province)) {
+            candidates.push([ward, province, "Viet Nam"].join(", "));
+          }
+
+          const seen = new Set();
+          return candidates.filter(function (query) {
+            if (!hasText(query) || seen.has(query)) {
+              return false;
+            }
+            seen.add(query);
+            return true;
+          });
+        }
+
+        let geocodeTimerId = null;
+        let geocodeController = null;
+
+        async function geocodeByNominatim(query, signal) {
+          const geocodeUrl = geocodingApi
+            + "?format=jsonv2&limit=1&countrycodes=vn&q="
+            + encodeURIComponent(query);
+          const response = await fetch(geocodeUrl, {
+            signal: signal,
+            headers: {
+              Accept: "application/json"
+            }
+          });
+          if (!response.ok) {
+            return null;
+          }
+          const results = await response.json();
+          if (!Array.isArray(results) || results.length === 0) {
+            return null;
+          }
+          const firstResult = results[0];
+          const lat = Number(firstResult.lat);
+          const lng = Number(firstResult.lon);
+          if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return null;
+          }
+          return { lat: lat, lng: lng };
+        }
+
+        async function geocodeByPhoton(query, signal) {
+          const geocodeUrl = fallbackGeocodingApi
+            + "?limit=1&lang=vi&q="
+            + encodeURIComponent(query + ", Viet Nam");
+          const response = await fetch(geocodeUrl, {
+            signal: signal,
+            headers: {
+              Accept: "application/json"
+            }
+          });
+          if (!response.ok) {
+            return null;
+          }
+          const data = await response.json();
+          const firstFeature = data && Array.isArray(data.features) ? data.features[0] : null;
+          const coordinates = firstFeature && firstFeature.geometry ? firstFeature.geometry.coordinates : null;
+          if (!Array.isArray(coordinates) || coordinates.length < 2) {
+            return null;
+          }
+          const lng = Number(coordinates[0]);
+          const lat = Number(coordinates[1]);
+          if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+            return null;
+          }
+          return { lat: lat, lng: lng };
+        }
+
+        async function geocodeAndUpdateMap() {
+          if (!hasText(streetInput.value) && !hasText(wardNameInput.value) && !hasText(provinceNameInput.value)) {
+            return;
+          }
+
+          const queries = buildGeocodingQueries();
+          if (queries.length === 0) {
+            return;
+          }
+
+          if (geocodeController) {
+            geocodeController.abort();
+          }
+          geocodeController = new AbortController();
+
+          try {
+            const signal = geocodeController.signal;
+            let result = null;
+            for (const query of queries) {
+              result = await geocodeByNominatim(query, signal);
+              if (!result) {
+                result = await geocodeByPhoton(query, signal);
+              }
+              if (result) {
+                break;
+              }
+            }
+            if (result) {
+              setMarkerPosition(result.lat, result.lng, 16);
+            }
+          } catch (error) {
+            if (error && error.name !== "AbortError") {
+              console.warn("Geocoding failed", error);
+            }
+          }
+        }
+
+        function scheduleGeocoding() {
+          if (geocodeTimerId) {
+            clearTimeout(geocodeTimerId);
+          }
+          geocodeTimerId = setTimeout(function () {
+            geocodeAndUpdateMap();
+          }, 450);
+        }
 
         map.on("click", function (event) {
-          const lat = event.latlng.lat;
-          const lng = event.latlng.lng;
-          marker.setLatLng([lat, lng]);
-          latInput.value = lat.toFixed(6);
-          lngInput.value = lng.toFixed(6);
+          setMarkerPosition(event.latlng.lat, event.latlng.lng, map.getZoom());
         });
+
+        provinceSelect.addEventListener("change", async function () {
+          syncSelectedName(provinceSelect, provinceNameInput);
+          await loadWardsByProvince(provinceSelect.value, "", "");
+          scheduleGeocoding();
+        });
+
+        wardSelect.addEventListener("change", function () {
+          syncSelectedName(wardSelect, wardNameInput);
+          scheduleGeocoding();
+        });
+
+        streetInput.addEventListener("input", function () {
+          scheduleGeocoding();
+        });
+        streetInput.addEventListener("change", function () {
+          scheduleGeocoding();
+        });
+        streetInput.addEventListener("blur", function () {
+          scheduleGeocoding();
+        });
+
+        Promise.resolve()
+          .then(loadProvinces)
+          .then(async function () {
+            const wardExistingCode = wardSelect.dataset.existingCode;
+            const wardExistingName = wardSelect.dataset.existingName || wardNameInput.value;
+
+            if (hasText(provinceSelect.value)) {
+              await loadWardsByProvince(provinceSelect.value, wardExistingCode, wardExistingName);
+            } else {
+              await loadWardsByProvince("", "", "");
+            }
+
+            if (!hasExistingCoordinates) {
+              scheduleGeocoding();
+            }
+          })
+          .catch(function (error) {
+            console.warn("Cannot load AddressKit administrative API", error);
+          })
+          .finally(function () {
+            setTimeout(function () {
+              map.invalidateSize();
+            }, 120);
+          });
       }
 
-      initMapPicker("createMapPicker", "createLatitude", "createLongitude");
-      initMapPicker("editMapPicker", "editLatitude", "editLongitude");
+      initLocationMap({
+        mapId: "createMapPicker",
+        latInputId: "createLatitude",
+        lngInputId: "createLongitude",
+        streetInputId: "createStreetAddress",
+        provinceSelectId: "createProvinceCode",
+        wardSelectId: "createWardCode",
+        provinceNameInputId: "createProvinceName",
+        wardNameInputId: "createWardName"
+      });
+
+      initLocationMap({
+        mapId: "editMapPicker",
+        latInputId: "editLatitude",
+        lngInputId: "editLongitude",
+        streetInputId: "editStreetAddress",
+        provinceSelectId: "editProvinceCode",
+        wardSelectId: "editWardCode",
+        provinceNameInputId: "editProvinceName",
+        wardNameInputId: "editWardName"
+      });
     })();
   </script>
 

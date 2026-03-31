@@ -64,6 +64,21 @@ public class Apartment {
     @Column(length = 120)
     private String locationDistrict;
 
+    @Column(length = 20)
+    private String locationProvinceCode;
+
+    @Column(length = 120)
+    private String locationProvince;
+
+    @Column(length = 20)
+    private String locationDistrictCode;
+
+    @Column(length = 20)
+    private String locationWardCode;
+
+    @Column(length = 120)
+    private String locationWard;
+
     @Column(length = 120)
     private String legalStatus;
 
@@ -113,4 +128,34 @@ public class Apartment {
     @Column(name = "image_url", nullable = false, length = 500)
     @Default
     private List<String> images = new ArrayList<>();
+
+    public String getLocationAreaLabel() {
+        List<String> areaParts = new ArrayList<>();
+        if (hasText(locationWard)) {
+            areaParts.add(locationWard.trim());
+        }
+        if (hasText(locationDistrict)) {
+            areaParts.add(locationDistrict.trim());
+        }
+        if (hasText(locationProvince)) {
+            areaParts.add(locationProvince.trim());
+        }
+        return areaParts.isEmpty() ? null : String.join(", ", areaParts);
+    }
+
+    public String getFullAddressLabel() {
+        List<String> addressParts = new ArrayList<>();
+        if (hasText(locationAddress)) {
+            addressParts.add(locationAddress.trim());
+        }
+        String areaLabel = getLocationAreaLabel();
+        if (hasText(areaLabel)) {
+            addressParts.add(areaLabel);
+        }
+        return addressParts.isEmpty() ? null : String.join(", ", addressParts);
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
+    }
 }
