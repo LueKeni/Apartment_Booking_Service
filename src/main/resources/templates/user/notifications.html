@@ -36,9 +36,13 @@
             </div>
           </div>
 
-          <form th:if="${notification.isRead == false}" th:action="@{/user/notifications/{id}/read(id=${notification.id})}" method="post">
-            <button class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700">Mark as read</button>
-          </form>
+          <div class="flex flex-wrap items-center gap-2">
+            <a th:href="${notification.openUrl}"
+               class="rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-white">Open related screen</a>
+            <form th:if="${notification.isRead == false}" th:action="@{/user/notifications/{id}/read(id=${notification.id})}" method="post">
+              <button class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700">Mark as read</button>
+            </form>
+          </div>
         </div>
       </article>
     </section>

@@ -13,6 +13,8 @@ public class NotificationDto {
     private String title;
     private String message;
     private NotificationType type;
+    private String actionUrl;
+    private String openUrl;
     private Boolean isRead;
     private LocalDateTime createdAt;
 }

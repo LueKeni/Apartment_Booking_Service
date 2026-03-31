@@ -166,6 +166,13 @@ public class UserController {
         return "redirect:/user/notifications?updated";
     }
 
+    @GetMapping("/notifications/{id}/open")
+    public String openNotification(@PathVariable Long id) {
+        User user = currentUser();
+        String actionUrl = notificationService.markReadAndResolveActionUrl(id, user.getId());
+        return "redirect:" + actionUrl;
+    }
+
     @PostMapping("/favorites/{apartmentId}/toggle")
     public String toggleFavorite(@PathVariable Long apartmentId,
             @RequestParam(required = false) String redirectTo,

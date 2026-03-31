@@ -47,6 +47,9 @@ public class Notification {
     @Column(nullable = false, length = 20)
     private NotificationType type;
 
+    @Column(length = 500)
+    private String actionUrl;
+
     @Column(nullable = false)
     private Boolean isRead;
 

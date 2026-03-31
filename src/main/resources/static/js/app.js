@@ -486,7 +486,24 @@ function initNotificationCenter() {
 
     notifications.slice(0, 8).forEach((notification) => {
       const item = document.createElement("article");
-      item.className = `rounded-xl border px-3 py-2 ${notification.isRead ? "border-slate-200 bg-white" : "border-teallite/40 bg-teallite/10"}`;
+      item.className = `rounded-xl border px-3 py-2 transition hover:border-tealdeep/50 hover:bg-white ${notification.isRead ? "border-slate-200 bg-white" : "border-teallite/40 bg-teallite/10"}`;
+      item.role = "button";
+      item.tabIndex = 0;
+
+      const openNotification = () => {
+        const href = notification.openUrl || notification.actionUrl;
+        if (href) {
+          window.location.href = href;
+        }
+      };
+
+      item.addEventListener("click", openNotification);
+      item.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openNotification();
+        }
+      });
 
       const title = document.createElement("p");
       title.className = "text-sm font-semibold text-ink";
@@ -510,7 +527,8 @@ function initNotificationCenter() {
         readButton.type = "button";
         readButton.className = "rounded-full border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700";
         readButton.textContent = "Mark read";
-        readButton.addEventListener("click", async () => {
+        readButton.addEventListener("click", async (event) => {
+          event.stopPropagation();
           try {
             await markRead(notification.id);
             await refreshNotifications();

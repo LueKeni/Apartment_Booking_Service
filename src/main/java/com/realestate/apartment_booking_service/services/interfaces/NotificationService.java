@@ -6,7 +6,11 @@ import java.util.List;
 
 public interface NotificationService {
 
-    void createNotification(Long recipientId, String title, String message, NotificationType type);
+    default void createNotification(Long recipientId, String title, String message, NotificationType type) {
+        createNotification(recipientId, title, message, type, null);
+    }
+
+    void createNotification(Long recipientId, String title, String message, NotificationType type, String actionUrl);
 
     List<NotificationDto> getNotifications(Long recipientId);
 
@@ -15,4 +19,6 @@ public interface NotificationService {
     void markRead(Long notificationId, Long recipientId);
 
     void markAllRead(Long recipientId);
+
+    String markReadAndResolveActionUrl(Long notificationId, Long recipientId);
 }

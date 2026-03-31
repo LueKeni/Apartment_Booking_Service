@@ -62,10 +62,11 @@ public class ReviewServiceImpl implements ReviewService {
         Review saved = reviewRepository.save(review);
 
         // Update Agent Profile rating
-        com.realestate.apartment_booking_service.entities.AgentProfile profile = agentProfileRepository.findByUserId(appointment.getAgent().getId())
+        com.realestate.apartment_booking_service.entities.AgentProfile profile = agentProfileRepository
+                .findByUserId(appointment.getAgent().getId())
                 .orElseGet(() -> {
-                    com.realestate.apartment_booking_service.entities.AgentProfile newProfile = 
-                        com.realestate.apartment_booking_service.entities.AgentProfile.builder()
+                    com.realestate.apartment_booking_service.entities.AgentProfile newProfile = com.realestate.apartment_booking_service.entities.AgentProfile
+                            .builder()
                             .user(appointment.getAgent())
                             .responseRate(0.0)
                             .activeListings(0)
@@ -76,7 +77,7 @@ public class ReviewServiceImpl implements ReviewService {
                             .build();
                     return agentProfileRepository.save(newProfile);
                 });
-        
+
         double currentTotalRating = profile.getAverageRating() * profile.getReviewCount();
         profile.setReviewCount(profile.getReviewCount() + 1);
         profile.setAverageRating((currentTotalRating + request.getRating()) / profile.getReviewCount());
@@ -86,7 +87,8 @@ public class ReviewServiceImpl implements ReviewService {
                 appointment.getAgent().getId(),
                 "New review received",
                 user.getFullName() + " submitted a " + request.getRating() + "-star review",
-                NotificationType.SYSTEM);
+                NotificationType.SYSTEM,
+                "/agent/profile");
 
         return saved;
     }

@@ -135,7 +135,8 @@ public class MomoServiceImpl implements MomoService {
                             user.getId(),
                             "Top-up successful",
                             "You received " + topUp.getPoints() + " points from order " + topUp.getOrderId() + ".",
-                            NotificationType.POINTS);
+                            NotificationType.POINTS,
+                            "/agent/points");
                 } else if (!success) {
                     topUp.setStatus(PaymentStatus.FAILED);
                 }

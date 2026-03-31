@@ -84,7 +84,8 @@ public class ChatServiceImpl implements ChatService {
                 notifyRecipientId,
                 "New message",
                 sender.getFullName() + " sent you a message",
-                NotificationType.CHAT);
+                NotificationType.CHAT,
+                "/chat?conversationId=" + conversation.getId());
 
         return message;
     }

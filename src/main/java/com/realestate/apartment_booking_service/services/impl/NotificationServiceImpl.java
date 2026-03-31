@@ -4,6 +4,7 @@ import com.realestate.apartment_booking_service.dto.NotificationDto;
 import com.realestate.apartment_booking_service.entities.Notification;
 import com.realestate.apartment_booking_service.entities.User;
 import com.realestate.apartment_booking_service.enums.NotificationType;
+import com.realestate.apartment_booking_service.enums.Role;
 import com.realestate.apartment_booking_service.repositories.NotificationRepository;
 import com.realestate.apartment_booking_service.repositories.UserRepository;
 import com.realestate.apartment_booking_service.services.interfaces.NotificationService;
@@ -23,7 +24,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final UserRepository userRepository;
 
     @Override
-    public void createNotification(Long recipientId, String title, String message, NotificationType type) {
+    public void createNotification(Long recipientId, String title, String message, NotificationType type,
+            String actionUrl) {
         User recipient = userRepository.findById(recipientId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipient not found"));
 
@@ -32,6 +34,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .title(title)
                 .message(message)
                 .type(type)
+                .actionUrl(sanitizeActionUrl(actionUrl))
                 .isRead(false)
                 .build();
 
@@ -47,6 +50,8 @@ public class NotificationServiceImpl implements NotificationService {
                         .title(notification.getTitle())
                         .message(notification.getMessage())
                         .type(notification.getType())
+                        .actionUrl(resolveActionUrl(notification))
+                        .openUrl(resolveOpenUrl(notification))
                         .isRead(notification.getIsRead())
                         .createdAt(notification.getCreatedAt())
                         .build())
@@ -76,5 +81,56 @@ public class NotificationServiceImpl implements NotificationService {
         List<Notification> unreadNotifications = notificationRepository.findByRecipientIdAndIsReadFalse(recipientId);
         unreadNotifications.forEach(notification -> notification.setIsRead(true));
         notificationRepository.saveAll(unreadNotifications);
+    }
+
+    @Override
+    public String markReadAndResolveActionUrl(Long notificationId, Long recipientId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Notification not found"));
+
+        if (!notification.getRecipient().getId().equals(recipientId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No access to this notification");
+        }
+
+        if (!Boolean.TRUE.equals(notification.getIsRead())) {
+            notification.setIsRead(true);
+            notificationRepository.save(notification);
+        }
+
+        return resolveActionUrl(notification);
+    }
+
+    private String sanitizeActionUrl(String actionUrl) {
+        if (actionUrl == null) {
+            return null;
+        }
+        String trimmed = actionUrl.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        return trimmed.startsWith("/") ? trimmed : "/" + trimmed;
+    }
+
+    private String resolveActionUrl(Notification notification) {
+        String explicit = sanitizeActionUrl(notification.getActionUrl());
+        if (explicit != null) {
+            return explicit;
+        }
+
+        Role role = notification.getRecipient().getRole();
+        return switch (notification.getType()) {
+            case BOOKING -> role == Role.AGENT ? "/agent/bookings" : "/user/appointments";
+            case CHAT -> "/chat";
+            case POINTS -> role == Role.AGENT ? "/agent/points" : "/user/dashboard";
+            case SYSTEM -> role == Role.AGENT ? "/agent/dashboard" : "/user/dashboard";
+        };
+    }
+
+    private String resolveOpenUrl(Notification notification) {
+        Role role = notification.getRecipient().getRole();
+        if (role == Role.AGENT) {
+            return "/agent/notifications/" + notification.getId() + "/open";
+        }
+        return "/user/notifications/" + notification.getId() + "/open";
     }
 }

@@ -216,6 +216,13 @@ public class AgentController {
         return "redirect:/agent/notifications?updated";
     }
 
+    @GetMapping("/notifications/{id}/open")
+    public String openNotification(@PathVariable Long id) {
+        User agent = currentUser();
+        String actionUrl = notificationService.markReadAndResolveActionUrl(id, agent.getId());
+        return "redirect:" + actionUrl;
+    }
+
     @PostMapping("/profile")
     public String updateProfile(
             @RequestParam String fullName,
