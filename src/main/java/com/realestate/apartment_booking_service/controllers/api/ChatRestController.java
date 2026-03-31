@@ -75,8 +75,8 @@ public class ChatRestController {
 
         return ConversationSummaryDto.builder()
                 .conversationId(conversation.getId())
-                .apartmentId(conversation.getApartment().getId())
-                .apartmentTitle(conversation.getApartment().getTitle())
+                .apartmentId(conversation.getApartment() != null ? conversation.getApartment().getId() : null)
+                .apartmentTitle(conversation.getApartment() != null ? conversation.getApartment().getTitle() : "General Inquiry")
                 .otherUserId(other.getId())
                 .otherUserName(other.getFullName())
                 .lastMessageAt(conversation.getLastMessageAt())

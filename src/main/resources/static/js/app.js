@@ -171,10 +171,10 @@ function initChat(root) {
       title.textContent = activeConversation.otherUserName || "Conversation";
       subtitle.textContent = activeConversation.apartmentTitle
         ? `Listing: ${activeConversation.apartmentTitle}`
-        : "Listing chat";
+        : "General Inquiry";
       return;
     }
-    if (state.recipientId && state.apartmentId) {
+    if (state.recipientId) {
       title.textContent = "New conversation";
       subtitle.textContent = "Send your first message to start this chat.";
       return;
@@ -239,7 +239,7 @@ function initChat(root) {
 
       const listing = document.createElement("p");
       listing.className = `mt-1 text-xs ${isActive ? "text-white/70" : "text-slate-500"}`;
-      listing.textContent = conversation.apartmentTitle || "Listing";
+      listing.textContent = conversation.apartmentTitle || "General Inquiry";
 
       const meta = document.createElement("p");
       meta.className = `mt-2 text-xs ${isActive ? "text-white/60" : "text-slate-400"}`;
@@ -261,7 +261,7 @@ function initChat(root) {
     activeConversation = conversation;
     state.conversationId = conversation.conversationId;
     state.recipientId = conversation.otherUserId;
-    state.apartmentId = conversation.apartmentId;
+    state.apartmentId = conversation.apartmentId || null;
     updateHeader();
     setComposerEnabled(true);
     loadMessages();
@@ -274,7 +274,7 @@ function initChat(root) {
       if (placeholder) {
         placeholder.classList.remove("hidden");
       }
-      setComposerEnabled(Boolean(state.recipientId && state.apartmentId));
+      setComposerEnabled(Boolean(state.recipientId));
       updateHeader();
       return;
     }
@@ -310,9 +310,9 @@ function initChat(root) {
       if (state.conversationId) {
         const matched = cachedConversations.find((item) => item.conversationId === state.conversationId);
         activeConversation = matched || null;
-      } else if (state.recipientId && state.apartmentId) {
+      } else if (state.recipientId) {
         const matched = cachedConversations.find(
-          (item) => item.otherUserId === state.recipientId && item.apartmentId === state.apartmentId
+          (item) => item.otherUserId === state.recipientId && (state.apartmentId ? item.apartmentId === state.apartmentId : true)
         );
         if (matched) {
           selectConversation(matched);
@@ -321,7 +321,7 @@ function initChat(root) {
       }
 
       updateHeader();
-      setComposerEnabled(Boolean(state.recipientId && state.apartmentId));
+      setComposerEnabled(Boolean(state.recipientId));
       setStatus("Ready");
       if (state.conversationId) {
         loadMessages(true);
@@ -337,7 +337,7 @@ function initChat(root) {
     if (!content) {
       return;
     }
-    if (!state.recipientId || !state.apartmentId) {
+    if (!state.recipientId) {
       setStatus("Select a conversation first");
       return;
     }
@@ -424,8 +424,168 @@ function initChatUnreadBadge() {
   });
 }
 
+function initComparison() {
+  const bar = document.getElementById("comparison-bar");
+  const countLabel = document.getElementById("compare-count");
+  const itemsContainer = document.getElementById("compare-items");
+  const clearBtn = document.getElementById("clear-compare");
+  const compareBtn = document.getElementById("compare-now-btn");
+  const modal = document.getElementById("comparison-modal");
+  const modalContent = document.getElementById("comparison-content");
+  const closeModalBtn = document.getElementById("close-comparison-modal");
+
+  if (!bar || !countLabel || !itemsContainer || !clearBtn || !compareBtn || !modal) {
+    return;
+  }
+
+  let compareList = [];
+
+  const updateUI = () => {
+    const count = compareList.length;
+    countLabel.textContent = `${count}/3`;
+
+    if (count > 0) {
+      bar.classList.remove("translate-y-full");
+    } else {
+      bar.classList.add("translate-y-full");
+    }
+
+    compareBtn.disabled = count < 2;
+
+    itemsContainer.innerHTML = "";
+    compareList.forEach((item) => {
+      const div = document.createElement("div");
+      div.className = "relative group w-12 h-12";
+      div.innerHTML = `
+        <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover border-2 border-white shadow-sm" alt="${item.title}" />
+        <button type="button" class="absolute -top-1 -right-1 bg-coral text-white rounded-full w-4 h-4 text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" data-remove="${item.id}">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      div.querySelector("[data-remove]").addEventListener("click", () => {
+        removeFromCompare(item.id);
+      });
+      itemsContainer.appendChild(div);
+    });
+  };
+
+  const addToCompare = (id, title, price, image, district, type, area, beds, baths) => {
+    if (compareList.length >= 3) {
+      alert("You can only compare up to 3 apartments.");
+      return;
+    }
+    if (compareList.some((item) => item.id === id)) {
+      alert("This apartment is already in the comparison list.");
+      return;
+    }
+
+    compareList.push({ id, title, price, image, district, type, area, beds, baths });
+    updateUI();
+  };
+
+  const removeFromCompare = (id) => {
+    compareList = compareList.filter((item) => item.id !== id);
+    updateUI();
+  };
+
+  const renderComparisonTable = () => {
+    if (compareList.length < 2) return;
+
+    let html = `
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[600px]">
+          <thead>
+            <tr>
+              <th class="p-3 bg-slate-50 border border-slate-200 w-1/4">Feature</th>
+              ${compareList.map(item => `
+                <th class="p-3 bg-slate-50 border border-slate-200">
+                  <div class="flex flex-col items-center text-center">
+                    <img src="${item.image}" class="w-32 h-20 rounded-lg object-cover mb-2" />
+                    <p class="font-bold text-ink">${item.title}</p>
+                    <p class="text-tealdeep font-bold mt-1">${item.price}</p>
+                  </div>
+                </th>
+              `).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="p-3 border border-slate-200 font-semibold bg-slate-50">District</td>
+              ${compareList.map(item => `<td class="p-3 border border-slate-200 text-center">${item.district || "N/A"}</td>`).join('')}
+            </tr>
+            <tr>
+              <td class="p-3 border border-slate-200 font-semibold bg-slate-50">Room Type</td>
+              ${compareList.map(item => `<td class="p-3 border border-slate-200 text-center">${item.type || "N/A"}</td>`).join('')}
+            </tr>
+            <tr>
+              <td class="p-3 border border-slate-200 font-semibold bg-slate-50">Area</td>
+              ${compareList.map(item => `<td class="p-3 border border-slate-200 text-center">${item.area || "N/A"} m²</td>`).join('')}
+            </tr>
+            <tr>
+              <td class="p-3 border border-slate-200 font-semibold bg-slate-50">Bedrooms</td>
+              ${compareList.map(item => `<td class="p-3 border border-slate-200 text-center">${item.beds || "N/A"}</td>`).join('')}
+            </tr>
+            <tr>
+              <td class="p-3 border border-slate-200 font-semibold bg-slate-50">Bathrooms</td>
+              ${compareList.map(item => `<td class="p-3 border border-slate-200 text-center">${item.baths || "N/A"}</td>`).join('')}
+            </tr>
+            <tr>
+              <td class="p-3 border border-slate-200 font-semibold bg-slate-50">Action</td>
+              ${compareList.map(item => `
+                <td class="p-3 border border-slate-200 text-center">
+                  <a href="/apartments/${item.id}" class="inline-block rounded-lg bg-ink px-4 py-2 text-xs font-semibold text-white">View Details</a>
+                </td>
+              `).join('')}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+    modalContent.innerHTML = html;
+  };
+
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-compare-add]");
+    if (btn) {
+      const data = btn.dataset;
+      addToCompare(
+        data.compareAdd,
+        data.compareTitle,
+        data.comparePrice,
+        data.compareImage,
+        data.compareDistrict,
+        data.compareType,
+        data.compareArea,
+        data.compareBeds,
+        data.compareBaths
+      );
+    }
+  });
+
+  clearBtn.addEventListener("click", () => {
+    compareList = [];
+    updateUI();
+  });
+
+  compareBtn.addEventListener("click", () => {
+    renderComparisonTable();
+    modal.classList.remove("hidden");
+  });
+
+  closeModalBtn.addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.classList.add("hidden");
+    }
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("[data-table]").forEach(initRealtimeTable);
   document.querySelectorAll("[data-chat-root]").forEach(initChat);
   initChatUnreadBadge();
+  initComparison();
 });
