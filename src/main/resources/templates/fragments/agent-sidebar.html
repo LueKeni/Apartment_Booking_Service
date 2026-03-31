@@ -1,39 +1,29 @@
-<aside th:fragment="agentSidebar(activePage)" class="glass-card sticky top-24 h-fit p-4">
-  <p class="text-xs uppercase tracking-[0.14em] text-slate-500">Agent Workspace</p>
-  <h2 class="mt-1 text-lg font-semibold text-ink">Operations Panel</h2>
-  <nav class="mt-4 space-y-2 text-sm font-semibold">
-    <a href="/agent/dashboard"
-       class="block rounded-xl border px-3 py-2"
-       th:classappend="${activePage == 'dashboard'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Dashboard</a>
-    <a href="/agent/listings"
-       class="block rounded-xl border px-3 py-2"
-       th:classappend="${activePage == 'listings'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Listings</a>
-    <a href="/agent/bookings"
-       class="block rounded-xl border px-3 py-2"
-       th:classappend="${activePage == 'bookings'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Bookings</a>
-    <a href="/agent/points"
-       class="block rounded-xl border px-3 py-2"
-       th:classappend="${activePage == 'points'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Points</a>
-    <a href="/agent/notifications"
-       class="block rounded-xl border px-3 py-2"
-       th:classappend="${activePage == 'notifications'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">
-      <span class="flex items-center justify-between gap-2">
-        <span>Notifications</span>
-        <span data-notification-unread-badge
-              class="hidden min-w-[22px] rounded-full bg-coral px-2 py-0.5 text-center text-xs font-semibold text-white"></span>
-      </span>
+<aside th:fragment="agentSidebar(activePage)" class="sticky top-24 h-fit rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+  <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Agent Workspace</p>
+  <h2 class="mt-1 text-lg font-bold text-slate-900">Operations</h2>
+  <nav class="mt-6 flex flex-col space-y-1">
+    <a href="/agent/dashboard" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors" th:classappend="${activePage == 'dashboard'} ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
+      Dashboard
     </a>
-    <a href="/chat"
-       class="block rounded-xl border px-3 py-2"
-       th:classappend="${activePage == 'chat'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">
-      <span class="flex items-center justify-between gap-2">
-        <span>Chat</span>
-        <span data-chat-unread-badge
-              class="hidden min-w-[22px] rounded-full bg-coral px-2 py-0.5 text-center text-xs font-semibold text-white"></span>
-      </span>
+    <a href="/agent/listings" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors" th:classappend="${activePage == 'listings'} ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
+      Listings Studio
     </a>
-    <a href="/agent/profile"
-       class="block rounded-xl border px-3 py-2"
-       th:classappend="${activePage == 'profile'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Profile</a>
+    <a href="/agent/bookings" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors" th:classappend="${activePage == 'bookings'} ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
+      Bookings
+    </a>
+    <a href="/agent/points" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors" th:classappend="${activePage == 'points'} ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
+      Wallet & Points
+    </a>
+    <a href="/agent/notifications" class="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors" th:classappend="${activePage == 'notifications'} ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
+      <span>Notifications</span>
+      <span data-notification-unread-badge class="hidden min-w-[20px] rounded-full bg-red-500 px-1.5 py-0.5 text-center text-[10px] font-bold text-white"></span>
+    </a>
+    <a href="/chat" class="flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors" th:classappend="${activePage == 'chat'} ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
+      <span>Inbox Chat</span>
+      <span data-chat-unread-badge class="hidden min-w-[20px] rounded-full bg-red-500 px-1.5 py-0.5 text-center text-[10px] font-bold text-white"></span>
+    </a>
+    <a href="/agent/profile" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors" th:classappend="${activePage == 'profile'} ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
+      My Profile
+    </a>
   </nav>
 </aside>

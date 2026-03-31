@@ -1,20 +1,34 @@
-<div th:fragment="userTabs(activePage)" class="mb-5 flex flex-wrap gap-2">
-  <a href="/user/dashboard"
-     class="rounded-full border px-4 py-2 text-sm font-semibold"
-     th:classappend="${activePage == 'dashboard'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-300 bg-white text-slate-700'">Dashboard</a>
-  <a href="/user/favorites"
-     class="rounded-full border px-4 py-2 text-sm font-semibold"
-     th:classappend="${activePage == 'favorites'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-300 bg-white text-slate-700'">Favorites</a>
-  <a href="/user/appointments"
-     class="rounded-full border px-4 py-2 text-sm font-semibold"
-     th:classappend="${activePage == 'appointments'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-300 bg-white text-slate-700'">Appointments</a>
-  <a href="/user/notifications"
-     class="rounded-full border px-4 py-2 text-sm font-semibold"
-     th:classappend="${activePage == 'notifications'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-300 bg-white text-slate-700'">Notifications</a>
-  <a href="/chat"
-     class="rounded-full border px-4 py-2 text-sm font-semibold"
-     th:classappend="${activePage == 'chat'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-300 bg-white text-slate-700'">Chat</a>
-  <a href="/user/profile"
-     class="rounded-full border px-4 py-2 text-sm font-semibold"
-     th:classappend="${activePage == 'profile'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-300 bg-white text-slate-700'">Profile</a>
+<div th:fragment="userTabs(activePage)" class="mb-8 overflow-x-auto border-b border-slate-200">
+  <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+    <a href="/user/dashboard"
+       class="whitespace-nowrap border-b-2 py-3 px-1 text-sm font-semibold transition-colors"
+       th:classappend="${activePage == 'dashboard'} ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'">
+      Dashboard
+    </a>
+    <a href="/user/favorites"
+       class="whitespace-nowrap border-b-2 py-3 px-1 text-sm font-semibold transition-colors"
+       th:classappend="${activePage == 'favorites'} ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'">
+      Saved Properties
+    </a>
+    <a href="/user/appointments"
+       class="whitespace-nowrap border-b-2 py-3 px-1 text-sm font-semibold transition-colors"
+       th:classappend="${activePage == 'appointments'} ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'">
+      My Appointments
+    </a>
+    <a href="/user/notifications"
+       class="whitespace-nowrap border-b-2 py-3 px-1 text-sm font-semibold transition-colors"
+       th:classappend="${activePage == 'notifications'} ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'">
+      Notifications
+    </a>
+    <a href="/chat"
+       class="whitespace-nowrap border-b-2 py-3 px-1 text-sm font-semibold transition-colors"
+       th:classappend="${activePage == 'chat'} ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'">
+      Messages
+    </a>
+    <a href="/user/profile"
+       class="whitespace-nowrap border-b-2 py-3 px-1 text-sm font-semibold transition-colors"
+       th:classappend="${activePage == 'profile'} ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'">
+      Account Settings
+    </a>
+  </nav>
 </div>

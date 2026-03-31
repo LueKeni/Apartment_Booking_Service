@@ -1,215 +1,232 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/ui-head :: uiHead('Apartment Details')}"></head>
-<body>
+<body class="bg-slate-50 font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="page-enter mx-auto max-w-5xl px-4 py-8" th:if="${apartment != null}">
-    <section class="glass-card p-6">
-      <h1 class="text-2xl font-semibold" th:text="${apartment.title}"></h1>
-      <p class="mt-1 text-slate-500" th:text="${apartment.fullAddressLabel != null ? apartment.fullAddressLabel : apartment.locationAddress}"></p>
-      <p class="mt-1 text-sm text-slate-600" th:text="${'Room type: ' + (apartment.roomType != null ? apartment.roomType : 'N/A')}"></p>
-      <div class="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-600">
-        <span class="rounded-full bg-rose-50 px-3 py-1 font-medium text-rose-600"
-              th:text="${'Luot thich: ' + (apartment.likesCount != null ? apartment.likesCount : 0)}"></span>
-        <span class="rounded-full bg-slate-100 px-3 py-1"
-              th:text="${apartment.transactionType != null ? apartment.transactionType : 'N/A'}"></span>
-      </div>
-      <p class="mt-3 text-2xl font-semibold text-emerald-600" th:text="${apartment.price}"></p>
-      <div class="mt-4 space-y-3" th:if="${!#lists.isEmpty(apartment.images)}">
-        <img th:src="${apartment.images[0]}" alt="Apartment image" class="h-72 w-full rounded-lg object-cover" />
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" th:if="${apartment.images.size() > 1}">
-          <img th:each="imageUrl, imageStat : ${apartment.images}"
-               th:if="${imageStat.index > 0}"
-               th:src="${imageUrl}"
-               alt="Apartment gallery image"
-               class="h-40 w-full rounded-lg object-cover" />
+  <main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8" th:if="${apartment != null}">
+    
+    <div class="mb-8 overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200" th:if="${!#lists.isEmpty(apartment.images)}">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-2 h-[50vh] min-h-[400px]">
+        <div class="md:col-span-3 h-full">
+          <img th:src="${apartment.images[0]}" alt="Main Image" class="h-full w-full object-cover" />
+        </div>
+        <div class="hidden md:grid grid-rows-2 gap-2 h-full" th:if="${apartment.images.size() > 1}">
+          <img th:if="${apartment.images.size() > 1}" th:src="${apartment.images[1]}" alt="Gallery 1" class="h-full w-full object-cover" />
+          <div class="relative h-full w-full">
+            <img th:if="${apartment.images.size() > 2}" th:src="${apartment.images[2]}" alt="Gallery 2" class="h-full w-full object-cover" />
+            <div th:if="${apartment.images.size() > 3}" class="absolute inset-0 bg-slate-900/50 flex items-center justify-center">
+              <span class="text-white font-bold text-xl" th:text="${'+' + (apartment.images.size() - 3)}"></span>
+            </div>
+          </div>
         </div>
       </div>
-      <p class="mt-3 text-slate-700" th:text="${apartment.description}"></p>
+    </div>
 
-      <div class="mt-6 rounded-lg border border-slate-200 p-4" th:if="${apartment.latitude != null and apartment.longitude != null}">
-        <div class="mb-3 flex items-center justify-between gap-3">
-          <h2 class="font-semibold">Location Map</h2>
-          <a th:href="${'https://www.google.com/maps/search/?api=1&query=' + apartment.latitude + ',' + apartment.longitude}"
-             target="_blank"
-             rel="noopener noreferrer"
-             class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700">
-            Open in Google Maps
-          </a>
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <div class="lg:col-span-2 space-y-8">
+        
+        <div>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="inline-flex items-center rounded-md bg-indigo-50 px-2.5 py-1 text-sm font-medium text-indigo-700 ring-1 ring-inset ring-indigo-600/20" th:text="${apartment.transactionType != null ? apartment.transactionType : 'N/A'}"></span>
+            <span class="inline-flex items-center rounded-md bg-slate-100 px-2.5 py-1 text-sm font-medium text-slate-700 ring-1 ring-inset ring-slate-500/10" th:text="${apartment.roomType != null ? apartment.roomType : 'N/A'}"></span>
+            <span class="inline-flex items-center gap-1 text-sm text-slate-500">
+              <svg class="h-4 w-4 text-rose-500" fill="currentColor" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/></svg>
+              <span th:text="${apartment.likesCount != null ? apartment.likesCount : 0}"></span> saves
+            </span>
+          </div>
+          <h1 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl" th:text="${apartment.title}"></h1>
+          <p class="mt-4 flex items-center gap-2 text-lg text-slate-600">
+            <svg class="h-5 w-5 flex-shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span th:text="${apartment.fullAddressLabel != null ? apartment.fullAddressLabel : apartment.locationAddress}"></span>
+          </p>
         </div>
-        <iframe
-                class="h-72 w-full rounded-lg border border-slate-200"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                th:src="${'https://www.google.com/maps?q=' + apartment.latitude + ',' + apartment.longitude + '&z=15&output=embed'}">
-        </iframe>
-      </div>
 
-      <div class="mt-6 grid gap-4 md:grid-cols-2">
-        <div class="rounded-lg border border-slate-200 bg-white/70 p-4">
-          <h2 class="font-semibold">Agent</h2>
-          <p class="mt-2" th:text="${apartment.agent.fullName}"></p>
-          <p class="text-sm text-slate-500" th:text="${agentProfile != null ? agentProfile.location : 'N/A'}"></p>
-          <p class="text-sm text-slate-500" th:text="${agentProfile != null ? agentProfile.bio : ''}"></p>
-          <div class="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-700">
-            <span th:text="${'Rating: ' + agentAverageRating + ' / 5'}"></span>
-            <span class="ml-2 text-slate-500" th:text="${'(' + agentReviewCount + ' reviews)'}"></span>
+        <div class="border-t border-slate-200 pt-8">
+          <h2 class="text-2xl font-bold text-slate-900">About this property</h2>
+          <div class="mt-4 prose prose-slate max-w-none">
+            <p class="whitespace-pre-line text-slate-600 leading-relaxed" th:text="${apartment.description}"></p>
           </div>
         </div>
 
-        <div class="space-y-4">
-          <div class="rounded-lg border border-slate-200 bg-white/70 p-4" th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}">
-            <div class="mb-3 flex items-center justify-between">
-              <h2 class="font-semibold">Book Appointment</h2>
-              <!-- Đề xuất Agent cao nhất -->
-              <div th:if="${bestAgent != null and bestAgent.user.id != apartment.agent.id}" 
-                   class="flex items-center gap-1 rounded bg-amber-50 px-2 py-1 text-[10px] text-amber-700 animate-pulse border border-amber-200">
-                <i class="fas fa-crown"></i>
-                <span>Top Agent Recommendation: <strong th:text="${bestAgent.user.fullName}"></strong></span>
+        <div class="border-t border-slate-200 pt-8" th:if="${apartment.latitude != null and apartment.longitude != null}">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-bold text-slate-900">Location Map</h2>
+            <a th:href="${'https://www.google.com/maps/search/?api=1&query=' + apartment.latitude + ',' + apartment.longitude}" target="_blank" rel="noopener noreferrer" class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">View on Google Maps &rarr;</a>
+          </div>
+          <div class="overflow-hidden rounded-2xl ring-1 ring-slate-200 shadow-sm">
+            <iframe class="h-[400px] w-full border-0" loading="lazy" referrerpolicy="no-referrer-when-downgrade" th:src="${'https://www.google.com/maps?q=' + apartment.latitude + ',' + apartment.longitude + '&z=15&output=embed'}"></iframe>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="lg:col-span-1">
+        <div class="sticky top-8 space-y-6">
+          
+          <div class="rounded-3xl bg-white p-6 shadow-xl ring-1 ring-slate-200">
+            <div class="mb-6">
+              <span class="text-3xl font-bold tracking-tight text-indigo-600" th:text="${apartment.price}"></span>
+              <span class="text-sm text-slate-500 font-medium" th:if="${apartment.transactionType == 'RENT'}">/ month</span>
+            </div>
+
+            <div th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}">
+              <form action="/user/bookings" method="post" class="space-y-4">
+                <input type="hidden" name="apartmentId" th:value="${apartment.id}" />
+                
+                <div th:if="${bestAgent != null and bestAgent.user.id != apartment.agent.id}" class="rounded-xl bg-amber-50 p-3 ring-1 ring-inset ring-amber-500/20">
+                  <div class="flex gap-2">
+                    <svg class="h-5 w-5 text-amber-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1zm-5 8.274l-.818 2.552c.25.112.526.174.818.174.292 0 .569-.062.818-.174L5 10.274zm10 0l-.818 2.552c.25.112.526.174.818.174.292 0 .569-.062.818-.174L15 10.274z" clip-rule="evenodd" /></svg>
+                    <p class="text-xs text-amber-800">
+                      Booking with <strong th:text="${apartment.agent.fullName}"></strong>. We recommend <strong th:text="${bestAgent.user.fullName}"></strong> (<span th:text="${#numbers.formatDecimal(bestAgent.averageRating, 1, 1)}"></span>★) for best experience.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Visit Date</label>
+                    <input type="date" name="scheduledDate" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Time</label>
+                    <input type="time" name="scheduledTime" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-slate-700 mb-1">Note to Agent</label>
+                  <textarea name="userNote" rows="2" class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" placeholder="Any specific requirements..."></textarea>
+                </div>
+                <button class="w-full rounded-lg bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 transition-colors">Request to Book</button>
+              </form>
+
+              <div class="mt-4 grid grid-cols-2 gap-3">
+                <a th:href="@{/chat(recipientId=${apartment.agent.id}, apartmentId=${apartment.id})}" class="flex items-center justify-center gap-2 rounded-lg bg-teal-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-teal-400 transition-colors">
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" /></svg>
+                  Chat
+                </a>
+                <form th:action="@{/user/favorites/{id}/toggle(id=${apartment.id})}" method="post">
+                  <input type="hidden" name="redirectTo" th:value="${'/apartments/' + apartment.id}" />
+                  <button class="w-full flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold shadow-sm ring-1 ring-inset transition-colors" th:classappend="${isFavorite} ? 'bg-amber-50 text-amber-700 ring-amber-600/20 hover:bg-amber-100' : 'bg-white text-slate-700 ring-slate-300 hover:bg-slate-50'">
+                    <svg class="h-4 w-4" th:classappend="${isFavorite} ? 'fill-current' : 'fill-none'" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    <span th:text="${isFavorite} ? 'Saved' : 'Save'"></span>
+                  </button>
+                </form>
               </div>
             </div>
 
-            <form action="/user/bookings" method="post" class="mt-3 space-y-3">
-              <input type="hidden" name="apartmentId" th:value="${apartment.id}" />
-              <div th:if="${bestAgent != null and bestAgent.user.id != apartment.agent.id}" class="rounded-md bg-amber-50/50 p-2 text-[11px] text-amber-800 border border-dashed border-amber-200">
-                  You are booking with <strong th:text="${apartment.agent.fullName}"></strong>. 
-                  Our system suggests <strong th:text="${bestAgent.user.fullName}"></strong> (<span th:text="${#numbers.formatDecimal(bestAgent.averageRating, 1, 1)}"></span>★) 
-                  for the best experience.
-              </div>
-              <div>
-                <label class="block text-sm text-slate-600">Date</label>
-                <input type="date" name="scheduledDate" required class="mt-1 w-full rounded border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block text-sm text-slate-600">Time</label>
-                <input type="time" name="scheduledTime" required class="mt-1 w-full rounded border border-slate-300 px-3 py-2" />
-              </div>
-              <div>
-                <label class="block text-sm text-slate-600">Note</label>
-                <textarea name="userNote" class="mt-1 w-full rounded border border-slate-300 px-3 py-2" placeholder="Tell us more about your visit..."></textarea>
-              </div>
-              <button class="w-full rounded bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-slate-800">
-                Confirm Booking
-              </button>
-            </form>
-
-            <form th:action="@{/user/likes/{id}/toggle(id=${apartment.id})}" method="post" class="mt-3">
-              <input type="hidden" name="redirectTo" th:value="${'/apartments/' + apartment.id}" />
-              <button class="rounded px-4 py-2 text-white"
-                      th:classappend="${isLiked} ? ' bg-rose-500 hover:bg-rose-600' : ' bg-slate-900 hover:bg-slate-700'"
-                      th:text="${isLiked} ? 'Bo like' : 'Like'">
-              </button>
-            </form>
-
-            <form th:action="@{/user/favorites/{id}/toggle(id=${apartment.id})}" method="post" class="mt-3">
-              <input type="hidden" name="redirectTo" th:value="${'/apartments/' + apartment.id}" />
-              <button class="rounded px-4 py-2 text-white"
-                      th:classappend="${isFavorite} ? ' bg-amber-500 hover:bg-amber-600' : ' bg-slate-600 hover:bg-slate-700'"
-                      th:text="${isFavorite} ? 'Bo yeu thich' : 'Them vao yeu thich'">
-              </button>
-            </form>
-            <p class="mt-2 text-xs text-slate-500">Tong luot thich: <span th:text="${apartment.likesCount != null ? apartment.likesCount : 0}">0</span></p>
+            <div th:if="${!isAuthenticated or hasRoleAgent}" class="rounded-xl bg-slate-50 p-4 text-center ring-1 ring-inset ring-slate-200">
+              <p class="text-sm text-slate-600">Sign in as a User to book viewing appointments and chat with agents.</p>
+              <a th:if="${!isAuthenticated}" href="/auth/login" class="mt-3 inline-block rounded-md bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">Log in</a>
+            </div>
           </div>
-          <div class="rounded-lg border border-slate-200 bg-white/70 p-4" th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}">
-            <h2 class="font-semibold">Chat With Agent</h2>
-            <p class="mt-2 text-sm text-slate-600">Ask about availability, pricing, or schedule a visit instantly.</p>
-            <a th:href="@{/chat(recipientId=${apartment.agent.id}, apartmentId=${apartment.id})}"
-               class="mt-4 inline-flex items-center justify-center rounded bg-tealdeep px-4 py-2 text-sm font-semibold text-white">
-              Open Chat
-            </a>
-          </div>
-          <div class="rounded-lg border border-slate-200 bg-white/70 p-4 text-sm text-slate-600" th:if="${!isAuthenticated or hasRoleAgent}">
-            Booking and chat are available for user accounts only.
+
+          <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-4">Listed by</h3>
+            <div class="flex items-start gap-4">
+              <div class="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center text-xl font-bold text-indigo-600 flex-shrink-0" th:text="${#strings.substring(apartment.agent.fullName,0,1)}"></div>
+              <div>
+                <p class="font-bold text-slate-900" th:text="${apartment.agent.fullName}"></p>
+                <div class="mt-1 flex items-center gap-1 text-sm font-medium text-amber-500">
+                  <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  <span th:text="${agentAverageRating}"></span>
+                  <span class="text-slate-400 font-normal ml-1" th:text="${'(' + agentReviewCount + ' reviews)'}"></span>
+                </div>
+              </div>
+            </div>
+            <p class="mt-4 text-sm text-slate-600 italic" th:if="${agentProfile != null and agentProfile.bio != null}" th:text="${'"' + agentProfile.bio + '"'}"></p>
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- Top Agents Ranking Section -->
-    <section class="mt-8 glass-card p-6 border-t-4 border-amber-400">
-        <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-xl font-bold flex items-center gap-2">
-                <i class="fas fa-medal text-amber-500 text-2xl"></i>
-                Top Rated Agents Ranking
-            </h2>
-            <span class="text-xs font-medium text-slate-500 uppercase tracking-widest">Global Platform Standing</span>
+    <section class="mt-16 rounded-3xl bg-slate-900 p-8 shadow-2xl relative overflow-hidden">
+      <div class="absolute top-0 right-0 -mr-20 -mt-20 opacity-20"><svg width="404" height="404" fill="none" viewBox="0 0 404 404"><defs><pattern id="85737c0e-0916-41d7-917f-596dc7edfa27" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="currentColor"></rect></pattern></defs><rect width="404" height="404" fill="url(#85737c0e-0916-41d7-917f-596dc7edfa27)"></rect></svg></div>
+      
+      <div class="relative z-10 mb-8 sm:flex sm:items-center sm:justify-between">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 text-white shadow-sm"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg></span>
+            Top Elite Agents
+          </h2>
+          <p class="mt-2 text-sm text-slate-400">The most highly rated and successful agents on our platform.</p>
         </div>
+      </div>
+      
+      <div class="relative z-10 overflow-hidden rounded-2xl bg-white/10 backdrop-blur-md ring-1 ring-white/20">
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm">
-                <thead>
-                    <tr class="border-b border-slate-100 text-slate-400 font-medium">
-                        <th class="pb-3 pr-4">Rank</th>
-                        <th class="pb-3 pr-4">Agent Name</th>
-                        <th class="pb-3 pr-4">Rating Score</th>
-                        <th class="pb-3 pr-4">Success Deals</th>
-                        <th class="pb-3">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-50">
-                    <tr th:each="agent, stat : ${topAgents}" class="group hover:bg-slate-50 transition-colors">
-                        <td class="py-4 pr-4">
-                            <div class="flex h-8 w-8 items-center justify-center rounded-full font-bold shadow-sm"
-                                 th:classappend="${stat.index == 0} ? 'bg-amber-100 text-amber-700' : (${stat.index == 1} ? 'bg-slate-200 text-slate-700' : (${stat.index == 2} ? 'bg-orange-100 text-orange-700' : 'bg-slate-50 text-slate-500'))"
-                                 th:text="${stat.index + 1}">
-                            </div>
-                        </td>
-                        <td class="py-4 pr-4">
-                            <div class="flex items-center gap-3">
-                                <img th:src="${agent.user.avatar != null ? agent.user.avatar : '/uploads/avatars/default.png'}" 
-                                     class="h-10 w-10 rounded-full object-cover shadow-sm border border-white" alt="Avatar"/>
-                                <div>
-                                    <div class="font-semibold text-slate-900" th:text="${agent.user.fullName}"></div>
-                                    <div class="text-[10px] text-slate-400 flex items-center gap-1">
-                                        <i class="fas fa-check-circle text-teal-500" th:if="${agent.verifiedStatus}"></i>
-                                        <span th:text="${agent.location}"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="py-4 pr-4">
-                            <div class="flex items-center gap-1.5 font-bold text-amber-500">
-                                <span th:text="${#numbers.formatDecimal(agent.averageRating, 1, 1)}"></span>
-                                <div class="flex text-[10px]">
-                                    <i class="fas fa-star" th:each="i : ${#numbers.sequence(1, 5)}" th:classappend="${i <= agent.averageRating} ? 'text-amber-500' : 'text-slate-200'"></i>
-                                </div>
-                                <span class="text-[10px] text-slate-400 font-normal" th:text="${'(' + agent.reviewCount + ' reviews)'}"></span>
-                            </div>
-                        </td>
-                        <td class="py-4 pr-4 text-slate-600 font-medium" th:text="${(agent.successDeals ?: 0) + ' deals'}"></td>
-                        <td class="py-4">
-                            <a th:href="@{/chat(recipientId=${agent.user.id})}" 
-                               class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-tealdeep/10 text-tealdeep hover:bg-tealdeep hover:text-white transition-all shadow-sm">
-                                <i class="fas fa-comment"></i>
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+          <table class="w-full text-left text-sm text-white">
+            <thead class="bg-white/5 border-b border-white/10 text-slate-300">
+              <tr>
+                <th scope="col" class="py-4 pl-6 pr-3 font-semibold">Rank</th>
+                <th scope="col" class="py-4 px-3 font-semibold">Agent Name</th>
+                <th scope="col" class="py-4 px-3 font-semibold">Rating Score</th>
+                <th scope="col" class="py-4 px-3 font-semibold text-center">Success Deals</th>
+                <th scope="col" class="py-4 pl-3 pr-6 font-semibold text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              <tr th:each="agent, stat : ${topAgents}" class="hover:bg-white/5 transition-colors">
+                <td class="whitespace-nowrap py-4 pl-6 pr-3">
+                  <div class="flex h-8 w-8 items-center justify-center rounded-full font-bold shadow-sm"
+                       th:classappend="${stat.index == 0} ? 'bg-amber-400 text-amber-900 ring-2 ring-amber-300 ring-offset-2 ring-offset-slate-900' : (${stat.index == 1} ? 'bg-slate-300 text-slate-800' : (${stat.index == 2} ? 'bg-orange-300 text-orange-900' : 'bg-white/10 text-white'))"
+                       th:text="${'#' + (stat.index + 1)}"></div>
+                </td>
+                <td class="whitespace-nowrap py-4 px-3">
+                  <div class="flex items-center gap-3">
+                    <img th:src="${agent.user.avatar != null ? agent.user.avatar : '/uploads/avatars/default.png'}" class="h-10 w-10 rounded-full object-cover ring-2 ring-white/20" alt="" />
+                    <div>
+                      <div class="font-medium text-white" th:text="${agent.user.fullName}"></div>
+                      <div class="text-xs text-slate-400" th:text="${agent.location}"></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="whitespace-nowrap py-4 px-3">
+                  <div class="flex items-center gap-1.5 font-bold text-amber-400">
+                    <span th:text="${#numbers.formatDecimal(agent.averageRating, 1, 1)}"></span>
+                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <span class="text-xs text-slate-400 font-normal ml-1" th:text="${'(' + agent.reviewCount + ')'}"></span>
+                  </div>
+                </td>
+                <td class="whitespace-nowrap py-4 px-3 text-center">
+                  <span class="inline-flex items-center rounded-md bg-white/10 px-2 py-1 text-xs font-medium text-white ring-1 ring-inset ring-white/20" th:text="${(agent.successDeals ?: 0) + ' deals'}"></span>
+                </td>
+                <td class="whitespace-nowrap py-4 pl-3 pr-6 text-right">
+                  <a th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}" th:href="@{/chat(recipientId=${agent.user.id})}" class="inline-flex items-center gap-2 rounded-md bg-indigo-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-400 transition-colors">
+                    Chat
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
     </section>
 
-    <section class="mt-8 glass-card p-6">
-      <div class="mb-4 flex items-center justify-between">
-        <h2 class="text-xl font-semibold">Related Listings</h2>
-        <span class="text-sm text-slate-500" th:text="${'By room type: ' + (apartment.roomType != null ? apartment.roomType : 'N/A')}"></span>
+    <section class="mt-16 border-t border-slate-200 pt-12">
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900 mb-6">Similar Properties</h2>
+      
+      <div th:if="${#lists.isEmpty(relatedApartments)}" class="rounded-2xl border-2 border-dashed border-slate-200 py-12 text-center text-sm text-slate-500">
+        No similar properties found right now.
       </div>
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <article th:if="${#lists.isEmpty(relatedApartments)}" class="rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500">
-          No related listings found.
-        </article>
-        <article th:each="related : ${relatedApartments}" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <img th:if="${!#lists.isEmpty(related.images)}"
-               th:src="${related.images[0]}"
-               alt="Related apartment image"
-               class="mb-3 h-36 w-full rounded-lg object-cover" />
-          <h3 class="text-lg font-semibold text-ink" th:text="${related.title}"></h3>
-          <p class="mt-1 text-sm text-slate-600" th:text="${related.locationAreaLabel != null ? related.locationAreaLabel : '-'}"></p>
-          <p class="mt-2 text-lg font-semibold text-emerald-600" th:text="${related.price}"></p>
-          <a th:href="@{/apartments/{id}(id=${related.id})}" class="mt-3 inline-block rounded bg-slate-900 px-3 py-1.5 text-sm text-white">View Details</a>
+      
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <article th:each="related : ${relatedApartments}" class="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 hover:shadow-md transition-shadow">
+          <div class="relative aspect-[4/3] w-full bg-slate-200 overflow-hidden">
+            <img th:if="${!#lists.isEmpty(related.images)}" th:src="${related.images[0]}" alt="" class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div th:if="${#lists.isEmpty(related.images)}" class="flex h-full w-full items-center justify-center text-slate-400 text-xs">No Image</div>
+          </div>
+          <div class="flex flex-1 flex-col justify-between p-4">
+            <div>
+              <p class="text-lg font-bold text-indigo-600" th:text="${related.price}"></p>
+              <h3 class="mt-1 font-semibold text-slate-900 line-clamp-1"><a th:href="@{/apartments/{id}(id=${related.id})}"><span class="absolute inset-0"></span><span th:text="${related.title}"></span></a></h3>
+              <p class="mt-1 text-xs text-slate-500 line-clamp-1" th:text="${related.locationAreaLabel != null ? related.locationAreaLabel : '-'}"></p>
+            </div>
+          </div>
         </article>
       </div>
     </section>
+
   </main>
 
   <div th:replace="~{fragments/footer :: siteFooter}"></div>

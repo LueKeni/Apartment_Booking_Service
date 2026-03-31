@@ -1,115 +1,8 @@
-:root {
-  --ink: #12211e;
-  --soft-ink: #3f5e58;
-  --sand: #f4efe6;
-  --teal: #146c72;
-  --teal-light: #4fb4b8;
-  --coral: #e36a3c;
-  --paper: #fffdf9;
-  --line: rgba(18, 33, 30, 0.12);
-}
-
 * {
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  font-family: "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
-  color: var(--ink);
-  background:
-    radial-gradient(circle at 0% 0%, rgba(79, 180, 184, 0.14), transparent 40%),
-    radial-gradient(circle at 100% 5%, rgba(227, 106, 60, 0.14), transparent 36%),
-    linear-gradient(180deg, #f8f6f2 0%, #f1ece2 100%);
-  min-height: 100vh;
-}
-
-h1,
-h2,
-h3,
-h4,
-.brand-title {
-  font-family: "Sora", "Plus Jakarta Sans", sans-serif;
-  letter-spacing: -0.02em;
-}
-
-.top-shell {
-  backdrop-filter: blur(10px);
-  background: rgba(255, 253, 249, 0.88);
-  border-bottom: 1px solid var(--line);
-}
-
-.glass-card {
-  background: rgba(255, 253, 249, 0.74);
-  border: 1px solid rgba(18, 33, 30, 0.08);
-  box-shadow: 0 14px 38px rgba(14, 34, 31, 0.1);
-  backdrop-filter: blur(8px);
-  border-radius: 20px;
-}
-
-.metric-card {
-  position: relative;
-  overflow: hidden;
-}
-
-.metric-card::after {
-  content: "";
-  position: absolute;
-  width: 120px;
-  height: 120px;
-  border-radius: 999px;
-  right: -30px;
-  top: -45px;
-  opacity: 0.25;
-  background: linear-gradient(140deg, var(--teal-light), var(--teal));
-}
-
-.page-enter {
-  animation: fade-up 420ms ease-out;
-}
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.pill {
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.66);
-  padding: 6px 12px;
-  font-size: 12px;
-  color: var(--soft-ink);
-}
-
-.data-grid {
-  display: grid;
-  gap: 16px;
-}
-
-.workspace-grid {
-  display: grid;
-  gap: 20px;
-}
-
-.table-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.table-toolbar input,
-.table-toolbar select {
-  min-height: 40px;
-}
-
+/* Custom thanh cuộn cho khu vực Chat */
 .chat-thread {
   max-height: 420px;
   overflow-y: auto;
@@ -117,28 +10,18 @@ h4,
 }
 
 .chat-thread::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .chat-thread::-webkit-scrollbar-thumb {
-  background: rgba(18, 33, 30, 0.25);
+  background: #cbd5e1; /* Màu slate-300 của Tailwind */
   border-radius: 999px;
+}
+
+.chat-thread::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8; /* Màu slate-400 khi hover */
 }
 
 .chat-thread::-webkit-scrollbar-track {
   background: transparent;
-}
-
-@media (min-width: 960px) {
-  .workspace-grid {
-    grid-template-columns: 260px minmax(0, 1fr);
-  }
-
-  .data-grid.cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .data-grid.cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }

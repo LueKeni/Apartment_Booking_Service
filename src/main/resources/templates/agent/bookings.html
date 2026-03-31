@@ -1,89 +1,100 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/ui-head :: uiHead('Agent Booking Pipeline')}"></head>
-<body>
+<body class="bg-slate-50 font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
-    <div class="workspace-grid">
+  <main class="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-[260px_1fr]">
       <div th:replace="~{fragments/agent-sidebar :: agentSidebar('bookings')}"></div>
 
-      <div>
-      <section class="glass-card p-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="space-y-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 class="text-3xl font-semibold text-ink">Booking Pipeline</h1>
-            <p class="mt-1 text-sm text-slate-600">Approve, reject, or complete customer appointments.</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900">Booking Pipeline</h1>
+            <p class="mt-1 text-sm text-slate-500">Approve, reject, or complete customer appointments.</p>
           </div>
-          <a href="/agent/dashboard" class="pill">Back to Dashboard</a>
-        </div>
-      </section>
-
-      <div th:if="${param.statusUpdated}" class="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Booking status updated.</div>
-
-      <section class="mt-6 glass-card p-6" data-table>
-        <div class="table-toolbar">
-          <input data-table-search type="text" placeholder="Search apartment or customer..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
-          <select data-table-filter-key="status" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-            <option value="">All status</option>
-            <option value="PENDING">PENDING</option>
-            <option value="CONFIRMED">CONFIRMED</option>
-            <option value="CANCELLED">CANCELLED</option>
-            <option value="COMPLETED">COMPLETED</option>
-          </select>
-          <select data-table-sort class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-            <option value="">Sort by</option>
-            <option value="scheduled:asc">Schedule Asc</option>
-            <option value="scheduled:desc">Schedule Desc</option>
-            <option value="customer:asc">Customer A-Z</option>
-            <option value="customer:desc">Customer Z-A</option>
-          </select>
+          <a href="/agent/dashboard" class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900">&larr; Back to Dashboard</a>
         </div>
 
-        <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
-          <table class="min-w-full divide-y divide-slate-200 text-sm">
-            <thead class="bg-slate-50 text-left text-slate-600">
-              <tr>
-                <th class="px-4 py-3 font-semibold">Apartment</th>
-                <th class="px-4 py-3 font-semibold">Customer</th>
-                <th class="px-4 py-3 font-semibold">Schedule</th>
-                <th class="px-4 py-3 font-semibold">Booked At</th>
-                <th class="px-4 py-3 font-semibold">Status</th>
-                <th class="px-4 py-3 font-semibold">Action</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 bg-white/80" data-table-body>
-              <tr th:if="${#lists.isEmpty(appointments)}">
-                <td class="px-4 py-4 text-slate-500" colspan="6">No booking requests yet.</td>
-              </tr>
-              <tr data-row
-                  th:each="appointment : ${appointments}"
-                  th:attr="data-search=${appointment.apartment.title + ' ' + appointment.user.fullName},data-status=${appointment.status},data-scheduled=${appointment.scheduledDate + 'T' + appointment.scheduledTime},data-customer=${appointment.user.fullName}">
-                <td class="px-4 py-3 font-semibold text-ink" th:text="${appointment.apartment.title}"></td>
-                <td class="px-4 py-3 text-slate-600" th:text="${appointment.user.fullName}"></td>
-                <td class="px-4 py-3 text-slate-600" th:text="${appointment.scheduledDate + ' ' + appointment.scheduledTime}"></td>
-                <td class="px-4 py-3 text-slate-600" th:text="${appointment.createdAt}"></td>
-                <td class="px-4 py-3"><span class="pill" th:text="${appointment.status}"></span></td>
-                <td class="px-4 py-3">
-                  <form th:action="@{/agent/bookings/{id}/status(id=${appointment.id})}" method="post" class="grid gap-2 md:grid-cols-3">
-                    <select name="status" class="rounded-xl border border-slate-300 bg-white px-2 py-1.5">
-                      <option value="PENDING">PENDING</option>
-                      <option value="CONFIRMED">CONFIRMED</option>
-                      <option value="CANCELLED">CANCELLED</option>
-                      <option value="COMPLETED">COMPLETED</option>
-                    </select>
-                    <input name="agentNote" placeholder="Note" class="rounded-xl border border-slate-300 bg-white px-2 py-1.5" />
-                    <button class="rounded-xl bg-tealdeep px-3 py-1.5 text-white">Apply</button>
-                  </form>
-                </td>
-              </tr>
-              <tr data-table-empty class="hidden">
-                <td class="px-4 py-4 text-slate-500" colspan="6">No booking matches current filters.</td>
-              </tr>
-            </tbody>
-          </table>
+        <div th:if="${param.statusUpdated}" class="rounded-xl bg-green-50 p-4 ring-1 ring-green-600/20">
+          <p class="text-sm font-medium text-green-800">Booking status updated successfully.</p>
         </div>
-      </section>
+
+        <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200" data-table>
+          <div class="border-b border-slate-200 px-6 py-4">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div class="relative flex-1">
+                <input data-table-search type="text" placeholder="Search apartment or customer..." class="block w-full rounded-lg border-0 py-2 pl-3 pr-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <select data-table-filter-key="status" class="rounded-lg border-0 py-2 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                  <option value="">All Status</option>
+                  <option value="PENDING">PENDING</option>
+                  <option value="CONFIRMED">CONFIRMED</option>
+                  <option value="CANCELLED">CANCELLED</option>
+                  <option value="COMPLETED">COMPLETED</option>
+                </select>
+                <select data-table-sort class="rounded-lg border-0 py-2 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                  <option value="">Sort by</option>
+                  <option value="scheduled:asc">Schedule Asc</option>
+                  <option value="scheduled:desc">Schedule Desc</option>
+                  <option value="customer:asc">Customer A-Z</option>
+                  <option value="customer:desc">Customer Z-A</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Apartment & Customer</th>
+                  <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Schedule</th>
+                  <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Status</th>
+                  <th scope="col" class="px-6 py-3.5 text-right text-sm font-semibold text-slate-900">Process Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 bg-white" data-table-body>
+                <tr th:if="${#lists.isEmpty(appointments)}">
+                  <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="4">No booking requests yet.</td>
+                </tr>
+                <tr data-row class="hover:bg-slate-50/50"
+                    th:each="appointment : ${appointments}"
+                    th:attr="data-search=${appointment.apartment.title + ' ' + appointment.user.fullName},data-status=${appointment.status},data-scheduled=${appointment.scheduledDate + 'T' + appointment.scheduledTime},data-customer=${appointment.user.fullName}">
+                  <td class="px-6 py-4">
+                    <div class="text-sm font-medium text-slate-900" th:text="${appointment.apartment.title}"></div>
+                    <div class="mt-1 text-sm text-slate-500" th:text="${'By: ' + appointment.user.fullName}"></div>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4">
+                    <div class="text-sm font-medium text-indigo-600" th:text="${appointment.scheduledDate + ' ' + appointment.scheduledTime}"></div>
+                    <div class="mt-1 text-xs text-slate-500" th:text="${'Booked at: ' + appointment.createdAt}"></div>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4">
+                    <span th:classappend="${appointment.status == 'PENDING' ? 'bg-yellow-50 text-yellow-800 ring-yellow-600/20' : (appointment.status == 'CONFIRMED' ? 'bg-blue-50 text-blue-700 ring-blue-600/20' : (appointment.status == 'COMPLETED' ? 'bg-green-50 text-green-700 ring-green-600/20' : 'bg-red-50 text-red-700 ring-red-600/10'))}" 
+                          class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset" th:text="${appointment.status}"></span>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <form th:action="@{/agent/bookings/{id}/status(id=${appointment.id})}" method="post" class="flex flex-col sm:flex-row items-end justify-end gap-2">
+                      <select name="status" class="rounded-md border-0 py-1.5 pl-3 pr-8 text-xs text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600">
+                        <option value="PENDING" th:selected="${appointment.status == 'PENDING'}">PENDING</option>
+                        <option value="CONFIRMED" th:selected="${appointment.status == 'CONFIRMED'}">CONFIRMED</option>
+                        <option value="CANCELLED" th:selected="${appointment.status == 'CANCELLED'}">CANCELLED</option>
+                        <option value="COMPLETED" th:selected="${appointment.status == 'COMPLETED'}">COMPLETED</option>
+                      </select>
+                      <input name="agentNote" placeholder="Note (optional)" class="w-full sm:w-32 rounded-md border-0 py-1.5 px-3 text-xs text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600" />
+                      <button class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-600">Apply</button>
+                    </form>
+                  </td>
+                </tr>
+                <tr data-table-empty class="hidden">
+                  <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="4">No booking matches current filters.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </main>

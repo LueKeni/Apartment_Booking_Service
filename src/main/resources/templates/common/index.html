@@ -1,105 +1,163 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/ui-head :: uiHead('VistaNest Home')}"></head>
-<body>
+<head th:replace="~{fragments/ui-head :: uiHead('VistaNest - Modern Real Estate')}"></head>
+<body class="bg-slate-50 font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="page-enter mx-auto max-w-7xl px-4 py-10">
-    <section class="glass-card overflow-hidden p-8">
-      <div class="grid items-center gap-6 lg:grid-cols-2">
-        <div>
-          <h1 class="text-4xl font-semibold leading-tight text-ink">Find apartments. Chat instantly. Book visits confidently.</h1>
-          <p class="mt-3 max-w-xl text-slate-600">A modern booking workspace for tenants, agents, and admins with real-time coordination.</p>
-          <div class="mt-6 flex flex-wrap gap-3">
-            <a href="/#listing-search" class="rounded-full bg-tealdeep px-5 py-2.5 font-semibold text-white">Explore Listings</a>
-            <a href="/auth/register" class="rounded-full border border-slate-300 bg-white px-5 py-2.5 font-semibold text-slate-700">Create Account</a>
+  <main>
+    <section class="relative bg-slate-900">
+      <div class="absolute inset-0">
+        <img class="h-full w-full object-cover object-center" 
+             src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80" 
+             alt="Luxury apartment interior">
+        <div class="absolute inset-0 bg-slate-900/60 mix-blend-multiply" aria-hidden="true"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
+      </div>
+
+      <div class="relative mx-auto max-w-7xl px-4 pb-32 pt-24 sm:px-6 lg:px-8 lg:pb-40 lg:pt-32 flex flex-col items-center text-center">
+        <span class="mb-4 inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-white ring-1 ring-inset ring-white/20 backdrop-blur-md">
+          Discover your new home
+        </span>
+        <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
+          Find apartments. <span class="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-indigo-400">Chat instantly.</span>
+        </h1>
+        <p class="mt-6 max-w-2xl text-lg text-slate-300">
+          A seamless real estate platform connecting you with verified agents. Experience instant communication and book visits confidently.
+        </p>
+      </div>
+    </section>
+
+    <section id="listing-search" class="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 -mt-20">
+      <div class="rounded-3xl bg-white p-2 shadow-2xl ring-1 ring-slate-200">
+        <form action="/" method="get" class="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-slate-200">
+          
+          <div class="flex-1 px-4 py-3 hover:bg-slate-50 rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none transition-colors cursor-pointer group">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-800">Keyword</label>
+            <input name="keyword" th:value="${filter != null ? filter.keyword : ''}" 
+                   placeholder="Name or address..." 
+                   class="w-full border-0 bg-transparent p-0 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0 sm:text-sm font-medium group-hover:bg-slate-50" />
           </div>
+
+          <div class="flex-1 px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer group">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-800">Location</label>
+            <input name="district" th:value="${filter != null ? filter.district : ''}" 
+                   placeholder="Ward or District" 
+                   class="w-full border-0 bg-transparent p-0 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0 sm:text-sm font-medium group-hover:bg-slate-50" />
+          </div>
+
+          <div class="flex-1 px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-800">Room Type</label>
+            <select name="roomType" class="w-full border-0 bg-transparent p-0 text-slate-900 focus:outline-none focus:ring-0 sm:text-sm font-medium cursor-pointer">
+              <option value="">Any Type</option>
+              <option value="STUDIO" th:selected="${filter != null and filter.roomType == 'STUDIO'}">Studio</option>
+              <option value="1BR" th:selected="${filter != null and filter.roomType == '1BR'}">1 Bedroom</option>
+              <option value="2BR" th:selected="${filter != null and filter.roomType == '2BR'}">2 Bedrooms</option>
+              <option value="3BR" th:selected="${filter != null and filter.roomType == '3BR'}">3 Bedrooms</option>
+              <option value="DUPLEX" th:selected="${filter != null and filter.roomType == 'DUPLEX'}">Duplex</option>
+            </select>
+          </div>
+
+          <div class="flex-1 px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-800">For</label>
+            <select name="transactionType" class="w-full border-0 bg-transparent p-0 text-slate-900 focus:outline-none focus:ring-0 sm:text-sm font-medium cursor-pointer">
+              <option value="">Rent & Sale</option>
+              <option value="SALE" th:selected="${filter != null and filter.transactionType != null and filter.transactionType.name() == 'SALE'}">Sale</option>
+              <option value="RENT" th:selected="${filter != null and filter.transactionType != null and filter.transactionType.name() == 'RENT'}">Rent</option>
+            </select>
+          </div>
+
+          <div class="p-2 md:pl-4 flex items-center justify-center">
+            <button type="submit" class="w-full md:w-auto flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-8 py-4 md:py-3 text-sm font-bold text-white shadow-md hover:bg-indigo-700 hover:shadow-lg transition-all transform hover:scale-105">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <span class="md:hidden">Search</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-7xl px-4 mt-16 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-slate-200 border-b border-slate-200 pb-16">
+        <div class="px-6 pt-6 md:pt-0">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-teal-100 text-teal-600 mb-4">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+          <h3 class="text-base font-bold text-slate-900">Smart Search</h3>
+          <p class="mt-2 text-sm text-slate-500">Filter by location, price, and room types to find your perfect match easily.</p>
         </div>
-        <div class="rounded-3xl bg-gradient-to-br from-teallite/30 to-coral/20 p-6">
-          <p class="text-sm uppercase tracking-wider text-slate-600">Platform Modes</p>
-          <div class="mt-4 space-y-3">
-            <div class="rounded-2xl bg-white/80 p-4">
-              <p class="font-semibold">User Workspace</p>
-              <p class="text-sm text-slate-600">Favorites, appointments, review flow</p>
-            </div>
-            <div class="rounded-2xl bg-white/80 p-4">
-              <p class="font-semibold">Agent Workspace</p>
-              <p class="text-sm text-slate-600">Listing operations, booking moderation, schedule planner</p>
-            </div>
-            <div class="rounded-2xl bg-white/80 p-4">
-              <p class="font-semibold">Admin Workspace</p>
-              <p class="text-sm text-slate-600">User moderation, listing control, chat log oversight</p>
-            </div>
+        <div class="px-6 pt-8 md:pt-0">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 mb-4">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
           </div>
+          <h3 class="text-base font-bold text-slate-900">Real-time Chat</h3>
+          <p class="mt-2 text-sm text-slate-500">Connect directly with agents instantly without leaving the platform.</p>
+        </div>
+        <div class="px-6 pt-8 md:pt-0">
+          <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-100 text-rose-600 mb-4">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="text-base font-bold text-slate-900">Verified Agents</h3>
+          <p class="mt-2 text-sm text-slate-500">Book appointments confidently with our top-rated, platform-verified agents.</p>
         </div>
       </div>
     </section>
 
-    <section id="listing-search" class="mt-8 glass-card p-5">
-      <form action="/" method="get" class="grid gap-3 md:grid-cols-6">
-        <input name="keyword"
-               placeholder="Search product name or address"
-               th:value="${filter != null ? filter.keyword : ''}"
-               class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
-        <input name="district"
-             placeholder="Area (ward/district/city)"
-               th:value="${filter != null ? filter.district : ''}"
-               class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
-        <select name="roomType" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
-          <option value="">Room type</option>
-          <option value="STUDIO" th:selected="${filter != null and filter.roomType == 'STUDIO'}">Studio</option>
-          <option value="1BR" th:selected="${filter != null and filter.roomType == '1BR'}">1BR</option>
-          <option value="2BR" th:selected="${filter != null and filter.roomType == '2BR'}">2BR</option>
-          <option value="3BR" th:selected="${filter != null and filter.roomType == '3BR'}">3BR</option>
-          <option value="DUPLEX" th:selected="${filter != null and filter.roomType == 'DUPLEX'}">Duplex</option>
-        </select>
-        <select name="transactionType" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
-          <option value="">Transaction Type</option>
-          <option value="SALE" th:selected="${filter != null and filter.transactionType != null and filter.transactionType.name() == 'SALE'}">Sale</option>
-          <option value="RENT" th:selected="${filter != null and filter.transactionType != null and filter.transactionType.name() == 'RENT'}">Rent</option>
-        </select>
-        <select name="status" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
-          <option value="">Status</option>
-          <option value="AVAILABLE" th:selected="${filter != null and filter.status != null and filter.status.name() == 'AVAILABLE'}">Available</option>
-          <option value="PENDING" th:selected="${filter != null and filter.status != null and filter.status.name() == 'PENDING'}">Pending</option>
-        </select>
-        <button class="rounded-xl bg-ink px-4 py-2 font-semibold text-white">Search</button>
-      </form>
-    </section>
-
-    <section class="mt-8">
-      <div class="mb-4 flex items-center justify-between">
-        <h2 class="text-2xl font-semibold text-ink">Listings</h2>
+    <section class="mx-auto max-w-7xl px-4 mt-16 pb-20 sm:px-6 lg:px-8">
+      <div class="mb-8 flex items-center justify-between">
+        <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">Featured Properties</h2>
       </div>
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <article th:each="apartment : ${apartments}" class="glass-card p-5">
-          <img th:if="${!#lists.isEmpty(apartment.images)}"
-               th:src="${apartment.images[0]}"
-               alt="Apartment image"
-               class="mb-3 h-40 w-full rounded-2xl object-cover" />
-          <h3 class="text-lg font-semibold text-ink" th:text="${apartment.title}"></h3>
-          <p class="mt-1 text-sm text-slate-600" th:text="${apartment.locationDistrict}"></p>
-          <p class="mt-3 text-xl font-bold text-tealdeep" th:text="${apartment.price}"></p>
-          <div class="mt-4 flex flex-wrap gap-2">
-            <a th:href="@{/apartments/{id}(id=${apartment.id})}" class="inline-block rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">View Details</a>
-            <form th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}"
-                  th:action="@{/user/likes/{id}/toggle(id=${apartment.id})}"
-                  method="post">
-              <input type="hidden" name="redirectTo" th:value="${'/?keyword=' + (filter != null and filter.keyword != null ? filter.keyword : '') + '&district=' + (filter != null and filter.district != null ? filter.district : '') + '&roomType=' + (filter != null and filter.roomType != null ? filter.roomType : '') + '&transactionType=' + (filter != null and filter.transactionType != null ? filter.transactionType.name() : '') + '&status=' + (filter != null and filter.status != null ? filter.status.name() : '')}" />
-              <button class="rounded-full px-4 py-2 text-sm font-semibold text-white"
-                      th:classappend="${likedApartmentIds.contains(apartment.id)} ? ' bg-rose-500 hover:bg-rose-600' : ' bg-slate-700 hover:bg-slate-800'"
-                      th:text="${likedApartmentIds.contains(apartment.id)} ? 'Bo like' : 'Like'">
-              </button>
-            </form>
-            <form th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}"
-                  th:action="@{/user/favorites/{id}/toggle(id=${apartment.id})}"
-                  method="post">
-              <input type="hidden" name="redirectTo" th:value="${'/?keyword=' + (filter != null and filter.keyword != null ? filter.keyword : '') + '&district=' + (filter != null and filter.district != null ? filter.district : '') + '&roomType=' + (filter != null and filter.roomType != null ? filter.roomType : '') + '&transactionType=' + (filter != null and filter.transactionType != null ? filter.transactionType.name() : '') + '&status=' + (filter != null and filter.status != null ? filter.status.name() : '')}" />
-              <button class="rounded-full px-4 py-2 text-sm font-semibold text-white"
-                      th:classappend="${favoriteApartmentIds.contains(apartment.id)} ? ' bg-amber-500 hover:bg-amber-600' : ' bg-slate-500 hover:bg-slate-600'"
-                      th:text="${favoriteApartmentIds.contains(apartment.id)} ? 'Bo yeu thich' : 'Them vao yeu thich'">
-              </button>
-            </form>
+      
+      <div th:if="${#lists.isEmpty(apartments)}" class="rounded-3xl border-2 border-dashed border-slate-200 py-24 text-center bg-white">
+        <svg class="mx-auto h-12 w-12 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-2m-9-2l4 2m0 0l4-2"/></svg>
+        <h3 class="mt-4 text-sm font-semibold text-slate-900">No properties found</h3>
+        <p class="mt-1 text-sm text-slate-500">Try adjusting your search filters to find what you're looking for.</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
+        <article th:each="apartment : ${apartments}" class="group flex flex-col rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 hover:shadow-xl transition-all duration-300 overflow-hidden">
+          <div class="relative aspect-[4/3] w-full overflow-hidden bg-slate-200">
+            <img th:if="${!#lists.isEmpty(apartment.images)}" th:src="${apartment.images[0]}" alt="Property" class="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+            <div th:if="${#lists.isEmpty(apartment.images)}" class="flex h-full w-full items-center justify-center text-slate-400 font-medium">No Image Available</div>
+            
+            <div class="absolute top-4 left-4 flex gap-2">
+              <span class="inline-flex items-center rounded-lg bg-white/90 backdrop-blur-md px-3 py-1.5 text-xs font-bold text-slate-900 shadow-sm" th:text="${apartment.transactionType}"></span>
+              <span th:if="${apartment.status.name() != 'AVAILABLE'}" class="inline-flex items-center rounded-lg bg-amber-400/90 backdrop-blur-md px-3 py-1.5 text-xs font-bold text-amber-900 shadow-sm" th:text="${apartment.status}"></span>
+            </div>
+            
+            <div th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}" class="absolute top-4 right-4 flex flex-col gap-2 z-10">
+              <form th:action="@{/user/favorites/{id}/toggle(id=${apartment.id})}" method="post">
+                <input type="hidden" name="redirectTo" th:value="${'/?keyword=' + (filter != null and filter.keyword != null ? filter.keyword : '')}" />
+                <button type="submit" class="p-2.5 rounded-full shadow-lg backdrop-blur-md transition-all" th:classappend="${favoriteApartmentIds.contains(apartment.id)} ? 'bg-rose-500 text-white hover:bg-rose-600' : 'bg-white/90 text-slate-400 hover:text-rose-500 hover:bg-white'">
+                  <svg class="h-5 w-5" th:classappend="${favoriteApartmentIds.contains(apartment.id)} ? 'fill-current' : 'fill-none'" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                </button>
+              </form>
+              <form th:action="@{/user/likes/{id}/toggle(id=${apartment.id})}" method="post">
+                <input type="hidden" name="redirectTo" th:value="${'/?keyword=' + (filter != null and filter.keyword != null ? filter.keyword : '')}" />
+                <button type="submit" class="p-2.5 rounded-full shadow-lg backdrop-blur-md transition-all" th:classappend="${likedApartmentIds.contains(apartment.id)} ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'bg-white/90 text-slate-400 hover:text-indigo-500 hover:bg-white'">
+                  <svg class="h-5 w-5" th:classappend="${likedApartmentIds.contains(apartment.id)} ? 'fill-current' : 'fill-none'" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg>
+                </button>
+              </form>
+            </div>
+          </div>
+          
+          <div class="flex flex-1 flex-col p-6">
+            <div class="flex items-center justify-between mb-2">
+              <p class="text-2xl font-extrabold text-indigo-600" th:text="${apartment.price}"></p>
+              <div class="flex items-center gap-1.5 text-sm font-semibold text-slate-600 bg-slate-100 px-2 py-1 rounded-md">
+                <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                <span th:text="${apartment.area + ' m²'}"></span>
+              </div>
+            </div>
+            <h3 class="text-lg font-bold leading-6 text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-1 mb-1">
+              <a th:href="@{/apartments/{id}(id=${apartment.id})}">
+                <span class="absolute inset-0 z-0"></span>
+                <span th:text="${apartment.title}"></span>
+              </a>
+            </h3>
+            <p class="text-sm text-slate-500 line-clamp-1 flex items-center gap-1.5">
+              <svg class="h-4 w-4 flex-shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span th:text="${apartment.locationDistrict}"></span>
+            </p>
           </div>
         </article>
       </div>

@@ -1,15 +1,24 @@
-<aside th:fragment="adminSidebar(activePage)" class="glass-card sticky top-24 h-fit p-4">
-  <p class="text-xs uppercase tracking-[0.14em] text-slate-500">Admin Workspace</p>
-  <h2 class="mt-1 text-lg font-semibold text-ink">Control Menu</h2>
-  <nav class="mt-4 space-y-2 text-sm font-semibold">
+<aside th:fragment="adminSidebar(activePage)" class="sticky top-24 h-fit rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+  <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Admin Workspace</p>
+  <h2 class="mt-1 text-lg font-bold text-slate-900">Control Menu</h2>
+  <nav class="mt-6 flex flex-col space-y-1">
     <a href="/admin/dashboard"
-       class="block rounded-xl border px-3 py-2"
-       th:classappend="${activePage == 'dashboard'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Dashboard</a>
+       class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors"
+       th:classappend="${activePage == 'dashboard'} ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-2m-9-2l4 2m0 0l4-2"/></svg>
+      Dashboard
+    </a>
     <a href="/admin/users"
-       class="block rounded-xl border px-3 py-2"
-       th:classappend="${activePage == 'users'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Users</a>
+       class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors"
+       th:classappend="${activePage == 'users'} ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2zm0 0h6v-2a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+      Users
+    </a>
     <a href="/admin/listings"
-       class="block rounded-xl border px-3 py-2"
-       th:classappend="${activePage == 'listings'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-200 bg-white/70 text-slate-700 hover:bg-white'">Listings</a>
+       class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors"
+       th:classappend="${activePage == 'listings'} ? 'bg-indigo-50 text-indigo-700' : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'">
+      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      Listings
+    </a>
   </nav>
 </aside>

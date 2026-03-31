@@ -1,64 +1,77 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/ui-head :: uiHead('Agent Profile')}"></head>
-<body>
+<body class="bg-slate-50 font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
-    <div class="workspace-grid">
+  <main class="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-[260px_1fr]">
       <div th:replace="~{fragments/agent-sidebar :: agentSidebar('profile')}"></div>
 
-      <div>
-        <section class="glass-card p-6">
-          <h1 class="text-3xl font-semibold text-ink">Agent Profile</h1>
-          <p class="mt-1 text-sm text-slate-600">Update your public account information.</p>
-        </section>
+      <div class="space-y-6 max-w-3xl">
+        <div class="flex flex-col gap-2">
+          <h1 class="text-2xl font-bold tracking-tight text-slate-900">Personal Information</h1>
+          <p class="text-sm text-slate-500">Update your public agent profile and contact details.</p>
+        </div>
 
-        <div th:if="${param.updated}" class="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Profile updated successfully.</div>
+        <div th:if="${param.updated}" class="rounded-xl bg-green-50 p-4 ring-1 ring-green-600/20 text-sm font-medium text-green-800">Profile updated successfully.</div>
 
-        <section class="mt-6 glass-card p-6">
-          <div class="mb-4 rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
-            <p><span class="font-semibold">Rating:</span> <span th:text="${agentAverageRating + ' / 5'}"></span></p>
-            <p class="mt-1"><span class="font-semibold">Total ratings:</span> <span th:text="${agentReviewCount}"></span></p>
+        <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+          <div class="bg-indigo-50 px-6 py-4 rounded-t-2xl border-b border-indigo-100 flex items-center justify-between">
+            <div>
+              <p class="text-sm font-medium text-indigo-900">Public Rating</p>
+              <div class="mt-1 flex items-baseline gap-2">
+                <span class="text-2xl font-bold text-indigo-700" th:text="${agentAverageRating}">0.0</span>
+                <span class="text-sm font-medium text-indigo-500">/ 5.0</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-medium text-indigo-900">Total Reviews</p>
+              <p class="mt-1 text-2xl font-bold text-indigo-700" th:text="${agentReviewCount}">0</p>
+            </div>
           </div>
 
-          <form action="/agent/profile" method="post" enctype="multipart/form-data" class="grid gap-4 md:grid-cols-2">
-            <div class="md:col-span-2">
-              <label class="mb-1 block text-sm font-semibold text-slate-700">Email</label>
-              <input type="email"
-                     th:value="${agentProfile.email}"
-                     readonly
-                     class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-slate-600" />
+          <form action="/agent/profile" method="post" enctype="multipart/form-data" class="p-6 grid gap-x-6 gap-y-6 sm:grid-cols-2">
+            
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium leading-6 text-slate-900">Profile Photo</label>
+              <div class="mt-2 flex items-center gap-x-4">
+                <img th:if="${agentProfile.avatar != null}" th:src="${agentProfile.avatar}" alt="Agent avatar" class="h-16 w-16 rounded-full object-cover ring-1 ring-slate-200" />
+                <div th:if="${agentProfile.avatar == null}" class="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center ring-1 ring-slate-200">
+                  <svg class="h-8 w-8 text-slate-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clip-rule="evenodd" /></svg>
+                </div>
+                <input name="avatarFile" type="file" accept="image/*" class="block w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-slate-900 file:ring-1 file:ring-inset file:ring-slate-300 hover:file:bg-slate-50" />
+              </div>
             </div>
-            <div class="md:col-span-2" th:if="${agentProfile.avatar != null}">
-              <label class="mb-1 block text-sm font-semibold text-slate-700">Current Avatar</label>
-              <img th:src="${agentProfile.avatar}" alt="Agent avatar" class="h-24 w-24 rounded-full border border-slate-200 object-cover" />
+
+            <div class="sm:col-span-2">
+              <label class="block text-sm font-medium leading-6 text-slate-900">Email Address</label>
+              <div class="mt-2">
+                <input type="email" th:value="${agentProfile.email}" readonly class="block w-full rounded-md border-0 py-2 px-3 text-slate-500 bg-slate-50 ring-1 ring-inset ring-slate-200 sm:text-sm sm:leading-6 cursor-not-allowed" />
+              </div>
             </div>
+
             <div>
-              <label class="mb-1 block text-sm font-semibold text-slate-700">Full Name</label>
-              <input name="fullName"
-                     th:value="${agentProfile.fullName}"
-                     required
-                     class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2" />
+              <label class="block text-sm font-medium leading-6 text-slate-900">Full Name</label>
+              <div class="mt-2">
+                <input name="fullName" th:value="${agentProfile.fullName}" required class="block w-full rounded-md border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              </div>
             </div>
+
             <div>
-              <label class="mb-1 block text-sm font-semibold text-slate-700">Phone</label>
-              <input name="phone"
-                     th:value="${agentProfile.phone}"
-                     class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2" />
+              <label class="block text-sm font-medium leading-6 text-slate-900">Phone Number</label>
+              <div class="mt-2">
+                <input name="phone" th:value="${agentProfile.phone}" class="block w-full rounded-md border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              </div>
             </div>
-            <div class="md:col-span-2">
-              <label class="mb-1 block text-sm font-semibold text-slate-700">Avatar from device</label>
-              <input name="avatarFile"
-                     type="file"
-                     accept="image/*"
-                     class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2" />
-              <p class="mt-1 text-xs text-slate-500">Upload a new avatar image from your computer.</p>
+
+            <div class="sm:col-span-2 mt-4 pt-6 border-t border-slate-200">
+              <button class="rounded-md bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-600">Save Profile</button>
             </div>
-            <button class="md:col-span-2 rounded-xl bg-tealdeep px-4 py-2 font-semibold text-white">Save Profile</button>
           </form>
-        </section>
+        </div>
       </div>
+
     </div>
   </main>
 

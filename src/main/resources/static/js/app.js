@@ -191,15 +191,16 @@ function initChat(root) {
       wrapper.className = `flex ${isSelf ? "justify-end" : "justify-start"}`;
 
       const bubble = document.createElement("div");
+      // Updated color classes here
       bubble.className = `max-w-[80%] rounded-2xl px-4 py-2 text-sm shadow-sm ${
-        isSelf ? "bg-ink text-white" : "bg-white text-slate-700"
+        isSelf ? "bg-indigo-600 text-white" : "bg-white text-slate-700 ring-1 ring-slate-200"
       }`;
 
       const content = document.createElement("p");
       content.textContent = message.content;
 
       const meta = document.createElement("p");
-      meta.className = `mt-1 text-xs ${isSelf ? "text-white/70" : "text-slate-400"}`;
+      meta.className = `mt-1 text-[10px] ${isSelf ? "text-indigo-200" : "text-slate-400"}`;
       meta.textContent = formatTimestamp(message.sentAt);
 
       bubble.appendChild(content);
@@ -227,22 +228,23 @@ function initChat(root) {
       const button = document.createElement("button");
       button.type = "button";
       const isActive = state.conversationId === conversation.conversationId;
-      button.className = `w-full rounded-xl border px-3 py-3 text-left transition ${
+      // Updated color classes here
+      button.className = `w-full rounded-xl px-4 py-3 text-left transition-all ${
         isActive
-          ? "border-transparent bg-ink text-white shadow"
-          : "border-slate-200 bg-white/70 text-slate-700 hover:bg-white"
+          ? "bg-indigo-600 text-white shadow-md"
+          : "bg-white text-slate-700 hover:bg-slate-50 ring-1 ring-slate-200"
       }`;
 
       const name = document.createElement("p");
-      name.className = "text-sm font-semibold";
+      name.className = "text-sm font-semibold line-clamp-1";
       name.textContent = conversation.otherUserName || "Conversation";
 
       const listing = document.createElement("p");
-      listing.className = `mt-1 text-xs ${isActive ? "text-white/70" : "text-slate-500"}`;
+      listing.className = `mt-1 text-xs line-clamp-1 ${isActive ? "text-indigo-200" : "text-slate-500"}`;
       listing.textContent = conversation.apartmentTitle || "Listing";
 
       const meta = document.createElement("p");
-      meta.className = `mt-2 text-xs ${isActive ? "text-white/60" : "text-slate-400"}`;
+      meta.className = `mt-2 text-[10px] ${isActive ? "text-indigo-300" : "text-slate-400"}`;
       meta.textContent = conversation.lastMessageAt ? formatTimestamp(conversation.lastMessageAt) : "";
 
       button.appendChild(name);
@@ -486,21 +488,22 @@ function initNotificationCenter() {
 
     notifications.slice(0, 8).forEach((notification) => {
       const item = document.createElement("article");
-      item.className = `rounded-xl border px-3 py-2 ${notification.isRead ? "border-slate-200 bg-white" : "border-teallite/40 bg-teallite/10"}`;
+      // Updated color classes here
+      item.className = `rounded-xl p-3 ${notification.isRead ? "bg-white ring-1 ring-slate-200" : "bg-indigo-50 ring-1 ring-indigo-200"}`;
 
       const title = document.createElement("p");
-      title.className = "text-sm font-semibold text-ink";
+      title.className = "text-sm font-semibold text-slate-900 line-clamp-1";
       title.textContent = notification.title || "Notification";
 
       const message = document.createElement("p");
-      message.className = "mt-1 text-xs text-slate-600";
+      message.className = "mt-1 text-xs text-slate-600 line-clamp-2";
       message.textContent = notification.message || "";
 
       const metaRow = document.createElement("div");
       metaRow.className = "mt-2 flex items-center justify-between gap-2";
 
       const createdAt = document.createElement("span");
-      createdAt.className = "text-[11px] text-slate-500";
+      createdAt.className = "text-[10px] font-medium text-slate-500";
       createdAt.textContent = formatTimestamp(notification.createdAt);
 
       metaRow.appendChild(createdAt);
@@ -508,7 +511,7 @@ function initNotificationCenter() {
       if (!notification.isRead) {
         const readButton = document.createElement("button");
         readButton.type = "button";
-        readButton.className = "rounded-full border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700";
+        readButton.className = "rounded-md bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50";
         readButton.textContent = "Mark read";
         readButton.addEventListener("click", async () => {
           try {

@@ -1,107 +1,134 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/ui-head :: uiHead('Admin User Moderation')}"></head>
-<body>
+<head th:replace="~{fragments/ui-head :: uiHead('User Moderation')}"></head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
-    <div class="workspace-grid">
+  <main class="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-[260px_1fr]">
       <div th:replace="~{fragments/admin-sidebar :: adminSidebar('users')}"></div>
 
-      <div>
-      <section class="glass-card p-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="space-y-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 class="text-3xl font-semibold text-ink">User Moderation</h1>
-            <p class="mt-1 text-sm text-slate-600">Ban/unban accounts and manage user roles.</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900">User Management</h1>
+            <p class="mt-1 text-sm text-slate-500">Manage accounts, roles, and platform access.</p>
           </div>
-          <a href="/admin/dashboard" class="pill">Back to Dashboard</a>
-        </div>
-      </section>
-
-      <div th:if="${param.updated}" class="mt-4 rounded-2xl border border-sky-300 bg-sky-50 px-4 py-3 text-sm text-sky-700">User status updated.</div>
-      <div th:if="${param.roleUpdated}" class="mt-4 rounded-2xl border border-indigo-300 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">User role updated.</div>
-      <div th:if="${param.roleDenied}" class="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-700">You cannot change your own role.</div>
-
-      <section class="mt-6 glass-card p-6" data-table>
-        <div class="table-toolbar">
-          <input data-table-search type="text" placeholder="Search by name or email..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
-          <select data-table-filter-key="role" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-            <option value="">All roles</option>
-            <option value="USER">USER</option>
-            <option value="AGENT">AGENT</option>
-            <option value="ADMIN">ADMIN</option>
-          </select>
-          <select data-table-filter-key="status" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-            <option value="">All status</option>
-            <option value="ACTIVE">ACTIVE</option>
-            <option value="BANNED">BANNED</option>
-          </select>
-          <select data-table-sort class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-            <option value="">Sort by</option>
-            <option value="name:asc">Name A-Z</option>
-            <option value="name:desc">Name Z-A</option>
-            <option value="email:asc">Email A-Z</option>
-            <option value="email:desc">Email Z-A</option>
-          </select>
+          <a href="/admin/dashboard" class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900">
+            &larr; Back to Dashboard
+          </a>
         </div>
 
-        <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
-          <table class="min-w-full divide-y divide-slate-200 text-sm">
-            <thead class="bg-slate-50 text-left text-slate-600">
-              <tr>
-                <th class="px-4 py-3 font-semibold">Name</th>
-                <th class="px-4 py-3 font-semibold">Email</th>
-                <th class="px-4 py-3 font-semibold">Role</th>
-                <th class="px-4 py-3 font-semibold">Status</th>
-                <th class="px-4 py-3 font-semibold">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 bg-white/80" data-table-body>
-              <tr th:if="${#lists.isEmpty(users)}">
-                <td class="px-4 py-4 text-slate-500" colspan="5">No users found.</td>
-              </tr>
-              <tr data-row
-                  th:each="u : ${users}"
-                  th:attr="data-search=${u.fullName + ' ' + u.email},data-role=${u.role},data-status=${u.status},data-name=${u.fullName},data-email=${u.email}">
-                <td class="px-4 py-3 font-semibold text-ink" th:text="${u.fullName}"></td>
-                <td class="px-4 py-3 text-slate-600" th:text="${u.email}"></td>
-                <td class="px-4 py-3"><span class="pill" th:text="${u.role}"></span></td>
-                <td class="px-4 py-3"><span class="pill" th:text="${u.status}"></span></td>
-                <td class="px-4 py-3">
-                  <div class="flex flex-wrap gap-2">
-                    <form th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post" class="flex items-center gap-2">
-                      <select name="role"
-                              class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
-                              th:disabled="${u.email == currentEmail}">
-                        <option th:each="r : ${T(com.realestate.apartment_booking_service.enums.Role).values()}"
-                                th:value="${r.name()}"
-                                th:text="${r.name()}"
-                                th:selected="${u.role == r}"></option>
-                      </select>
-                      <button class="rounded-lg border border-indigo-400 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-700"
-                              th:disabled="${u.email == currentEmail}">
-                        Set Role
-                      </button>
-                    </form>
-                    <form th:if="${u.status.name() == 'ACTIVE'}" th:action="@{/admin/users/{id}/ban(id=${u.id})}" method="post">
-                      <input type="hidden" name="banned" value="true" />
-                      <button class="rounded-lg border border-rose-400 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700">Ban</button>
-                    </form>
-                    <form th:if="${u.status.name() == 'BANNED'}" th:action="@{/admin/users/{id}/ban(id=${u.id})}" method="post">
-                      <input type="hidden" name="banned" value="false" />
-                      <button class="rounded-lg border border-emerald-400 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700">Unban</button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-              <tr data-table-empty class="hidden">
-                <td class="px-4 py-4 text-slate-500" colspan="5">No user matches current filters.</td>
-              </tr>
-            </tbody>
-          </table>
+        <div th:if="${param.updated}" class="rounded-xl bg-blue-50 p-4 ring-1 ring-blue-600/20">
+          <p class="text-sm font-medium text-blue-800">User status has been successfully updated.</p>
         </div>
-      </section>
+        <div th:if="${param.roleUpdated}" class="rounded-xl bg-indigo-50 p-4 ring-1 ring-indigo-600/20">
+          <p class="text-sm font-medium text-indigo-800">User role has been modified.</p>
+        </div>
+        <div th:if="${param.roleDenied}" class="rounded-xl bg-red-50 p-4 ring-1 ring-red-600/20">
+          <p class="text-sm font-medium text-red-800">Action denied: You cannot change your own administrative role.</p>
+        </div>
+
+        <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200" data-table>
+          
+          <div class="border-b border-slate-200 px-6 py-4">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div class="relative flex-1">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <svg class="h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
+                </div>
+                <input data-table-search type="text" placeholder="Search by name or email..." class="block w-full rounded-lg border-0 py-2 pl-10 pr-3 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <select data-table-filter-key="role" class="rounded-lg border-0 py-2 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                  <option value="">All Roles</option>
+                  <option value="USER">USER</option>
+                  <option value="AGENT">AGENT</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
+                <select data-table-filter-key="status" class="rounded-lg border-0 py-2 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                  <option value="">All Status</option>
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="BANNED">BANNED</option>
+                </select>
+                <select data-table-sort class="rounded-lg border-0 py-2 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                  <option value="">Sort by</option>
+                  <option value="name:asc">Name A-Z</option>
+                  <option value="name:desc">Name Z-A</option>
+                  <option value="email:asc">Email A-Z</option>
+                  <option value="email:desc">Email Z-A</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">User Profile</th>
+                  <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Role</th>
+                  <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Status</th>
+                  <th scope="col" class="px-6 py-3.5 text-right text-sm font-semibold text-slate-900">Administration</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 bg-white" data-table-body>
+                <tr th:if="${#lists.isEmpty(users)}">
+                  <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="4">No users found.</td>
+                </tr>
+                <tr data-row class="hover:bg-slate-50/50"
+                    th:each="u : ${users}"
+                    th:attr="data-search=${u.fullName + ' ' + u.email},data-role=${u.role},data-status=${u.status},data-name=${u.fullName},data-email=${u.email}">
+                  
+                  <td class="whitespace-nowrap px-6 py-4">
+                    <div class="flex items-center gap-4">
+                      <div class="h-10 w-10 flex-shrink-0 rounded-full bg-slate-100 flex items-center justify-center text-sm font-semibold text-slate-600 ring-1 ring-slate-200" th:text="${#strings.substring(u.fullName,0,1)}"></div>
+                      <div>
+                        <div class="text-sm font-medium text-slate-900" th:text="${u.fullName}"></div>
+                        <div class="text-sm text-slate-500" th:text="${u.email}"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4">
+                    <span th:classappend="${u.role.name() == 'ADMIN' ? 'bg-indigo-50 text-indigo-700 ring-indigo-600/20' : 'bg-slate-50 text-slate-600 ring-slate-500/10'}" 
+                          class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset" th:text="${u.role}"></span>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4">
+                    <span th:classappend="${u.status.name() == 'ACTIVE' ? 'bg-green-50 text-green-700 ring-green-600/20' : 'bg-red-50 text-red-700 ring-red-600/10'}" 
+                          class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset" th:text="${u.status}"></span>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <form th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post" class="inline-flex items-center gap-2">
+                        <select name="role" class="rounded-md border-0 py-1.5 pl-3 pr-8 text-xs text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 disabled:opacity-50" th:disabled="${u.email == currentEmail}">
+                          <option th:each="r : ${T(com.realestate.apartment_booking_service.enums.Role).values()}"
+                                  th:value="${r.name()}"
+                                  th:text="${r.name()}"
+                                  th:selected="${u.role == r}"></option>
+                        </select>
+                        <button class="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50 disabled:opacity-50" th:disabled="${u.email == currentEmail}">Role</button>
+                      </form>
+                      
+                      <div class="h-4 w-px bg-slate-200 mx-1"></div>
+
+                      <form th:if="${u.status.name() == 'ACTIVE'}" th:action="@{/admin/users/{id}/ban(id=${u.id})}" method="post">
+                        <input type="hidden" name="banned" value="true" />
+                        <button class="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-red-700 shadow-sm ring-1 ring-inset ring-red-300 hover:bg-red-50">Ban</button>
+                      </form>
+                      <form th:if="${u.status.name() == 'BANNED'}" th:action="@{/admin/users/{id}/ban(id=${u.id})}" method="post">
+                        <input type="hidden" name="banned" value="false" />
+                        <button class="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-green-700 shadow-sm ring-1 ring-inset ring-green-300 hover:bg-green-50">Unban</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                <tr data-table-empty class="hidden">
+                  <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="4">No user matches current filters.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </main>

@@ -1,67 +1,73 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/ui-head :: uiHead('My Favorites')}"></head>
-<body>
+<body class="bg-slate-50 font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
-    <section class="glass-card p-6">
-      <h1 class="text-3xl font-semibold text-ink">My Favorites</h1>
-      <p class="mt-1 text-sm text-slate-600">Saved listings: <span th:text="${favoriteCount}">0</span></p>
-    </section>
+  <main class="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900">My Favorites</h1>
+      <p class="mt-1 text-sm text-slate-500">Saved listings: <span class="font-semibold text-indigo-600" th:text="${favoriteCount}">0</span></p>
+    </div>
 
     <div th:replace="~{fragments/user-tabs :: userTabs('favorites')}"></div>
 
-    <section class="glass-card p-6" data-table>
-      <div class="table-toolbar">
-        <input data-table-search type="text" placeholder="Search title or area..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
-        <select data-table-sort class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-          <option value="">Sort by</option>
-          <option value="title:asc">Title A-Z</option>
-          <option value="title:desc">Title Z-A</option>
-          <option value="price:asc">Price Low-High</option>
-          <option value="price:desc">Price High-Low</option>
-        </select>
+    <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200" data-table>
+      <div class="border-b border-slate-200 px-6 py-4">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center justify-between">
+          <div class="relative w-full sm:max-w-xs">
+            <input data-table-search type="text" placeholder="Search title or area..." class="block w-full rounded-md border-0 py-2 pl-3 pr-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+          </div>
+          <select data-table-sort class="rounded-md border-0 py-2 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+            <option value="">Sort by</option>
+            <option value="title:asc">Title A-Z</option>
+            <option value="title:desc">Title Z-A</option>
+            <option value="price:asc">Price Low-High</option>
+            <option value="price:desc">Price High-Low</option>
+          </select>
+        </div>
       </div>
 
-      <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
-        <table class="min-w-full divide-y divide-slate-200 text-sm">
-          <thead class="bg-slate-50 text-left text-slate-600">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200">
+          <thead class="bg-slate-50">
             <tr>
-              <th class="px-4 py-3 font-semibold">Listing</th>
-              <th class="px-4 py-3 font-semibold">Area</th>
-              <th class="px-4 py-3 font-semibold">Price</th>
-              <th class="px-4 py-3 font-semibold">Action</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Listing Information</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Area</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Price</th>
+              <th scope="col" class="px-6 py-3.5 text-right text-sm font-semibold text-slate-900">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100 bg-white/80" data-table-body>
+          <tbody class="divide-y divide-slate-200 bg-white" data-table-body>
             <tr th:if="${#lists.isEmpty(favorites)}">
-              <td class="px-4 py-4 text-slate-500" colspan="4">You have no favorite listing yet.</td>
+              <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="4">You haven't saved any listings yet.</td>
             </tr>
-            <tr data-row
+            <tr data-row class="hover:bg-slate-50/50"
                 th:each="favorite : ${favorites}"
                 th:attr="data-search=${favorite.apartment.title + ' ' + (favorite.apartment.locationAreaLabel != null ? favorite.apartment.locationAreaLabel : '')},data-title=${favorite.apartment.title},data-price=${favorite.apartment.price}">
-              <td class="px-4 py-3 font-semibold text-ink" th:text="${favorite.apartment.title}"></td>
-              <td class="px-4 py-3 text-slate-600" th:text="${favorite.apartment.locationAreaLabel != null ? favorite.apartment.locationAreaLabel : '-'}"></td>
-              <td class="px-4 py-3 text-slate-600" th:text="${favorite.apartment.price}"></td>
-              <td class="px-4 py-3">
-                <div class="flex flex-wrap gap-2">
-                  <a th:href="@{/apartments/{id}(id=${favorite.apartment.id})}" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">Open</a>
+              <td class="px-6 py-4">
+                <a th:href="@{/apartments/{id}(id=${favorite.apartment.id})}" class="font-medium text-slate-900 hover:text-indigo-600 hover:underline line-clamp-1" th:text="${favorite.apartment.title}"></a>
+                <p class="mt-1 text-xs text-slate-500">Total saves: <span th:text="${favorite.apartment.likesCount != null ? favorite.apartment.likesCount : 0}">0</span></p>
+              </td>
+              <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-600" th:text="${favorite.apartment.locationAreaLabel != null ? favorite.apartment.locationAreaLabel : '-'}"></td>
+              <td class="whitespace-nowrap px-6 py-4 text-sm font-semibold text-indigo-600" th:text="${favorite.apartment.price}"></td>
+              <td class="whitespace-nowrap px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <a th:href="@{/apartments/{id}(id=${favorite.apartment.id})}" class="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">View</a>
                   <form th:action="@{/user/favorites/{apartmentId}/toggle(apartmentId=${favorite.apartment.id})}" method="post">
                     <input type="hidden" name="redirectTo" value="/user/favorites" />
-                    <button class="rounded-lg border border-rose-400 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700">Remove</button>
+                    <button class="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-red-700 shadow-sm ring-1 ring-inset ring-red-300 hover:bg-red-50">Remove</button>
                   </form>
                 </div>
-                <p class="mt-2 text-xs text-slate-500">Luot thich: <span th:text="${favorite.apartment.likesCount != null ? favorite.apartment.likesCount : 0}">0</span></p>
               </td>
             </tr>
             <tr data-table-empty class="hidden">
-              <td class="px-4 py-4 text-slate-500" colspan="4">No favorite matches current search.</td>
+              <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="4">No favorite matches current search.</td>
             </tr>
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
   </main>
 
   <div th:replace="~{fragments/footer :: siteFooter}"></div>
