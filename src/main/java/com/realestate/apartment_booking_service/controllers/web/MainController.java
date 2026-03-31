@@ -37,9 +37,13 @@ public class MainController {
             filterRequest.setStatus(ApartmentStatus.AVAILABLE);
         }
         Long currentUserId = resolveCurrentUserId();
+        
+        // Fetch Top Agents for ranking (Top 5)
+        var topAgents = agentProfileRepository.findTopAgents(org.springframework.data.domain.PageRequest.of(0, 5));
+
         model.addAttribute("apartments", apartmentService.search(filterRequest));
         model.addAttribute("filter", filterRequest);
-        model.addAttribute("likedApartmentIds", resolveLikedApartmentIds(currentUserId));
+        model.addAttribute("topAgents", topAgents);
         model.addAttribute("favoriteApartmentIds", resolveFavoriteApartmentIds(currentUserId));
         return "common/index";
     }
