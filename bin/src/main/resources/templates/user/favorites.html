@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/ui-head :: uiHead('My Favorites')}"></head>
+<body>
+  <div th:replace="~{fragments/header :: siteHeader}"></div>
+
+  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
+    <section class="glass-card p-6">
+      <h1 class="text-3xl font-semibold text-ink">My Favorites</h1>
+      <p class="mt-1 text-sm text-slate-600">Saved listings: <span th:text="${favoriteCount}">0</span></p>
+    </section>
+
+    <div th:replace="~{fragments/user-tabs :: userTabs('favorites')}"></div>
+
+    <section class="glass-card p-6" data-table>
+      <div class="table-toolbar">
+        <input data-table-search type="text" placeholder="Search title or district..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
+        <select data-table-sort class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
+          <option value="">Sort by</option>
+          <option value="title:asc">Title A-Z</option>
+          <option value="title:desc">Title Z-A</option>
+          <option value="price:asc">Price Low-High</option>
+          <option value="price:desc">Price High-Low</option>
+        </select>
+      </div>
+
+      <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
+        <table class="min-w-full divide-y divide-slate-200 text-sm">
+          <thead class="bg-slate-50 text-left text-slate-600">
+            <tr>
+              <th class="px-4 py-3 font-semibold">Listing</th>
+              <th class="px-4 py-3 font-semibold">District</th>
+              <th class="px-4 py-3 font-semibold">Price</th>
+              <th class="px-4 py-3 font-semibold">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 bg-white/80" data-table-body>
+            <tr th:if="${#lists.isEmpty(favorites)}">
+              <td class="px-4 py-4 text-slate-500" colspan="4">You have no favorite listing yet.</td>
+            </tr>
+            <tr data-row
+                th:each="favorite : ${favorites}"
+                th:attr="data-search=${favorite.apartment.title + ' ' + favorite.apartment.locationDistrict},data-title=${favorite.apartment.title},data-price=${favorite.apartment.price}">
+              <td class="px-4 py-3 font-semibold text-ink" th:text="${favorite.apartment.title}"></td>
+              <td class="px-4 py-3 text-slate-600" th:text="${favorite.apartment.locationDistrict}"></td>
+              <td class="px-4 py-3 text-slate-600" th:text="${favorite.apartment.price}"></td>
+              <td class="px-4 py-3">
+                <div class="flex flex-wrap gap-2">
+                  <a th:href="@{/apartments/{id}(id=${favorite.apartment.id})}" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">Open</a>
+                  <form th:action="@{/user/favorites/{apartmentId}/toggle(apartmentId=${favorite.apartment.id})}" method="post">
+                    <button class="rounded-lg border border-rose-400 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700">Remove</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            <tr data-table-empty class="hidden">
+              <td class="px-4 py-4 text-slate-500" colspan="4">No favorite matches current search.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

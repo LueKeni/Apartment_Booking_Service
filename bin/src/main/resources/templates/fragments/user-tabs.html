@@ -1,0 +1,20 @@
+<div th:fragment="userTabs(activePage)" class="mb-5 flex flex-wrap gap-2">
+  <a href="/user/dashboard"
+     class="rounded-full border px-4 py-2 text-sm font-semibold"
+     th:classappend="${activePage == 'dashboard'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-300 bg-white text-slate-700'">Dashboard</a>
+  <a href="/user/favorites"
+     class="rounded-full border px-4 py-2 text-sm font-semibold"
+     th:classappend="${activePage == 'favorites'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-300 bg-white text-slate-700'">Favorites</a>
+  <a href="/user/appointments"
+     class="rounded-full border px-4 py-2 text-sm font-semibold"
+     th:classappend="${activePage == 'appointments'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-300 bg-white text-slate-700'">Appointments</a>
+  <a href="/user/notifications"
+     class="rounded-full border px-4 py-2 text-sm font-semibold"
+     th:classappend="${activePage == 'notifications'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-300 bg-white text-slate-700'">Notifications</a>
+  <a href="/chat"
+     class="rounded-full border px-4 py-2 text-sm font-semibold"
+     th:classappend="${activePage == 'chat'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-300 bg-white text-slate-700'">Chat</a>
+  <a href="/user/profile"
+     class="rounded-full border px-4 py-2 text-sm font-semibold"
+     th:classappend="${activePage == 'profile'} ? ' border-transparent bg-tealdeep text-white' : ' border-slate-300 bg-white text-slate-700'">Profile</a>
+</div>

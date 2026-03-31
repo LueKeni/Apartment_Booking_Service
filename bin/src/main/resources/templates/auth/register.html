@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100">
+  <div th:replace="~{fragments/header :: siteHeader}"></div>
+
+  <main class="mx-auto max-w-md px-4 py-10">
+    <div class="rounded-xl bg-white p-6 shadow">
+      <h1 class="text-2xl font-semibold">Create Account</h1>
+      <div th:if="${error}" class="mt-4 rounded bg-rose-100 px-3 py-2 text-sm text-rose-700" th:text="${error}"></div>
+
+      <form th:action="@{/auth/register}" th:object="${registerRequest}" method="post" class="mt-6 space-y-4">
+        <div>
+          <label class="block text-sm text-slate-600">Full Name</label>
+          <input th:field="*{fullName}" type="text" required class="mt-1 w-full rounded border border-slate-300 px-3 py-2" />
+        </div>
+        <div>
+          <label class="block text-sm text-slate-600">Email</label>
+          <input th:field="*{email}" type="email" required class="mt-1 w-full rounded border border-slate-300 px-3 py-2" />
+        </div>
+        <div>
+          <label class="block text-sm text-slate-600">Phone</label>
+          <input th:field="*{phone}" type="text" class="mt-1 w-full rounded border border-slate-300 px-3 py-2" />
+        </div>
+        <div>
+          <label class="block text-sm text-slate-600">Password</label>
+          <input th:field="*{password}" type="password" required class="mt-1 w-full rounded border border-slate-300 px-3 py-2" />
+        </div>
+        <button class="w-full rounded bg-slate-900 px-4 py-2 text-white">Register</button>
+      </form>
+    </div>
+  </main>
+
+  <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

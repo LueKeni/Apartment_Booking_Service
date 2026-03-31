@@ -1,0 +1,65 @@
+ApartmentBookingSystem/
+├── pom.xml                                  # Quản lý JDK 21, Spring Boot 3, JPA, MySQL, Socket.io
+└── src/
+    ├── main/
+    │   ├── java/com/realestate/apartmet_booking_service/
+    │   │   ├── ApartmentBookingServiceApplication.java      # Main class
+    │   │   │
+    │   │   ├── config/                      # SecurityConfig, WebSocketConfig, CloudinaryConfig (nếu có)
+    │   │   │
+    │   │   ├── entities/                    # [MODEL] Ánh xạ Database MySQL
+    │   │   │   ├── User.java                # Thông tin login & Role
+    │   │   │   ├── AgentProfile.java        # Hồ sơ CTV (1:1 với User)
+    │   │   │   ├── Apartment.java           # Thông tin căn hộ
+    │   │   │   ├── Appointment.java         # Lịch hẹn xem nhà
+    │   │   │   ├── AgentSchedule.java       # Khung giờ rảnh của CTV
+    │   │   │   ├── Review.java              # Đánh giá CTV
+    │   │   │   ├── Favorite.java            # Lưu căn hộ
+    │   │   │   ├── Notification.java        # Thông báo hệ thống
+    │   │   │   ├── Conversation.java        # Phòng chat giữa User-Agent
+    │   │   │   └── Message.java             # Nội dung tin nhắn chat
+    │   │   │
+    │   │   ├── repositories/                # [REPOSITORY] Giao tiếp DB (Spring Data JPA)
+    │   │   │   ├── UserRepository.java
+    │   │   │   ├── ApartmentRepository.java
+    │   │   │   ├── AppointmentRepository.java
+    │   │   │   ├── ChatRepository.java      # Cho Message và Conversation
+    │   │   │   └── ... (Mỗi Entity có 1 Repo tương ứng)
+    │   │   │
+    │   │   ├── services/                    # [SERVICE] Xử lý Logic nghiệp vụ
+    │   │   │   ├── interfaces/              # Khai báo hàm
+    │   │   │   │   ├── UserService.java
+    │   │   │   │   ├── ApartmentService.java
+    │   │   │   │   ├── BookingService.java
+    │   │   │   │   └── ChatService.java
+    │   │   │   └── impl/                    # Cài đặt chi tiết logic
+    │   │   │       ├── UserServiceImpl.java
+    │   │   │       ├── ApartmentServiceImpl.java
+    │   │   │       └── ChatServiceImpl.java
+    │   │   │
+    │   │   ├── controllers/                 # [CONTROLLER] Điều hướng Request
+    │   │   │   ├── web/                     # Trả về HTML (Thymeleaf)
+    │   │   │   │   ├── AuthController.java  # Login/Register
+    │   │   │   │   ├── AdminController.java # Quản lý User/Post
+    │   │   │   │   ├── AgentController.java # Quản lý lịch/Listing
+    │   │   │   │   └── MainController.java  # Home, Details, Search
+    │   │   │   └── api/                     # Trả về JSON (Dùng cho Chatbox & AJAX)
+    │   │   │       ├── ChatRestController.java
+    │   │   │       └── NotificationRestController.java
+    │   │   │
+    │   │   ├── dto/                         # Data Transfer Objects
+    │   │   ├── enums/                       # Role, Status, TransactionType
+    │   │   └── utils/                       # FileUploadUtil, SecurityUtils
+    │   │
+    │   └── resources/
+    │       ├── application.properties       # Kết nối 127.0.0.1:3306 (user: root)
+    │       ├── static/                      # CSS, JS (Tailwind/Bootstrap), Images
+    │       └── templates/                   # Giao diện Thymeleaf (.html)
+    │           ├── fragments/               # Header, Footer, Sidebar
+    │           ├── common/                  # Index, Search, Details
+    │           ├── auth/                    # Login, Register
+    │           ├── user/                    # Favorite, My Appointments
+    │           ├── agent/                   # Dashboard, Manage Listing, Schedule
+    │           └── admin/                   # Dashboard, Verify Agent, Manage All
+    │
+    └── test/                                # JUnit & Mockito tests

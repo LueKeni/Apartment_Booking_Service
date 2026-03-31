@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/ui-head :: uiHead('Admin User Moderation')}"></head>
+<body>
+  <div th:replace="~{fragments/header :: siteHeader}"></div>
+
+  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
+    <div class="workspace-grid">
+      <div th:replace="~{fragments/admin-sidebar :: adminSidebar('users')}"></div>
+
+      <div>
+      <section class="glass-card p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 class="text-3xl font-semibold text-ink">User Moderation</h1>
+            <p class="mt-1 text-sm text-slate-600">Ban/unban accounts and manage user roles.</p>
+          </div>
+          <a href="/admin/dashboard" class="pill">Back to Dashboard</a>
+        </div>
+      </section>
+
+      <div th:if="${param.updated}" class="mt-4 rounded-2xl border border-sky-300 bg-sky-50 px-4 py-3 text-sm text-sky-700">User status updated.</div>
+      <div th:if="${param.roleUpdated}" class="mt-4 rounded-2xl border border-indigo-300 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">User role updated.</div>
+      <div th:if="${param.roleDenied}" class="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-700">You cannot change your own role.</div>
+
+      <section class="mt-6 glass-card p-6" data-table>
+        <div class="table-toolbar">
+          <input data-table-search type="text" placeholder="Search by name or email..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
+          <select data-table-filter-key="role" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
+            <option value="">All roles</option>
+            <option value="USER">USER</option>
+            <option value="AGENT">AGENT</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+          <select data-table-filter-key="status" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
+            <option value="">All status</option>
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="BANNED">BANNED</option>
+          </select>
+          <select data-table-sort class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
+            <option value="">Sort by</option>
+            <option value="name:asc">Name A-Z</option>
+            <option value="name:desc">Name Z-A</option>
+            <option value="email:asc">Email A-Z</option>
+            <option value="email:desc">Email Z-A</option>
+          </select>
+        </div>
+
+        <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
+          <table class="min-w-full divide-y divide-slate-200 text-sm">
+            <thead class="bg-slate-50 text-left text-slate-600">
+              <tr>
+                <th class="px-4 py-3 font-semibold">Name</th>
+                <th class="px-4 py-3 font-semibold">Email</th>
+                <th class="px-4 py-3 font-semibold">Role</th>
+                <th class="px-4 py-3 font-semibold">Status</th>
+                <th class="px-4 py-3 font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 bg-white/80" data-table-body>
+              <tr th:if="${#lists.isEmpty(users)}">
+                <td class="px-4 py-4 text-slate-500" colspan="5">No users found.</td>
+              </tr>
+              <tr data-row
+                  th:each="u : ${users}"
+                  th:attr="data-search=${u.fullName + ' ' + u.email},data-role=${u.role},data-status=${u.status},data-name=${u.fullName},data-email=${u.email}">
+                <td class="px-4 py-3 font-semibold text-ink" th:text="${u.fullName}"></td>
+                <td class="px-4 py-3 text-slate-600" th:text="${u.email}"></td>
+                <td class="px-4 py-3"><span class="pill" th:text="${u.role}"></span></td>
+                <td class="px-4 py-3"><span class="pill" th:text="${u.status}"></span></td>
+                <td class="px-4 py-3">
+                  <div class="flex flex-wrap gap-2">
+                    <form th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post" class="flex items-center gap-2">
+                      <select name="role"
+                              class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs"
+                              th:disabled="${u.email == currentEmail}">
+                        <option th:each="r : ${T(com.realestate.apartment_booking_service.enums.Role).values()}"
+                                th:value="${r.name()}"
+                                th:text="${r.name()}"
+                                th:selected="${u.role == r}"></option>
+                      </select>
+                      <button class="rounded-lg border border-indigo-400 bg-white px-3 py-1.5 text-xs font-semibold text-indigo-700"
+                              th:disabled="${u.email == currentEmail}">
+                        Set Role
+                      </button>
+                    </form>
+                    <form th:if="${u.status.name() == 'ACTIVE'}" th:action="@{/admin/users/{id}/ban(id=${u.id})}" method="post">
+                      <input type="hidden" name="banned" value="true" />
+                      <button class="rounded-lg border border-rose-400 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700">Ban</button>
+                    </form>
+                    <form th:if="${u.status.name() == 'BANNED'}" th:action="@{/admin/users/{id}/ban(id=${u.id})}" method="post">
+                      <input type="hidden" name="banned" value="false" />
+                      <button class="rounded-lg border border-emerald-400 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700">Unban</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              <tr data-table-empty class="hidden">
+                <td class="px-4 py-4 text-slate-500" colspan="5">No user matches current filters.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      </div>
+    </div>
+  </main>
+
+  <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>
