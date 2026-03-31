@@ -51,6 +51,8 @@ public class DataInitializer implements CommandLineRunner {
                     .activeListings(0)
                     .successDeals(0)
                     .verifiedStatus(true)
+                    .averageRating(4.8)
+                    .reviewCount(1)
                     .build();
             agentProfileRepository.save(profile);
         }

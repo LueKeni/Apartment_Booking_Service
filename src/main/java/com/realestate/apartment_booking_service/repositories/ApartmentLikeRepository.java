@@ -1,14 +1,10 @@
 package com.realestate.apartment_booking_service.repositories;
 
-import com.realestate.apartment_booking_service.entities.Favorite;
+import com.realestate.apartment_booking_service.entities.ApartmentLike;
 import java.util.List;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
-
-    @EntityGraph(attributePaths = { "apartment" })
-    List<Favorite> findByUserIdOrderByCreatedAtDesc(Long userId);
+public interface ApartmentLikeRepository extends JpaRepository<ApartmentLike, Long> {
 
     boolean existsByUserIdAndApartmentId(Long userId, Long apartmentId);
 
@@ -17,4 +13,6 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     void deleteByUserIdAndApartmentId(Long userId, Long apartmentId);
 
     long deleteByApartmentId(Long apartmentId);
+
+    List<ApartmentLike> findByUserId(Long userId);
 }

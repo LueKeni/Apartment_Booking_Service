@@ -78,9 +78,29 @@
                alt="Apartment image"
                class="mb-3 h-40 w-full rounded-2xl object-cover" />
           <h3 class="text-lg font-semibold text-ink" th:text="${apartment.title}"></h3>
-          <p class="mt-1 text-sm text-slate-600" th:text="${apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '-'}"></p>
+          <p class="mt-1 text-sm text-slate-600" th:text="${apartment.locationDistrict}"></p>
           <p class="mt-3 text-xl font-bold text-tealdeep" th:text="${apartment.price}"></p>
-          <a th:href="@{/apartments/{id}(id=${apartment.id})}" class="mt-4 inline-block rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">View Details</a>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <a th:href="@{/apartments/{id}(id=${apartment.id})}" class="inline-block rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">View Details</a>
+            <form th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}"
+                  th:action="@{/user/likes/{id}/toggle(id=${apartment.id})}"
+                  method="post">
+              <input type="hidden" name="redirectTo" th:value="${'/?keyword=' + (filter != null and filter.keyword != null ? filter.keyword : '') + '&district=' + (filter != null and filter.district != null ? filter.district : '') + '&roomType=' + (filter != null and filter.roomType != null ? filter.roomType : '') + '&transactionType=' + (filter != null and filter.transactionType != null ? filter.transactionType.name() : '') + '&status=' + (filter != null and filter.status != null ? filter.status.name() : '')}" />
+              <button class="rounded-full px-4 py-2 text-sm font-semibold text-white"
+                      th:classappend="${likedApartmentIds.contains(apartment.id)} ? ' bg-rose-500 hover:bg-rose-600' : ' bg-slate-700 hover:bg-slate-800'"
+                      th:text="${likedApartmentIds.contains(apartment.id)} ? 'Bo like' : 'Like'">
+              </button>
+            </form>
+            <form th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}"
+                  th:action="@{/user/favorites/{id}/toggle(id=${apartment.id})}"
+                  method="post">
+              <input type="hidden" name="redirectTo" th:value="${'/?keyword=' + (filter != null and filter.keyword != null ? filter.keyword : '') + '&district=' + (filter != null and filter.district != null ? filter.district : '') + '&roomType=' + (filter != null and filter.roomType != null ? filter.roomType : '') + '&transactionType=' + (filter != null and filter.transactionType != null ? filter.transactionType.name() : '') + '&status=' + (filter != null and filter.status != null ? filter.status.name() : '')}" />
+              <button class="rounded-full px-4 py-2 text-sm font-semibold text-white"
+                      th:classappend="${favoriteApartmentIds.contains(apartment.id)} ? ' bg-amber-500 hover:bg-amber-600' : ' bg-slate-500 hover:bg-slate-600'"
+                      th:text="${favoriteApartmentIds.contains(apartment.id)} ? 'Bo yeu thich' : 'Them vao yeu thich'">
+              </button>
+            </form>
+          </div>
         </article>
       </div>
     </section>
