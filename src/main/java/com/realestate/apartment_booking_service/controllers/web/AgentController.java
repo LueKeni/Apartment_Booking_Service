@@ -5,11 +5,14 @@ import com.realestate.apartment_booking_service.entities.Appointment;
 import com.realestate.apartment_booking_service.entities.User;
 import com.realestate.apartment_booking_service.enums.ApartmentStatus;
 import com.realestate.apartment_booking_service.enums.AppointmentStatus;
+import com.realestate.apartment_booking_service.dto.MomoOrderInfoRequest;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
 import com.realestate.apartment_booking_service.services.interfaces.BookingService;
+import com.realestate.apartment_booking_service.services.interfaces.MomoService;
 import com.realestate.apartment_booking_service.services.interfaces.ReviewService;
 import com.realestate.apartment_booking_service.services.interfaces.UserService;
 import com.realestate.apartment_booking_service.utils.SecurityUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +37,7 @@ public class AgentController {
     private final BookingService bookingService;
     private final ReviewService reviewService;
     private final UserService userService;
+    private final MomoService momoService;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -69,6 +73,7 @@ public class AgentController {
         User agent = currentUser();
         model.addAttribute("apartments", apartmentService.findByAgent(agent.getId()));
         model.addAttribute("apartment", new Apartment());
+        model.addAttribute("currentPoints", agent.getPoints());
 
         if (editId != null) {
             Apartment editApartment = apartmentService.findById(editId);
@@ -113,6 +118,19 @@ public class AgentController {
         return "redirect:/agent/listings?deleted";
     }
 
+    @PostMapping("/listings/{id}/boost")
+    public String boostListing(@PathVariable Long id, @RequestParam Long points) {
+        User agent = currentUser();
+        if (points == null || points <= 0) {
+            return "redirect:/agent/listings?boostError=invalid";
+        }
+        if (agent.getPoints() == null || agent.getPoints() < points) {
+            return "redirect:/agent/listings?boostError=insufficient";
+        }
+        apartmentService.boostListing(id, agent.getId(), points);
+        return "redirect:/agent/listings?boosted";
+    }
+
     @GetMapping("/bookings")
     public String bookings(Model model) {
         User agent = currentUser();
@@ -143,6 +161,34 @@ public class AgentController {
         model.addAttribute("agentReviewCount", agentReviews.size());
         model.addAttribute("agentAverageRating", String.format(Locale.US, "%.1f", averageRating));
         return "agent/profile";
+    }
+
+    @GetMapping("/points")
+    public String points(Model model) {
+        User agent = currentUser();
+        model.addAttribute("agentProfile", agent);
+        model.addAttribute("currentPoints", agent.getPoints());
+        return "agent/points";
+    }
+
+    @PostMapping("/points/momo")
+    public String createMomoPayment(MomoOrderInfoRequest request) {
+        User agent = currentUser();
+        var response = momoService.createPayment(request, agent.getId());
+        if (response == null || response.getPayUrl() == null || response.getPayUrl().isBlank()) {
+            return "redirect:/agent/points?error=payment_unavailable";
+        }
+        return "redirect:" + response.getPayUrl();
+    }
+
+    @GetMapping("/points/callback")
+    public String momoCallback(HttpServletRequest request, Model model) {
+        var result = momoService.handleCallback(request);
+        User agent = currentUser();
+        model.addAttribute("paymentResult", result);
+        model.addAttribute("agentProfile", agent);
+        model.addAttribute("currentPoints", agent.getPoints());
+        return "agent/points";
     }
 
     @PostMapping("/profile")

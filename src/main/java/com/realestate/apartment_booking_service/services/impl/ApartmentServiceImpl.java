@@ -153,6 +153,29 @@ public class ApartmentServiceImpl implements ApartmentService {
         apartmentRepository.delete(apartment);
     }
 
+    @Override
+    public void boostListing(Long apartmentId, Long agentId, long points) {
+        if (points <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid_points");
+        }
+
+        Apartment apartment = findById(apartmentId);
+        validateOwnership(apartment, agentId);
+
+        User agent = apartment.getAgent();
+        long availablePoints = agent.getPoints() == null ? 0L : agent.getPoints();
+        if (availablePoints < points) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "insufficient_points");
+        }
+
+        agent.setPoints(availablePoints - points);
+        long currentBoost = apartment.getBoostPoints() == null ? 0L : apartment.getBoostPoints();
+        apartment.setBoostPoints(currentBoost + points);
+
+        userRepository.save(agent);
+        apartmentRepository.save(apartment);
+    }
+
     private List<String> storeImageFiles(List<MultipartFile> imageFiles) {
         if (imageFiles == null || imageFiles.isEmpty()) {
             return new ArrayList<>();

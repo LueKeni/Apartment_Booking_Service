@@ -25,4 +25,6 @@ public interface ApartmentService {
     Apartment updateStatusForAgent(Long apartmentId, ApartmentStatus status, Long agentId);
 
     void deleteApartment(Long apartmentId, Long agentId);
+
+    void boostListing(Long apartmentId, Long agentId, long points);
 }

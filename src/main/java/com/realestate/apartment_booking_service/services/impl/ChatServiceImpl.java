@@ -124,6 +124,11 @@ public class ChatServiceImpl implements ChatService {
         messageRepository.saveAll(messages);
     }
 
+    @Override
+    public long countUnreadMessages(Long userId) {
+        return messageRepository.countUnreadForUser(userId);
+    }
+
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));

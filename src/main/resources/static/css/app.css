@@ -110,6 +110,25 @@ h4,
   min-height: 40px;
 }
 
+.chat-thread {
+  max-height: 420px;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.chat-thread::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-thread::-webkit-scrollbar-thumb {
+  background: rgba(18, 33, 30, 0.25);
+  border-radius: 999px;
+}
+
+.chat-thread::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 @media (min-width: 960px) {
   .workspace-grid {
     grid-template-columns: 260px minmax(0, 1fr);

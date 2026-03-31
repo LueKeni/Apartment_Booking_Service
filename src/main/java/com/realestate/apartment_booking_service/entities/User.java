@@ -58,10 +58,16 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
+    private Long points;
+
     @PrePersist
     public void prePersist() {
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
+        }
+        if (points == null) {
+            points = 0L;
         }
         if (role == null) {
             role = Role.USER;

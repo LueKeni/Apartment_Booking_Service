@@ -21,6 +21,7 @@ public class SecurityConfig {
                                 "/search",
                                 "/apartments/**",
                                 "/auth/**",
+                                "/momo/**",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",

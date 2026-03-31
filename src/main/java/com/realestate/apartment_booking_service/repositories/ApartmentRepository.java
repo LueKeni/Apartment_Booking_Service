@@ -33,6 +33,7 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
                   and (:roomType is null or upper(a.roomType) = upper(:roomType))
                   and (:transactionType is null or a.transactionType = :transactionType)
                   and (:status is null or a.status = :status)
+                order by coalesce(a.boostPoints, 0) desc, a.id desc
             """)
     List<Apartment> search(
             @Param("keyword") String keyword,

@@ -104,6 +104,10 @@ public class Apartment {
     @Column(nullable = false, length = 20)
     private ApartmentStatus status;
 
+    @Column
+    @Default
+    private Long boostPoints = 0L;
+
     @ElementCollection
     @CollectionTable(name = "apartment_images", joinColumns = @JoinColumn(name = "apartment_id"))
     @Column(name = "image_url", nullable = false, length = 500)

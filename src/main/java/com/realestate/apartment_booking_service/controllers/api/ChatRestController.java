@@ -64,6 +64,11 @@ public class ChatRestController {
         chatService.markConversationRead(conversationId, currentUser().getId());
     }
 
+    @GetMapping("/unread-count")
+    public long unreadCount() {
+        return chatService.countUnreadMessages(currentUser().getId());
+    }
+
     private ConversationSummaryDto mapConversation(Conversation conversation, Long currentUserId) {
         boolean selfIsUser = conversation.getUser().getId().equals(currentUserId);
         User other = selfIsUser ? conversation.getAgent() : conversation.getUser();

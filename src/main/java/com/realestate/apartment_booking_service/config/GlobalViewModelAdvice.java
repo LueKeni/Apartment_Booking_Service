@@ -1,6 +1,9 @@
 package com.realestate.apartment_booking_service.config;
 
+import com.realestate.apartment_booking_service.services.interfaces.UserService;
+import com.realestate.apartment_booking_service.utils.SecurityUtils;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,7 +12,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 @ControllerAdvice(annotations = Controller.class)
+@RequiredArgsConstructor
 public class GlobalViewModelAdvice {
+
+    private final UserService userService;
 
     @ModelAttribute("isAuthenticated")
     public boolean isAuthenticated() {
@@ -25,6 +31,15 @@ public class GlobalViewModelAdvice {
             return null;
         }
         return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    @ModelAttribute("currentUserId")
+    public Long currentUserId() {
+        String email = SecurityUtils.getCurrentUserEmail();
+        if (email == null) {
+            return null;
+        }
+        return userService.findByEmail(email).getId();
     }
 
     @ModelAttribute("hasRoleUser")

@@ -23,6 +23,9 @@
     <div th:if="${param.updated}" class="mt-4 rounded-2xl border border-sky-300 bg-sky-50 px-4 py-3 text-sm text-sky-700">Listing updated successfully.</div>
     <div th:if="${param.statusUpdated}" class="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-700">Listing visibility updated.</div>
     <div th:if="${param.deleted}" class="mt-4 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700">Listing deleted successfully.</div>
+    <div th:if="${param.boosted}" class="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Listing boosted successfully.</div>
+    <div th:if="${param.boostError == 'invalid'}" class="mt-4 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700">Boost points must be greater than 0.</div>
+    <div th:if="${param.boostError == 'insufficient'}" class="mt-4 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700">Not enough points to boost this listing.</div>
 
     <section class="mt-6 glass-card p-6">
       <h2 class="text-xl font-semibold">Create New Listing</h2>
@@ -113,6 +116,7 @@
 
     <section class="mt-6 glass-card p-6">
       <h2 class="text-xl font-semibold">Current Listings</h2>
+      <p class="mt-1 text-sm text-slate-600">Available points: <span th:text="${currentPoints != null ? currentPoints : 0}">0</span></p>
       <div class="mt-4" data-table>
       <div class="table-toolbar">
         <input data-table-search type="text" placeholder="Search title or district..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
@@ -149,12 +153,13 @@
               <th class="px-4 py-3 font-semibold">District</th>
               <th class="px-4 py-3 font-semibold">Price</th>
               <th class="px-4 py-3 font-semibold">Status</th>
+              <th class="px-4 py-3 font-semibold">Boost</th>
               <th class="px-4 py-3 font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100 bg-white/80" data-table-body>
             <tr th:if="${#lists.isEmpty(apartments)}">
-              <td class="px-4 py-4 text-slate-500" colspan="8">No listings yet.</td>
+              <td class="px-4 py-4 text-slate-500" colspan="9">No listings yet.</td>
             </tr>
             <tr data-row
                 th:each="apartment : ${apartments}"
@@ -172,6 +177,18 @@
               <td class="px-4 py-3 text-slate-600" th:text="${apartment.locationDistrict}"></td>
               <td class="px-4 py-3 text-slate-600" th:text="${apartment.price}"></td>
               <td class="px-4 py-3"><span class="pill" th:text="${apartment.status}"></span></td>
+              <td class="px-4 py-3">
+                <form th:action="@{/agent/listings/{id}/boost(id=${apartment.id})}" method="post" class="flex flex-wrap items-center gap-2">
+                  <input type="number"
+                         name="points"
+                         min="1"
+                         th:attr="max=${currentPoints != null ? currentPoints : 0}"
+                         placeholder="Points"
+                         class="w-24 rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs" />
+                  <button class="rounded-lg border border-tealdeep bg-tealdeep px-3 py-1.5 text-xs font-semibold text-white">Boost</button>
+                </form>
+                <p class="mt-1 text-xs text-slate-500">Boosted: <span th:text="${apartment.boostPoints != null ? apartment.boostPoints : 0}">0</span> pts</p>
+              </td>
               <td class="px-4 py-3">
                 <div class="flex flex-wrap gap-2">
                   <a th:href="@{/agent/listings(editId=${apartment.id})}"
@@ -191,7 +208,7 @@
               </td>
             </tr>
             <tr data-table-empty class="hidden">
-              <td class="px-4 py-4 text-slate-500" colspan="8">No listing matches current filters.</td>
+              <td class="px-4 py-4 text-slate-500" colspan="9">No listing matches current filters.</td>
             </tr>
           </tbody>
         </table>
