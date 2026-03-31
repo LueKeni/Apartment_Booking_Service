@@ -27,4 +27,12 @@ public interface ApartmentService {
     void deleteApartment(Long apartmentId, Long agentId);
 
     void boostListing(Long apartmentId, Long agentId, long points);
+
+    boolean toggleFavorite(Long apartmentId, Long userId);
+
+    boolean isFavorite(Long apartmentId, Long userId);
+
+    boolean toggleLike(Long apartmentId, Long userId);
+
+    boolean isLiked(Long apartmentId, Long userId);
 }

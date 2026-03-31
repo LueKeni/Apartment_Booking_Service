@@ -2,7 +2,6 @@ package com.realestate.apartment_booking_service.controllers.web;
 
 import com.realestate.apartment_booking_service.dto.BookingRequest;
 import com.realestate.apartment_booking_service.dto.CreateReviewRequest;
-import com.realestate.apartment_booking_service.entities.Apartment;
 import com.realestate.apartment_booking_service.entities.Appointment;
 import com.realestate.apartment_booking_service.entities.Favorite;
 import com.realestate.apartment_booking_service.entities.User;
@@ -28,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -167,17 +167,31 @@ public class UserController {
     }
 
     @PostMapping("/favorites/{apartmentId}/toggle")
-    public String toggleFavorite(@PathVariable Long apartmentId) {
+    public String toggleFavorite(@PathVariable Long apartmentId,
+            @RequestParam(required = false) String redirectTo,
+            RedirectAttributes redirectAttributes) {
         User user = currentUser();
-        if (favoriteRepository.existsByUserIdAndApartmentId(user.getId(), apartmentId)) {
-            favoriteRepository.deleteByUserIdAndApartmentId(user.getId(), apartmentId);
-        } else {
-            Apartment apartment = apartmentService.findById(apartmentId);
-            Favorite favorite = Favorite.builder()
-                    .user(user)
-                    .apartment(apartment)
-                    .build();
-            favoriteRepository.save(favorite);
+        boolean favoriteAdded = apartmentService.toggleFavorite(apartmentId, user.getId());
+        redirectAttributes.addFlashAttribute("favoriteUpdated", true);
+        redirectAttributes.addFlashAttribute("favoriteAdded", favoriteAdded);
+
+        if (redirectTo != null && !redirectTo.isBlank() && redirectTo.startsWith("/")) {
+            return "redirect:" + redirectTo;
+        }
+        return "redirect:/apartments/" + apartmentId;
+    }
+
+    @PostMapping("/likes/{apartmentId}/toggle")
+    public String toggleLike(@PathVariable Long apartmentId,
+            @RequestParam(required = false) String redirectTo,
+            RedirectAttributes redirectAttributes) {
+        User user = currentUser();
+        boolean liked = apartmentService.toggleLike(apartmentId, user.getId());
+        redirectAttributes.addFlashAttribute("likeUpdated", true);
+        redirectAttributes.addFlashAttribute("liked", liked);
+
+        if (redirectTo != null && !redirectTo.isBlank() && redirectTo.startsWith("/")) {
+            return "redirect:" + redirectTo;
         }
         return "redirect:/apartments/" + apartmentId;
     }

@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +23,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "agent_profiles")
-public class AgentProfile {
+public class  AgentProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,4 +50,23 @@ public class AgentProfile {
 
     @Column(nullable = false)
     private Boolean verifiedStatus;
+
+    @Column(nullable = false)
+    private Double averageRating;
+
+    @Column(nullable = false)
+    private Integer reviewCount;
+
+    @PrePersist
+    public void prePersist() {
+        if (averageRating == null) {
+            averageRating = 0.0;
+        }
+        if (reviewCount == null) {
+            reviewCount = 0;
+        }
+        if (verifiedStatus == null) {
+            verifiedStatus = false;
+        }
+    }
 }

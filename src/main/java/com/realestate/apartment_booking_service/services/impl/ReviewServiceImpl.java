@@ -28,6 +28,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final AppointmentRepository appointmentRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final com.realestate.apartment_booking_service.repositories.AgentProfileRepository agentProfileRepository;
 
     @Override
     public Review createReview(Long userId, CreateReviewRequest request) {
@@ -59,6 +60,27 @@ public class ReviewServiceImpl implements ReviewService {
                 .build();
 
         Review saved = reviewRepository.save(review);
+
+        // Update Agent Profile rating
+        com.realestate.apartment_booking_service.entities.AgentProfile profile = agentProfileRepository.findByUserId(appointment.getAgent().getId())
+                .orElseGet(() -> {
+                    com.realestate.apartment_booking_service.entities.AgentProfile newProfile = 
+                        com.realestate.apartment_booking_service.entities.AgentProfile.builder()
+                            .user(appointment.getAgent())
+                            .responseRate(0.0)
+                            .activeListings(0)
+                            .successDeals(0)
+                            .verifiedStatus(false)
+                            .averageRating(0.0)
+                            .reviewCount(0)
+                            .build();
+                    return agentProfileRepository.save(newProfile);
+                });
+        
+        double currentTotalRating = profile.getAverageRating() * profile.getReviewCount();
+        profile.setReviewCount(profile.getReviewCount() + 1);
+        profile.setAverageRating((currentTotalRating + request.getRating()) / profile.getReviewCount());
+        agentProfileRepository.save(profile);
 
         notificationService.createNotification(
                 appointment.getAgent().getId(),
