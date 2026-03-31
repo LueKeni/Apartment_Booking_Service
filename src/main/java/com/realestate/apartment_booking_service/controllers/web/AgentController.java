@@ -12,6 +12,8 @@ import com.realestate.apartment_booking_service.services.interfaces.MomoService;
 import com.realestate.apartment_booking_service.services.interfaces.ReviewService;
 import com.realestate.apartment_booking_service.services.interfaces.UserService;
 import com.realestate.apartment_booking_service.utils.SecurityUtils;
+import com.realestate.apartment_booking_service.repositories.PointTopUpRepository;
+import com.realestate.apartment_booking_service.repositories.PointUsageRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Locale;
@@ -38,6 +40,8 @@ public class AgentController {
     private final ReviewService reviewService;
     private final UserService userService;
     private final MomoService momoService;
+    private final PointTopUpRepository pointTopUpRepository;
+    private final PointUsageRepository pointUsageRepository;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -168,6 +172,10 @@ public class AgentController {
         User agent = currentUser();
         model.addAttribute("agentProfile", agent);
         model.addAttribute("currentPoints", agent.getPoints());
+        model.addAttribute("topupHistory",
+                pointTopUpRepository.findTop20ByUserIdOrderByCreatedAtDesc(agent.getId()));
+        model.addAttribute("usageHistory",
+                pointUsageRepository.findTop20ByUserIdOrderByCreatedAtDesc(agent.getId()));
         return "agent/points";
     }
 
@@ -188,6 +196,10 @@ public class AgentController {
         model.addAttribute("paymentResult", result);
         model.addAttribute("agentProfile", agent);
         model.addAttribute("currentPoints", agent.getPoints());
+        model.addAttribute("topupHistory",
+                pointTopUpRepository.findTop20ByUserIdOrderByCreatedAtDesc(agent.getId()));
+        model.addAttribute("usageHistory",
+                pointUsageRepository.findTop20ByUserIdOrderByCreatedAtDesc(agent.getId()));
         return "agent/points";
     }
 

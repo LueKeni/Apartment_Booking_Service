@@ -2,11 +2,13 @@ package com.realestate.apartment_booking_service.controllers.web;
 
 import com.realestate.apartment_booking_service.entities.User;
 import com.realestate.apartment_booking_service.enums.ApartmentStatus;
+import com.realestate.apartment_booking_service.enums.PaymentStatus;
 import com.realestate.apartment_booking_service.enums.Role;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
 import com.realestate.apartment_booking_service.services.interfaces.UserService;
 import com.realestate.apartment_booking_service.utils.SecurityUtils;
 import com.realestate.apartment_booking_service.repositories.ApartmentRepository;
+import com.realestate.apartment_booking_service.repositories.PointTopUpRepository;
 import com.realestate.apartment_booking_service.repositories.UserRepository;
 import java.util.Comparator;
 import java.util.List;
@@ -28,6 +30,7 @@ public class AdminController {
     private final ApartmentService apartmentService;
     private final UserRepository userRepository;
     private final ApartmentRepository apartmentRepository;
+    private final PointTopUpRepository pointTopUpRepository;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -46,6 +49,14 @@ public class AdminController {
         model.addAttribute("userCount", userRepository.count());
         model.addAttribute("listingCount", apartmentRepository.count());
         model.addAttribute("hiddenListingCount", hiddenListings);
+        model.addAttribute("pointRevenue", pointTopUpRepository.sumAmountByStatus(PaymentStatus.SUCCESS));
+        var monthlyRevenue = pointTopUpRepository.findMonthlyRevenue();
+        model.addAttribute("revenueLabels", monthlyRevenue.stream()
+                .map(PointTopUpRepository.MonthlyRevenueProjection::getMonth)
+                .toList());
+        model.addAttribute("revenueValues", monthlyRevenue.stream()
+                .map(row -> row.getTotal() == null ? 0 : row.getTotal().doubleValue())
+                .toList());
         model.addAttribute("latestUsers", latestUsers);
         return "admin/dashboard";
     }
@@ -84,6 +95,13 @@ public class AdminController {
     public String listings(Model model) {
         model.addAttribute("apartments", apartmentRepository.findAll());
         return "admin/listings";
+    }
+
+    @GetMapping("/points")
+    public String pointHistory(Model model) {
+        model.addAttribute("pointTopups",
+                pointTopUpRepository.findTop200ByUserRoleOrderByCreatedAtDesc(Role.AGENT));
+        return "admin/points";
     }
 
     @PostMapping("/listings/{id}/status")

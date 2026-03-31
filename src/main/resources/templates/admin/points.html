@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/ui-head :: uiHead('Point Purchases')}"></head>
+<body>
+  <div th:replace="~{fragments/header :: siteHeader}"></div>
+
+  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
+    <div class="workspace-grid">
+      <div th:replace="~{fragments/admin-sidebar :: adminSidebar('points')}"></div>
+
+      <div>
+        <section class="glass-card p-6">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h1 class="text-3xl font-semibold text-ink">Point Purchase History</h1>
+              <p class="mt-1 text-sm text-slate-600">All MoMo point purchases by agents.</p>
+            </div>
+            <a href="/admin/dashboard" class="pill">Back to Dashboard</a>
+          </div>
+        </section>
+
+        <section class="mt-6 glass-card p-6">
+          <div class="overflow-hidden rounded-2xl border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+              <thead class="bg-slate-50 text-left text-slate-600">
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Agent</th>
+                  <th class="px-4 py-3 font-semibold">Email</th>
+                  <th class="px-4 py-3 font-semibold">Order</th>
+                  <th class="px-4 py-3 font-semibold">Amount</th>
+                  <th class="px-4 py-3 font-semibold">Points</th>
+                  <th class="px-4 py-3 font-semibold">Status</th>
+                  <th class="px-4 py-3 font-semibold">Created</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 bg-white/80">
+                <tr th:if="${#lists.isEmpty(pointTopups)}">
+                  <td class="px-4 py-4 text-slate-500" colspan="7">No purchases yet.</td>
+                </tr>
+                <tr th:each="topup : ${pointTopups}">
+                  <td class="px-4 py-3 font-semibold text-ink" th:text="${topup.user.fullName}"></td>
+                  <td class="px-4 py-3 text-slate-600" th:text="${topup.user.email}"></td>
+                  <td class="px-4 py-3 text-slate-700" th:text="${topup.orderId}"></td>
+                  <td class="px-4 py-3 text-slate-700" th:text="${topup.amount}"></td>
+                  <td class="px-4 py-3 text-slate-700" th:text="${topup.points}"></td>
+                  <td class="px-4 py-3"><span class="pill" th:text="${topup.status}"></span></td>
+                  <td class="px-4 py-3 text-slate-600" th:text="${#temporals.format(topup.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>
