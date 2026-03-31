@@ -7,9 +7,11 @@ import com.realestate.apartment_booking_service.enums.ApartmentStatus;
 import com.realestate.apartment_booking_service.enums.AppointmentStatus;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
 import com.realestate.apartment_booking_service.services.interfaces.BookingService;
+import com.realestate.apartment_booking_service.services.interfaces.ReviewService;
 import com.realestate.apartment_booking_service.services.interfaces.UserService;
 import com.realestate.apartment_booking_service.utils.SecurityUtils;
 import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -30,6 +32,7 @@ public class AgentController {
 
     private final ApartmentService apartmentService;
     private final BookingService bookingService;
+    private final ReviewService reviewService;
     private final UserService userService;
 
     @GetMapping("/dashboard")
@@ -129,7 +132,16 @@ public class AgentController {
 
     @GetMapping("/profile")
     public String profile(Model model) {
-        model.addAttribute("agentProfile", currentUser());
+        User agent = currentUser();
+        var agentReviews = reviewService.getAgentReviews(agent.getId());
+        double averageRating = agentReviews.stream()
+                .mapToInt(review -> review.getRating())
+                .average()
+                .orElse(0.0);
+
+        model.addAttribute("agentProfile", agent);
+        model.addAttribute("agentReviewCount", agentReviews.size());
+        model.addAttribute("agentAverageRating", String.format(Locale.US, "%.1f", averageRating));
         return "agent/profile";
     }
 
@@ -137,9 +149,10 @@ public class AgentController {
     public String updateProfile(
             @RequestParam String fullName,
             @RequestParam(required = false) String phone,
-            @RequestParam(required = false) String avatar) {
+            @RequestParam(required = false) String avatar,
+            @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile) {
         User agent = currentUser();
-        userService.updateProfile(agent.getId(), fullName, phone, avatar);
+        userService.updateProfile(agent.getId(), fullName, phone, avatar, avatarFile);
         return "redirect:/agent/profile?updated";
     }
 

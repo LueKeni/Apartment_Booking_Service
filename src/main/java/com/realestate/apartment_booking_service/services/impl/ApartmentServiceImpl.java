@@ -113,6 +113,16 @@ public class ApartmentServiceImpl implements ApartmentService {
     }
 
     @Override
+    public List<Apartment> findRelatedApartments(Long apartmentId, String roomType) {
+        String normalizedRoomType = normalizeBlankToNull(roomType);
+        if (normalizedRoomType != null) {
+            return apartmentRepository.findTop6ByRoomTypeIgnoreCaseAndIdNotAndStatusOrderByIdDesc(
+                    normalizedRoomType, apartmentId, ApartmentStatus.AVAILABLE);
+        }
+        return apartmentRepository.findTop6ByIdNotAndStatusOrderByIdDesc(apartmentId, ApartmentStatus.AVAILABLE);
+    }
+
+    @Override
     public List<Apartment> findByAgent(Long agentId) {
         return apartmentRepository.findByAgentId(agentId);
     }

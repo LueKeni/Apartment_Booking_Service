@@ -9,11 +9,20 @@ import com.realestate.apartment_booking_service.repositories.AgentProfileReposit
 import com.realestate.apartment_booking_service.repositories.UserRepository;
 import com.realestate.apartment_booking_service.services.interfaces.UserService;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -24,6 +33,9 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AgentProfileRepository agentProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private static final List<String> ALLOWED_IMAGE_CONTENT_TYPES =
+            List.of("image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif");
+    private static final String AVATAR_UPLOAD_DIR = "uploads/avatars";
 
     @Override
     public User registerUser(RegisterRequest request) {
@@ -98,7 +110,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateProfile(Long userId, String fullName, String phone, String avatar) {
+    public User updateProfile(Long userId, String fullName, String phone, String avatar, MultipartFile avatarFile) {
         User user = findById(userId);
 
         if (fullName == null || fullName.isBlank()) {
@@ -107,7 +119,14 @@ public class UserServiceImpl implements UserService {
 
         user.setFullName(fullName.trim());
         user.setPhone(normalizeBlankToNull(phone));
-        user.setAvatar(normalizeBlankToNull(avatar));
+
+        String storedAvatarPath = storeAvatarFile(avatarFile);
+        if (storedAvatarPath != null) {
+            user.setAvatar(storedAvatarPath);
+        } else {
+            user.setAvatar(normalizeBlankToNull(avatar));
+        }
+
         return userRepository.save(user);
     }
 
@@ -126,5 +145,56 @@ public class UserServiceImpl implements UserService {
             return null;
         }
         return value.trim();
+    }
+
+    private String storeAvatarFile(MultipartFile avatarFile) {
+        if (avatarFile == null || avatarFile.isEmpty()) {
+            return null;
+        }
+        validateAvatarFile(avatarFile);
+
+        Path uploadPath = Paths.get(AVATAR_UPLOAD_DIR).toAbsolutePath().normalize();
+        try {
+            Files.createDirectories(uploadPath);
+        } catch (IOException exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Cannot prepare avatar upload directory", exception);
+        }
+
+        String extension = resolveExtension(avatarFile.getOriginalFilename());
+        String storedFileName = UUID.randomUUID() + extension;
+        Path targetPath = uploadPath.resolve(storedFileName);
+
+        try {
+            Files.copy(avatarFile.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException exception) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot store avatar file", exception);
+        }
+
+        return "/uploads/avatars/" + storedFileName;
+    }
+
+    private void validateAvatarFile(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported avatar type");
+        }
+        String normalizedType = contentType.toLowerCase(Locale.ROOT);
+        if (!ALLOWED_IMAGE_CONTENT_TYPES.contains(normalizedType)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported avatar type");
+        }
+    }
+
+    private String resolveExtension(String originalFilename) {
+        String cleanedName = StringUtils.cleanPath(originalFilename == null ? "" : originalFilename);
+        int dotIndex = cleanedName.lastIndexOf('.');
+        if (dotIndex < 0 || dotIndex == cleanedName.length() - 1) {
+            return ".jpg";
+        }
+        String extension = cleanedName.substring(dotIndex).toLowerCase(Locale.ROOT);
+        if (extension.length() > 10) {
+            return ".jpg";
+        }
+        return extension;
     }
 }

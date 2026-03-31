@@ -40,4 +40,11 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
             @Param("roomType") String roomType,
             @Param("transactionType") TransactionType transactionType,
             @Param("status") ApartmentStatus status);
+
+    @EntityGraph(attributePaths = {"images"})
+    List<Apartment> findTop6ByRoomTypeIgnoreCaseAndIdNotAndStatusOrderByIdDesc(
+            String roomType, Long apartmentId, ApartmentStatus status);
+
+    @EntityGraph(attributePaths = {"images"})
+    List<Apartment> findTop6ByIdNotAndStatusOrderByIdDesc(Long apartmentId, ApartmentStatus status);
 }

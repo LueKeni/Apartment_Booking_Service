@@ -71,7 +71,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public List<Review> getAgentReviews(Long agentId) {
-        return reviewRepository.findByAgentId(agentId);
+        return reviewRepository.findByAgentIdOrderByCreatedAtDesc(agentId);
     }
 
     @Override

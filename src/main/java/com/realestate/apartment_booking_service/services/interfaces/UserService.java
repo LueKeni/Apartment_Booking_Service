@@ -4,6 +4,7 @@ import com.realestate.apartment_booking_service.dto.RegisterRequest;
 import com.realestate.apartment_booking_service.entities.User;
 import com.realestate.apartment_booking_service.enums.Role;
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserService {
 
@@ -21,5 +22,5 @@ public interface UserService {
 
     User updateUserRole(Long userId, Role role);
 
-    User updateProfile(Long userId, String fullName, String phone, String avatar);
+    User updateProfile(Long userId, String fullName, String phone, String avatar, MultipartFile avatarFile);
 }

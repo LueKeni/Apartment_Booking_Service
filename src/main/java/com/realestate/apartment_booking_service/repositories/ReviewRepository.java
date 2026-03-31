@@ -7,7 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    List<Review> findByAgentId(Long agentId);
+    @EntityGraph(attributePaths = {"user"})
+    List<Review> findByAgentIdOrderByCreatedAtDesc(Long agentId);
 
     @EntityGraph(attributePaths = { "appointment" })
     List<Review> findByUserId(Long userId);

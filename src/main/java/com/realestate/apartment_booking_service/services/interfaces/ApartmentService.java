@@ -16,6 +16,8 @@ public interface ApartmentService {
 
     List<Apartment> search(ApartmentFilterRequest filterRequest);
 
+    List<Apartment> findRelatedApartments(Long apartmentId, String roomType);
+
     List<Apartment> findByAgent(Long agentId);
 
     Apartment updateStatus(Long apartmentId, String status);

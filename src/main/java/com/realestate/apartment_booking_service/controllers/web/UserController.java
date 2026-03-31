@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @Controller
@@ -112,9 +113,10 @@ public class UserController {
     public String updateProfile(
             @RequestParam String fullName,
             @RequestParam(required = false) String phone,
-            @RequestParam(required = false) String avatar) {
+            @RequestParam(required = false) String avatar,
+            @RequestParam(value = "avatarFile", required = false) MultipartFile avatarFile) {
         User user = currentUser();
-        userService.updateProfile(user.getId(), fullName, phone, avatar);
+        userService.updateProfile(user.getId(), fullName, phone, avatar, avatarFile);
         return "redirect:/user/profile?updated";
     }
 

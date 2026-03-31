@@ -17,13 +17,22 @@
         <div th:if="${param.updated}" class="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Profile updated successfully.</div>
 
         <section class="mt-6 glass-card p-6">
-          <form action="/agent/profile" method="post" class="grid gap-4 md:grid-cols-2">
+          <div class="mb-4 rounded-xl bg-slate-50 p-4 text-sm text-slate-700">
+            <p><span class="font-semibold">Rating:</span> <span th:text="${agentAverageRating + ' / 5'}"></span></p>
+            <p class="mt-1"><span class="font-semibold">Total ratings:</span> <span th:text="${agentReviewCount}"></span></p>
+          </div>
+
+          <form action="/agent/profile" method="post" enctype="multipart/form-data" class="grid gap-4 md:grid-cols-2">
             <div class="md:col-span-2">
               <label class="mb-1 block text-sm font-semibold text-slate-700">Email</label>
               <input type="email"
                      th:value="${agentProfile.email}"
                      readonly
                      class="w-full rounded-xl border border-slate-300 bg-slate-100 px-3 py-2 text-slate-600" />
+            </div>
+            <div class="md:col-span-2" th:if="${agentProfile.avatar != null}">
+              <label class="mb-1 block text-sm font-semibold text-slate-700">Current Avatar</label>
+              <img th:src="${agentProfile.avatar}" alt="Agent avatar" class="h-24 w-24 rounded-full border border-slate-200 object-cover" />
             </div>
             <div>
               <label class="mb-1 block text-sm font-semibold text-slate-700">Full Name</label>
@@ -39,11 +48,12 @@
                      class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2" />
             </div>
             <div class="md:col-span-2">
-              <label class="mb-1 block text-sm font-semibold text-slate-700">Avatar URL</label>
-              <input name="avatar"
-                     th:value="${agentProfile.avatar}"
-                     placeholder="https://..."
+              <label class="mb-1 block text-sm font-semibold text-slate-700">Avatar from device</label>
+              <input name="avatarFile"
+                     type="file"
+                     accept="image/*"
                      class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2" />
+              <p class="mt-1 text-xs text-slate-500">Upload a new avatar image from your computer.</p>
             </div>
             <button class="md:col-span-2 rounded-xl bg-tealdeep px-4 py-2 font-semibold text-white">Save Profile</button>
           </form>
