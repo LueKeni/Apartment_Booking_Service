@@ -17,7 +17,6 @@
       <div th:if="${param.error}" class="mt-4 rounded bg-rose-100 px-3 py-2 text-sm text-rose-700">Invalid credentials.</div>
       <div th:if="${param.logout}" class="mt-4 rounded bg-emerald-100 px-3 py-2 text-sm text-emerald-700">Logged out successfully.</div>
       <div th:if="${param.registered}" class="mt-4 rounded bg-emerald-100 px-3 py-2 text-sm text-emerald-700">Registration completed.</div>
-      <div th:if="${param.googleNotConfigured}" class="mt-4 rounded bg-amber-100 px-3 py-2 text-sm text-amber-700">Google Login is not configured yet. Set either spring OAuth variables or application.properties keys google.oauth.client-id and google.oauth.client-secret.</div>
 
       <form action="/auth/login" method="post" class="mt-6 space-y-4">
         <div>
@@ -30,24 +29,6 @@
         </div>
         <button class="w-full rounded bg-slate-900 px-4 py-2 text-white">Sign In</button>
       </form>
-
-      <div class="mt-4">
-        <div class="mb-3 flex items-center gap-3 text-xs uppercase tracking-wide text-slate-400">
-          <span class="h-px flex-1 bg-slate-200"></span>
-          <span>or</span>
-          <span class="h-px flex-1 bg-slate-200"></span>
-        </div>
-        <a href="/auth/google-login"
-           class="flex w-full items-center justify-center gap-2 rounded border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="h-5 w-5" aria-hidden="true">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.22 9.22 3.62l6.88-6.88C35.9 2.36 30.37 0 24 0 14.62 0 6.51 5.38 2.56 13.22l8.05 6.25C12.53 13.2 17.78 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.5 24.55c0-1.66-.15-3.26-.42-4.8H24v9.08h12.65c-.55 2.93-2.2 5.41-4.69 7.08l7.2 5.58C43.63 37.3 46.5 31.5 46.5 24.55z"/>
-            <path fill="#FBBC05" d="M10.61 28.53A14.4 14.4 0 0 1 9.5 24c0-1.57.27-3.09.75-4.53l-8.05-6.25A24 24 0 0 0 0 24c0 3.87.92 7.53 2.56 10.78l8.05-6.25z"/>
-            <path fill="#34A853" d="M24 48c6.37 0 11.72-2.1 15.63-5.7l-7.2-5.58c-2 1.35-4.56 2.15-8.43 2.15-6.22 0-11.47-3.7-13.39-8.97l-8.05 6.25C6.51 42.62 14.62 48 24 48z"/>
-          </svg>
-          Continue with Google
-        </a>
-      </div>
 
       <p class="mt-4 text-sm text-slate-600">No account? <a href="/auth/register" class="text-slate-900 underline">Register</a></p>
     </div>
