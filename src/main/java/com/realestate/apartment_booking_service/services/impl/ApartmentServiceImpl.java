@@ -115,6 +115,7 @@ public class ApartmentServiceImpl implements ApartmentService {
                 keyword,
                 district,
                 roomType,
+                filterRequest.getBedrooms(),
                 filterRequest.getTransactionType(),
                 filterRequest.getStatus());
     }

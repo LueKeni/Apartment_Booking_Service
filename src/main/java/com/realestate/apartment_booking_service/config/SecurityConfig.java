@@ -20,6 +20,7 @@ public class SecurityConfig {
                                 "/",
                                 "/search",
                                 "/apartments/**",
+                                "/api/assistant/apartments",
                                 "/auth/**",
                                 "/momo/**",
                                 "/css/**",

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
-    @EntityGraph(attributePaths = {"user"})
+    @EntityGraph(attributePaths = {"user", "appointment", "appointment.apartment"})
     List<Review> findByAgentIdOrderByCreatedAtDesc(Long agentId);
 
     @EntityGraph(attributePaths = { "appointment" })

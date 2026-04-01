@@ -6,10 +6,12 @@ import com.realestate.apartment_booking_service.entities.Message;
 import com.realestate.apartment_booking_service.services.interfaces.ChatService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "socketio.enabled", havingValue = "true", matchIfMissing = true)
 public class SocketIoChatEventHandler {
 
     private final SocketIOServer socketIOServer;
