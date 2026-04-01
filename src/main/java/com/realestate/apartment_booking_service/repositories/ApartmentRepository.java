@@ -34,7 +34,8 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
                               and (:district is null or lower(a.locationDistrict) = lower(:district))
                               and (:roomType is null or upper(a.roomType) = upper(:roomType))
                               and (:transactionType is null or a.transactionType = :transactionType)
-                              and (:status is null or a.status = :status)
+                                                and ((:status is null and a.status in (com.realestate.apartment_booking_service.enums.ApartmentStatus.AVAILABLE, com.realestate.apartment_booking_service.enums.ApartmentStatus.COMING_SOON))
+                                                        or (:status is not null and a.status = :status))
                             order by coalesce(a.boostPoints, 0) desc, coalesce(ap.averageRating, 0.0) desc, a.id desc
                         """)
         List<Apartment> search(

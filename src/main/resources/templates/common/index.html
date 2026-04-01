@@ -114,7 +114,11 @@
             <img th:src="${apartment.primaryImageUrl}" alt="Apartment image" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
             <div class="absolute left-3 top-3 flex gap-2">
               <span class="rounded-full bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-800" th:text="${apartment.transactionType == 'SALE' ? 'Sale' : 'Rent'}"></span>
-              <span class="rounded-full bg-midnight-700/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white" th:text="${apartment.status}"></span>
+              <span class="rounded-full bg-midnight-700/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white"
+                    th:text="${apartment.status != null and apartment.status.name() == 'COMING_SOON' ? 'COMING SOON' : apartment.status}"></span>
+              <span th:if="${apartment.boostPoints != null and apartment.boostPoints > 0}"
+                    class="rounded-full bg-amber-400/95 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-950"
+                    th:text="${'Boost ' + apartment.boostPoints + ' pts'}"></span>
             </div>
           </div>
 

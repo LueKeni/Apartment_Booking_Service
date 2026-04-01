@@ -43,7 +43,8 @@ public class AdminController {
 
         long hiddenListings = apartmentRepository.findAll()
                 .stream()
-                .filter(apartment -> apartment.getStatus() == ApartmentStatus.HIDDEN)
+            .filter(apartment -> apartment.getStatus() == ApartmentStatus.COMING_SOON
+                || apartment.getStatus() == ApartmentStatus.HIDDEN)
                 .count();
 
         model.addAttribute("userCount", userRepository.count());

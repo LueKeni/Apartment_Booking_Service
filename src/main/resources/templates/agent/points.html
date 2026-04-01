@@ -103,6 +103,76 @@
             </button>
           </form>
         </section>
+
+        <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-slate-900">Top-up History</h2>
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Latest 20</span>
+          </div>
+
+          <div th:if="${#lists.isEmpty(topupHistory)}" class="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
+            No top-up history yet.
+          </div>
+
+          <div th:if="${!#lists.isEmpty(topupHistory)}" class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">Time</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">Order</th>
+                  <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-600">Amount</th>
+                  <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-600">Points</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 bg-white text-sm">
+                <tr th:each="topup : ${topupHistory}">
+                  <td class="px-4 py-3 text-slate-600" th:text="${#temporals.format(topup.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                  <td class="px-4 py-3 font-medium text-slate-900" th:text="${topup.orderId}"></td>
+                  <td class="px-4 py-3 text-right text-slate-700" th:text="${topup.amount}"></td>
+                  <td class="px-4 py-3 text-right font-semibold text-indigo-700" th:text="${'+' + topup.points}"></td>
+                  <td class="px-4 py-3">
+                    <span th:classappend="${topup.status.name() == 'SUCCESS' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' : (topup.status.name() == 'PENDING' ? 'bg-amber-50 text-amber-700 ring-amber-600/20' : 'bg-rose-50 text-rose-700 ring-rose-600/20')}"
+                          class="inline-flex rounded-md px-2 py-1 text-xs font-semibold ring-1 ring-inset"
+                          th:text="${topup.status}"></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-slate-900">Point Usage History</h2>
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Latest 20</span>
+          </div>
+
+          <div th:if="${#lists.isEmpty(usageHistory)}" class="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">
+            No point usage history yet.
+          </div>
+
+          <div th:if="${!#lists.isEmpty(usageHistory)}" class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">Time</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">Type</th>
+                  <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-600">Listing</th>
+                  <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-600">Points Used</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 bg-white text-sm">
+                <tr th:each="usage : ${usageHistory}">
+                  <td class="px-4 py-3 text-slate-600" th:text="${#temporals.format(usage.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                  <td class="px-4 py-3 text-slate-700" th:text="${usage.type}"></td>
+                  <td class="px-4 py-3 font-medium text-slate-900" th:text="${usage.apartment != null ? usage.apartment.title : 'N/A'}"></td>
+                  <td class="px-4 py-3 text-right font-semibold text-rose-700" th:text="${'-' + usage.points}"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
       </div>
     </div>
   </main>

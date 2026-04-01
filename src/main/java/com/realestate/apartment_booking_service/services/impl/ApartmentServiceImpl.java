@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +55,8 @@ public class ApartmentServiceImpl implements ApartmentService {
         User agent = userRepository.findById(agentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Agent not found"));
 
+        validateListingPayload(apartment);
+        normalizeLocationFields(apartment);
         apartment.setId(null);
         apartment.setAgent(agent);
         apartment.setImages(storeImageFiles(imageFiles));
@@ -317,6 +320,29 @@ public class ApartmentServiceImpl implements ApartmentService {
         if (!apartment.getAgent().getId().equals(agentId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No access to this apartment");
         }
+    }
+
+    private void validateListingPayload(Apartment apartment) {
+        if (apartment == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid listing payload");
+        }
+        if (normalizeBlankToNull(apartment.getTitle()) == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title is required");
+        }
+        if (apartment.getTransactionType() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction type is required");
+        }
+        if (apartment.getPrice() == null || apartment.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Price must be greater than 0");
+        }
+        if (apartment.getArea() == null || apartment.getArea() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Area must be greater than 0");
+        }
+        if (normalizeBlankToNull(apartment.getLocationAddress()) == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Address is required");
+        }
+
+        apartment.setTitle(normalizeBlankToNull(apartment.getTitle()));
     }
 
     private String normalizeBlankToNull(String value) {

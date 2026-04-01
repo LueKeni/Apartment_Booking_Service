@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -123,6 +124,7 @@ public class Apartment {
 
     @ElementCollection
     @CollectionTable(name = "apartment_images", joinColumns = @JoinColumn(name = "apartment_id"))
+    @OrderColumn(name = "image_order")
     @Column(name = "image_url", nullable = false, length = 500)
     @Default
     private List<String> images = new ArrayList<>();

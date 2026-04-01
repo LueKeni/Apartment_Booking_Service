@@ -36,9 +36,6 @@ public class MainController {
 
     @GetMapping("/")
     public String home(@ModelAttribute ApartmentFilterRequest filterRequest, Model model) {
-        if (filterRequest.getStatus() == null) {
-            filterRequest.setStatus(ApartmentStatus.AVAILABLE);
-        }
         Long currentUserId = resolveCurrentUserId();
         
         // Fetch Top Agents for ranking (Top 5)

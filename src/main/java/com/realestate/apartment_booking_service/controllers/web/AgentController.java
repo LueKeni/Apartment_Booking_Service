@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Controller
 @RequiredArgsConstructor
@@ -61,7 +63,8 @@ public class AgentController {
                 .count();
         long hiddenListings = apartments
                 .stream()
-                .filter(apartment -> apartment.getStatus() == ApartmentStatus.HIDDEN)
+            .filter(apartment -> apartment.getStatus() == ApartmentStatus.COMING_SOON
+                || apartment.getStatus() == ApartmentStatus.HIDDEN)
                 .count();
 
         model.addAttribute("appointmentCount", appointments.size());
@@ -96,8 +99,16 @@ public class AgentController {
             @ModelAttribute Apartment apartment,
             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles) {
         User agent = currentUser();
-        apartmentService.createApartment(apartment, agent.getId(), imageFiles);
-        return "redirect:/agent/listings?saved";
+        try {
+            apartmentService.createApartment(apartment, agent.getId(), imageFiles);
+            return "redirect:/agent/listings?saved";
+        } catch (ResponseStatusException ex) {
+            return "redirect:/agent/listings?saveError=invalid";
+        } catch (DataIntegrityViolationException ex) {
+            return "redirect:/agent/listings?saveError=invalid";
+        } catch (DataAccessException ex) {
+            return "redirect:/agent/listings?saveError=invalid";
+        }
     }
 
     @PostMapping("/listings/{id}")
@@ -106,15 +117,31 @@ public class AgentController {
             @ModelAttribute Apartment apartment,
             @RequestParam(value = "imageFiles", required = false) List<MultipartFile> imageFiles) {
         User agent = currentUser();
-        apartmentService.updateApartment(id, apartment, agent.getId(), imageFiles);
-        return "redirect:/agent/listings?updated";
+        try {
+            apartmentService.updateApartment(id, apartment, agent.getId(), imageFiles);
+            return "redirect:/agent/listings?updated";
+        } catch (ResponseStatusException ex) {
+            return "redirect:/agent/listings?updateError=invalid";
+        } catch (DataIntegrityViolationException ex) {
+            return "redirect:/agent/listings?updateError=invalid";
+        } catch (DataAccessException ex) {
+            return "redirect:/agent/listings?updateError=invalid";
+        }
     }
 
     @PostMapping("/listings/{id}/visibility")
-    public String updateListingVisibility(@PathVariable Long id, @RequestParam boolean hidden) {
+        public String updateListingVisibility(
+            @PathVariable Long id,
+            @RequestParam(required = false) Boolean comingSoon,
+            @RequestParam(required = false) Boolean hidden) {
         User agent = currentUser();
-        apartmentService.updateStatusForAgent(id, hidden ? ApartmentStatus.HIDDEN : ApartmentStatus.AVAILABLE,
-                agent.getId());
+        boolean setComingSoon = comingSoon != null
+            ? comingSoon
+            : (hidden != null && hidden);
+        apartmentService.updateStatusForAgent(
+            id,
+            setComingSoon ? ApartmentStatus.COMING_SOON : ApartmentStatus.AVAILABLE,
+            agent.getId());
         return "redirect:/agent/listings?statusUpdated";
     }
 

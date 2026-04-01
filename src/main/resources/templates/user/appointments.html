@@ -83,6 +83,12 @@
               </td>
               <td class="px-6 py-4 text-right">
                 <div class="flex items-center justify-end gap-2">
+                  <a th:if="${appointment.status.name() == 'CONFIRMED'}"
+                     th:href="@{/chat(recipientId=${appointment.agent.id},apartmentId=${appointment.apartment.id})}"
+                     class="rounded-md bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-700 shadow-sm ring-1 ring-inset ring-blue-300 hover:bg-blue-100">
+                    Chat
+                  </a>
+
                   <form th:if="${appointment.status.name() == 'PENDING'}" th:action="@{/user/appointments/{id}/cancel(id=${appointment.id})}" method="post">
                     <button class="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-red-700 shadow-sm ring-1 ring-inset ring-red-300 hover:bg-red-50">Cancel</button>
                   </form>

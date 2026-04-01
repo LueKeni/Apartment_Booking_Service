@@ -1,0 +1,14 @@
+# Copy this file to oauth-local.properties in the project root, then fill real values.
+# Do NOT commit oauth-local.properties.
+
+# Google OAuth2
+# Redirect URI must match your running port.
+# If running on 8080: http://localhost:8080/login/oauth2/code/google
+# If running on 8086: http://localhost:8086/login/oauth2/code/google
+
+google.oauth.client-id=your-google-client-id
+google.oauth.client-secret=your-google-client-secret
+
+# Optional Facebook OAuth2
+# facebook.oauth.client-id=your-facebook-client-id
+# facebook.oauth.client-secret=your-facebook-client-secret
