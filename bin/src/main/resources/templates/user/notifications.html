@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/ui-head :: uiHead('My Notifications')}"></head>
+<body>
+  <div th:replace="~{fragments/header :: siteHeader}"></div>
+
+  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
+    <section class="glass-card p-6">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 class="text-3xl font-semibold text-ink">My Notifications</h1>
+          <p class="mt-1 text-sm text-slate-600">Unread: <span th:text="${unreadNotificationCount}">0</span></p>
+        </div>
+        <form th:if="${unreadNotificationCount > 0}" action="/user/notifications/read-all" method="post">
+          <button class="rounded-xl bg-tealdeep px-4 py-2 text-sm font-semibold text-white">Mark all as read</button>
+        </form>
+      </div>
+    </section>
+
+    <div th:replace="~{fragments/user-tabs :: userTabs('notifications')}"></div>
+
+    <div th:if="${param.updated}" class="mb-5 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Notification marked as read.</div>
+
+    <section class="space-y-3">
+      <article th:if="${#lists.isEmpty(notifications)}" class="glass-card p-5 text-sm text-slate-500">No notifications available.</article>
+
+      <article th:each="notification : ${notifications}" class="glass-card p-5">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-semibold text-ink" th:text="${notification.title}"></h2>
+            <p class="mt-1 text-sm text-slate-600" th:text="${notification.message}"></p>
+            <div class="mt-2 flex flex-wrap gap-2">
+              <span class="pill" th:text="${notification.type}"></span>
+              <span class="pill" th:text="${#temporals.format(notification.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+              <span class="pill" th:text="${notification.isRead ? 'READ' : 'UNREAD'}"></span>
+            </div>
+          </div>
+
+          <form th:if="${notification.isRead == false}" th:action="@{/user/notifications/{id}/read(id=${notification.id})}" method="post">
+            <button class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700">Mark as read</button>
+          </form>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

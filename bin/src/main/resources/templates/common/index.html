@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/ui-head :: uiHead('VistaNest Home')}"></head>
+<body>
+  <div th:replace="~{fragments/header :: siteHeader}"></div>
+
+  <main class="page-enter mx-auto max-w-7xl px-4 py-10">
+    <section class="glass-card overflow-hidden p-8">
+      <div class="grid items-center gap-6 lg:grid-cols-2">
+        <div>
+          <h1 class="text-4xl font-semibold leading-tight text-ink">Find apartments. Chat instantly. Book visits confidently.</h1>
+          <p class="mt-3 max-w-xl text-slate-600">A modern booking workspace for tenants, agents, and admins with real-time coordination.</p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a href="/#listing-search" class="rounded-full bg-tealdeep px-5 py-2.5 font-semibold text-white">Explore Listings</a>
+            <a href="/auth/register" class="rounded-full border border-slate-300 bg-white px-5 py-2.5 font-semibold text-slate-700">Create Account</a>
+          </div>
+        </div>
+        <div class="rounded-3xl bg-gradient-to-br from-teallite/30 to-coral/20 p-6">
+          <p class="text-sm uppercase tracking-wider text-slate-600">Platform Modes</p>
+          <div class="mt-4 space-y-3">
+            <div class="rounded-2xl bg-white/80 p-4">
+              <p class="font-semibold">User Workspace</p>
+              <p class="text-sm text-slate-600">Favorites, appointments, review flow</p>
+            </div>
+            <div class="rounded-2xl bg-white/80 p-4">
+              <p class="font-semibold">Agent Workspace</p>
+              <p class="text-sm text-slate-600">Listing operations, booking moderation, schedule planner</p>
+            </div>
+            <div class="rounded-2xl bg-white/80 p-4">
+              <p class="font-semibold">Admin Workspace</p>
+              <p class="text-sm text-slate-600">User moderation, listing control, chat log oversight</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="listing-search" class="mt-8 glass-card p-5">
+      <form action="/" method="get" class="grid gap-3 md:grid-cols-6">
+        <input name="keyword"
+               placeholder="Search product name or address"
+               th:value="${filter != null ? filter.keyword : ''}"
+               class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <input name="district"
+               placeholder="District"
+               th:value="${filter != null ? filter.district : ''}"
+               class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <select name="roomType" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
+          <option value="">Room type</option>
+          <option value="STUDIO" th:selected="${filter != null and filter.roomType == 'STUDIO'}">Studio</option>
+          <option value="1BR" th:selected="${filter != null and filter.roomType == '1BR'}">1BR</option>
+          <option value="2BR" th:selected="${filter != null and filter.roomType == '2BR'}">2BR</option>
+          <option value="3BR" th:selected="${filter != null and filter.roomType == '3BR'}">3BR</option>
+          <option value="DUPLEX" th:selected="${filter != null and filter.roomType == 'DUPLEX'}">Duplex</option>
+        </select>
+        <select name="transactionType" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
+          <option value="">Transaction Type</option>
+          <option value="SALE" th:selected="${filter != null and filter.transactionType != null and filter.transactionType.name() == 'SALE'}">Sale</option>
+          <option value="RENT" th:selected="${filter != null and filter.transactionType != null and filter.transactionType.name() == 'RENT'}">Rent</option>
+        </select>
+        <select name="status" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
+          <option value="">Status</option>
+          <option value="AVAILABLE" th:selected="${filter != null and filter.status != null and filter.status.name() == 'AVAILABLE'}">Available</option>
+          <option value="PENDING" th:selected="${filter != null and filter.status != null and filter.status.name() == 'PENDING'}">Pending</option>
+        </select>
+        <button class="rounded-xl bg-ink px-4 py-2 font-semibold text-white">Search</button>
+      </form>
+    </section>
+
+    <section class="mt-8">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-2xl font-semibold text-ink">Listings</h2>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <article th:each="apartment : ${apartments}" class="glass-card p-5">
+          <img th:if="${!#lists.isEmpty(apartment.images)}"
+               th:src="${apartment.images[0]}"
+               alt="Apartment image"
+               class="mb-3 h-40 w-full rounded-2xl object-cover" />
+          <h3 class="text-lg font-semibold text-ink" th:text="${apartment.title}"></h3>
+          <p class="mt-1 text-sm text-slate-600" th:text="${apartment.locationDistrict}"></p>
+          <p class="mt-3 text-xl font-bold text-tealdeep" th:text="${apartment.price}"></p>
+          <a th:href="@{/apartments/{id}(id=${apartment.id})}" class="mt-4 inline-block rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">View Details</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div th:replace="~{fragments/footer :: siteFooter}"></div>
+</body>
+</html>

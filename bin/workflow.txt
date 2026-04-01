@@ -1,0 +1,22 @@
+WORKFLOWS & PAGE LOGIC:
+
+1. Guest/User:
+   - Home -> Search Results -> Apartment Details.
+   - Details Page: View AgentProfile info. Click "Chat" (Opens Socket.io ChatBox) or "Book" (Select time from AgentSchedule).
+   - User Dashboard: View 'My Favorites' and 'My Appointments' (Can cancel if PENDING).
+   - Review: Only allowed after Appointment status is COMPLETED.
+
+2. Agent (CTV):
+   - Dashboard: Stats (Successful deals, response rate).
+   - Listings: Create/Update own apartments.
+   - Bookings: Approve/Reject/Complete appointments. Update AgentNote.
+   - Schedule: Update available dates/slots.
+
+3. Admin:
+   - User Mgmt: Verify Agent status or Ban users.
+   - Listing Mgmt: Approve/Hide any apartment.
+   - System Overview: Access all appointments and chat logs for moderation.
+
+4. Chat Real-time:
+   - Persistent chat connection using WebSocket/Socket.io.
+   - Contextual chat: Conversation is linked to a specific Apartment.
