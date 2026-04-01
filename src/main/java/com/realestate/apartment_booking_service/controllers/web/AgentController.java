@@ -41,6 +41,9 @@ public class AgentController {
     private final ReviewService reviewService;
     private final UserService userService;
     private final MomoService momoService;
+    private final NotificationService notificationService;
+    private final PointTopUpRepository pointTopUpRepository;
+    private final PointUsageRepository pointUsageRepository;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {

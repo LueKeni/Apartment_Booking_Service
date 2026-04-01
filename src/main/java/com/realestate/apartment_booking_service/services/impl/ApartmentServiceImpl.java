@@ -4,12 +4,15 @@ import com.realestate.apartment_booking_service.dto.ApartmentFilterRequest;
 import com.realestate.apartment_booking_service.entities.Apartment;
 import com.realestate.apartment_booking_service.entities.ApartmentLike;
 import com.realestate.apartment_booking_service.entities.Favorite;
+import com.realestate.apartment_booking_service.entities.PointUsage;
 import com.realestate.apartment_booking_service.entities.User;
 import com.realestate.apartment_booking_service.enums.ApartmentStatus;
+import com.realestate.apartment_booking_service.enums.PointUsageType;
 import com.realestate.apartment_booking_service.repositories.ApartmentLikeRepository;
 import com.realestate.apartment_booking_service.repositories.AppointmentRepository;
 import com.realestate.apartment_booking_service.repositories.ApartmentRepository;
 import com.realestate.apartment_booking_service.repositories.FavoriteRepository;
+import com.realestate.apartment_booking_service.repositories.PointUsageRepository;
 import com.realestate.apartment_booking_service.repositories.ReviewRepository;
 import com.realestate.apartment_booking_service.repositories.UserRepository;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
@@ -41,6 +44,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     private final AppointmentRepository appointmentRepository;
     private final FavoriteRepository favoriteRepository;
     private final ReviewRepository reviewRepository;
+    private final PointUsageRepository pointUsageRepository;
     private static final List<String> ALLOWED_IMAGE_CONTENT_TYPES = List.of("image/jpeg", "image/jpg", "image/png",
             "image/webp", "image/gif");
     private static final String UPLOAD_DIR = "uploads";
@@ -184,6 +188,12 @@ public class ApartmentServiceImpl implements ApartmentService {
 
         userRepository.save(agent);
         apartmentRepository.save(apartment);
+        pointUsageRepository.save(PointUsage.builder()
+                .user(agent)
+                .apartment(apartment)
+                .points(points)
+                .type(PointUsageType.BOOST)
+                .build());
     }
 
     @Override
