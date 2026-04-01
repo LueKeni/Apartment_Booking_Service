@@ -6,6 +6,7 @@ import com.realestate.apartment_booking_service.enums.ApartmentStatus;
 import com.realestate.apartment_booking_service.repositories.AgentProfileRepository;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
 import com.realestate.apartment_booking_service.services.interfaces.ReviewService;
+import java.time.LocalDate;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -61,6 +62,7 @@ public class MainController {
                 agentProfileRepository.findByUserId(apartment.getAgent().getId()).orElse(null));
         model.addAttribute("agentReviewCount", agentReviews.size());
         model.addAttribute("agentAverageRating", String.format(Locale.US, "%.1f", averageRating));
+        model.addAttribute("today", LocalDate.now());
         return "common/details";
     }
 }
