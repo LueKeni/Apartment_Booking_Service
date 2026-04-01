@@ -35,7 +35,9 @@ public class SecurityConfig {
                         .requestMatchers("/agent/**").hasRole("AGENT")
                         .requestMatchers("/user/**").hasAnyRole("USER", "AGENT", "ADMIN")
                         .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated())
+                        
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/auth/login")

@@ -155,7 +155,7 @@
             <div class="mt-auto border-t border-slate-100 pt-4">
               <div class="mb-4">
                 <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Price</p>
-                <p class="text-2xl font-extrabold text-[#0b1437]" th:text="${apartment.price}"></p>
+                <p class="text-2xl font-extrabold text-[#0b1437]" th:text="'$' + ${#numbers.formatDecimal(apartment.price, 1, 'COMMA', 0, 'POINT')}"></p>
               </div>
               <div class="flex flex-wrap items-center gap-2">
                 <a th:href="@{/apartments/{id}(id=${apartment.id})}" class="flex-1 text-center rounded-[1rem] bg-[#0b1437] px-4 py-2.5 text-xs font-bold text-white shadow-md hover:bg-[#1a234b] transition-all">Details</a>
