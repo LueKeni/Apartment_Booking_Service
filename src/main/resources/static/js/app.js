@@ -440,6 +440,29 @@ function initComparison() {
 
   let compareList = [];
 
+  const escapeHtml = (value) =>
+    String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+
+  const formatComparisonPrice = (value) => {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) {
+      return escapeHtml(value || "N/A");
+    }
+    return `${numeric.toLocaleString("vi-VN")} VND`;
+  };
+
+  const formatComparisonArea = (value) => {
+    if (value === null || value === undefined || value === "") {
+      return "N/A";
+    }
+    return `${escapeHtml(value)} m2`;
+  };
+
   const updateUI = () => {
     const count = compareList.length;
     countLabel.textContent = `${count}/3`;
@@ -491,43 +514,45 @@ function initComparison() {
   const renderComparisonTable = () => {
     if (compareList.length < 2) return;
 
+    const tableMinWidth = 220 + compareList.length * 240;
+
     let html = `
       <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse min-w-[600px]">
+        <table class="w-full table-fixed border-collapse text-left" style="min-width: ${tableMinWidth}px;">
           <thead>
             <tr>
-              <th class="p-3 bg-slate-50 border border-slate-200 w-1/4">Feature</th>
+              <th class="w-[220px] border border-slate-200 bg-slate-50 p-4 align-top">Feature</th>
               ${compareList.map(item => `
-                <th class="p-3 bg-slate-50 border border-slate-200">
-                  <div class="flex flex-col items-center text-center">
-                    <img src="${item.image}" class="w-32 h-20 rounded-lg object-cover mb-2" />
-                    <p class="font-bold text-ink">${item.title}</p>
-                    <p class="text-tealdeep font-bold mt-1">${item.price}</p>
+                <th class="border border-slate-200 bg-slate-50 p-4 align-top">
+                  <div class="mx-auto flex w-[220px] max-w-full flex-col items-center text-center">
+                    <img src="${escapeHtml(item.image)}" class="mb-3 h-24 w-full rounded-lg object-cover" alt="${escapeHtml(item.title)}" />
+                    <p class="break-words text-base font-bold leading-snug text-ink">${escapeHtml(item.title)}</p>
+                    <p class="mt-2 text-lg font-bold text-tealdeep">${formatComparisonPrice(item.price)}</p>
                   </div>
                 </th>
-              `).join('')}
+              `).join("")}
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td class="p-3 border border-slate-200 font-semibold bg-slate-50">District</td>
-              ${compareList.map(item => `<td class="p-3 border border-slate-200 text-center">${item.district || "N/A"}</td>`).join('')}
+              <td class="border border-slate-200 bg-slate-50 p-4 font-semibold">District</td>
+              ${compareList.map(item => `<td class="border border-slate-200 p-4 text-center break-words">${escapeHtml(item.district || "N/A")}</td>`).join("")}
             </tr>
             <tr>
-              <td class="p-3 border border-slate-200 font-semibold bg-slate-50">Room Type</td>
-              ${compareList.map(item => `<td class="p-3 border border-slate-200 text-center">${item.type || "N/A"}</td>`).join('')}
+              <td class="border border-slate-200 bg-slate-50 p-4 font-semibold">Room Type</td>
+              ${compareList.map(item => `<td class="border border-slate-200 p-4 text-center break-words">${escapeHtml(item.type || "N/A")}</td>`).join("")}
             </tr>
             <tr>
-              <td class="p-3 border border-slate-200 font-semibold bg-slate-50">Area</td>
-              ${compareList.map(item => `<td class="p-3 border border-slate-200 text-center">${item.area || "N/A"} m²</td>`).join('')}
+              <td class="border border-slate-200 bg-slate-50 p-4 font-semibold">Area</td>
+              ${compareList.map(item => `<td class="border border-slate-200 p-4 text-center">${formatComparisonArea(item.area)}</td>`).join("")}
             </tr>
             <tr>
-              <td class="p-3 border border-slate-200 font-semibold bg-slate-50">Action</td>
+              <td class="border border-slate-200 bg-slate-50 p-4 font-semibold">Action</td>
               ${compareList.map(item => `
-                <td class="p-3 border border-slate-200 text-center">
-                  <a href="/apartments/${item.id}" class="inline-block rounded-lg bg-ink px-4 py-2 text-xs font-semibold text-white">View Details</a>
+                <td class="border border-slate-200 p-4 text-center">
+                  <a href="/apartments/${encodeURIComponent(item.id)}" class="inline-block rounded-lg bg-ink px-4 py-2 text-xs font-semibold text-white">View Details</a>
                 </td>
-              `).join('')}
+              `).join("")}
             </tr>
           </tbody>
         </table>

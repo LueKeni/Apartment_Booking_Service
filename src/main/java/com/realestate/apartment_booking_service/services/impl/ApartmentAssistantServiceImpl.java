@@ -80,7 +80,12 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
         ParsedQuery query = parse(normalizedMessage);
         List<Apartment> matches = apartmentRepository.findByStatus(ApartmentStatus.AVAILABLE).stream()
                 .filter(apartment -> matches(apartment, query))
-                .sorted(Comparator.comparing(Apartment::getBoostPoints, Comparator.nullsLast(Comparator.reverseOrder()))
+                .sorted(Comparator.comparing(
+                                (Apartment apartment) -> {
+                                    Long boostPoints = apartment.getBoostPoints();
+                                    return boostPoints != null && boostPoints > 0 ? 0 : 1;
+                                })
+                        .thenComparing(Apartment::getBoostPoints, Comparator.nullsLast(Comparator.reverseOrder()))
                         .thenComparing(Apartment::getId, Comparator.reverseOrder()))
                 .limit(5)
                 .toList();
