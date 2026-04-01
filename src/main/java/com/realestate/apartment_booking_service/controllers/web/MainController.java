@@ -4,9 +4,13 @@ import com.realestate.apartment_booking_service.dto.ApartmentFilterRequest;
 import com.realestate.apartment_booking_service.entities.Apartment;
 import com.realestate.apartment_booking_service.enums.ApartmentStatus;
 import com.realestate.apartment_booking_service.repositories.AgentProfileRepository;
+import com.realestate.apartment_booking_service.repositories.ApartmentLikeRepository;
+import com.realestate.apartment_booking_service.repositories.FavoriteRepository;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
 import com.realestate.apartment_booking_service.services.interfaces.ReviewService;
-import java.time.LocalDate;
+import com.realestate.apartment_booking_service.services.interfaces.UserService;
+import com.realestate.apartment_booking_service.utils.SecurityUtils;
+import java.util.Set;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -22,15 +26,25 @@ public class MainController {
 
     private final ApartmentService apartmentService;
     private final AgentProfileRepository agentProfileRepository;
+    private final ApartmentLikeRepository apartmentLikeRepository;
+    private final FavoriteRepository favoriteRepository;
     private final ReviewService reviewService;
+    private final UserService userService;
 
     @GetMapping("/")
     public String home(@ModelAttribute ApartmentFilterRequest filterRequest, Model model) {
         if (filterRequest.getStatus() == null) {
             filterRequest.setStatus(ApartmentStatus.AVAILABLE);
         }
+        Long currentUserId = resolveCurrentUserId();
+        
+        // Fetch Top Agents for ranking (Top 5)
+        var topAgents = agentProfileRepository.findTopAgents(org.springframework.data.domain.PageRequest.of(0, 5));
+
         model.addAttribute("apartments", apartmentService.search(filterRequest));
         model.addAttribute("filter", filterRequest);
+        model.addAttribute("topAgents", topAgents);
+        model.addAttribute("favoriteApartmentIds", resolveFavoriteApartmentIds(currentUserId));
         return "common/index";
     }
 
@@ -50,19 +64,55 @@ public class MainController {
     @GetMapping("/apartments/{id}")
     public String apartmentDetails(@PathVariable Long id, Model model) {
         Apartment apartment = apartmentService.findById(id);
-        var agentReviews = reviewService.getAgentReviews(apartment.getAgent().getId());
-        double averageRating = agentReviews.stream()
-                .mapToInt(review -> review.getRating())
-                .average()
-                .orElse(0.0);
+        com.realestate.apartment_booking_service.entities.AgentProfile profile = 
+                agentProfileRepository.findByUserId(apartment.getAgent().getId()).orElse(null);
+        
+        double averageRating = (profile != null) ? profile.getAverageRating() : 0.0;
+        int reviewCount = (profile != null) ? profile.getReviewCount() : 0;
+        
+        Long currentUserId = resolveCurrentUserId();
+
+        // Fetch Top Agents Ranking (Top 5)
+        var topAgents = agentProfileRepository.findTopAgents(org.springframework.data.domain.PageRequest.of(0, 5));
+        var bestAgent = topAgents.isEmpty() ? null : topAgents.get(0);
 
         model.addAttribute("apartment", apartment);
         model.addAttribute("relatedApartments", apartmentService.findRelatedApartments(id, apartment.getRoomType()));
-        model.addAttribute("agentProfile",
-                agentProfileRepository.findByUserId(apartment.getAgent().getId()).orElse(null));
-        model.addAttribute("agentReviewCount", agentReviews.size());
+        model.addAttribute("agentProfile", profile);
+        model.addAttribute("agentReviewCount", reviewCount);
         model.addAttribute("agentAverageRating", String.format(Locale.US, "%.1f", averageRating));
-        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("isLiked", currentUserId != null && apartmentService.isLiked(id, currentUserId));
+        model.addAttribute("isFavorite", currentUserId != null && apartmentService.isFavorite(id, currentUserId));
+        
+        model.addAttribute("topAgents", topAgents);
+        model.addAttribute("bestAgent", bestAgent);
+        
         return "common/details";
+    }
+
+    private Long resolveCurrentUserId() {
+        String email = SecurityUtils.getCurrentUserEmail();
+        if (email == null) {
+            return null;
+        }
+        return userService.findByEmail(email).getId();
+    }
+
+    private Set<Long> resolveFavoriteApartmentIds(Long currentUserId) {
+        if (currentUserId == null) {
+            return Set.of();
+        }
+        return favoriteRepository.findByUserIdOrderByCreatedAtDesc(currentUserId).stream()
+                .map(favorite -> favorite.getApartment().getId())
+                .collect(java.util.stream.Collectors.toSet());
+    }
+
+    private Set<Long> resolveLikedApartmentIds(Long currentUserId) {
+        if (currentUserId == null) {
+            return Set.of();
+        }
+        return apartmentLikeRepository.findByUserId(currentUserId).stream()
+                .map(apartmentLike -> apartmentLike.getApartment().getId())
+                .collect(java.util.stream.Collectors.toSet());
     }
 }

@@ -108,6 +108,10 @@ public class Apartment {
     @Default
     private Long boostPoints = 0L;
 
+    @Column
+    @Default
+    private Long likesCount = 0L;
+
     @ElementCollection
     @CollectionTable(name = "apartment_images", joinColumns = @JoinColumn(name = "apartment_id"))
     @Column(name = "image_url", nullable = false, length = 500)

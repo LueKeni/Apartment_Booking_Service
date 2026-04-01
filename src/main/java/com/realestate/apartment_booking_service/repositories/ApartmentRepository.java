@@ -19,12 +19,13 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
     @EntityGraph(attributePaths = {"agent", "images"})
     List<Apartment> findByAgentId(Long agentId);
 
-    @EntityGraph(attributePaths = {"agent", "images"})
+    @EntityGraph(attributePaths = {"agent", "images", "agent.agentProfile"})
     List<Apartment> findByStatus(ApartmentStatus status);
 
-    @EntityGraph(attributePaths = {"agent", "images"})
+    @EntityGraph(attributePaths = {"agent", "images", "agent.agentProfile"})
     @Query("""
                 select a from Apartment a
+                left join a.agent.agentProfile ap
                 where (:keyword is null
                        or lower(a.title) like lower(concat('%', :keyword, '%'))
                        or lower(a.locationAddress) like lower(concat('%', :keyword, '%'))
@@ -33,7 +34,7 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
                   and (:roomType is null or upper(a.roomType) = upper(:roomType))
                   and (:transactionType is null or a.transactionType = :transactionType)
                   and (:status is null or a.status = :status)
-                order by coalesce(a.boostPoints, 0) desc, a.id desc
+                order by coalesce(a.boostPoints, 0) desc, coalesce(ap.averageRating, 0.0) desc, a.id desc
             """)
     List<Apartment> search(
             @Param("keyword") String keyword,

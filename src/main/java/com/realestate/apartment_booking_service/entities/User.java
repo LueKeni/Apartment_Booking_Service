@@ -61,6 +61,9 @@ public class User {
     @Column(nullable = false)
     private Long points;
 
+    @jakarta.persistence.OneToOne(mappedBy = "user", fetch = jakarta.persistence.FetchType.LAZY)
+    private AgentProfile agentProfile;
+
     @PrePersist
     public void prePersist() {
         if (createdAt == null) {

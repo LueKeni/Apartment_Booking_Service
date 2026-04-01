@@ -137,6 +137,8 @@ public class UserServiceImpl implements UserService {
                 .activeListings(0)
                 .successDeals(0)
                 .verifiedStatus(false)
+                .averageRating(0.0)
+                .reviewCount(0)
                 .build();
     }
 

@@ -2,14 +2,14 @@ package com.realestate.apartment_booking_service.services.impl;
 
 import com.realestate.apartment_booking_service.dto.ApartmentFilterRequest;
 import com.realestate.apartment_booking_service.entities.Apartment;
-import com.realestate.apartment_booking_service.entities.PointUsage;
+import com.realestate.apartment_booking_service.entities.ApartmentLike;
+import com.realestate.apartment_booking_service.entities.Favorite;
 import com.realestate.apartment_booking_service.entities.User;
 import com.realestate.apartment_booking_service.enums.ApartmentStatus;
-import com.realestate.apartment_booking_service.enums.PointUsageType;
+import com.realestate.apartment_booking_service.repositories.ApartmentLikeRepository;
 import com.realestate.apartment_booking_service.repositories.AppointmentRepository;
 import com.realestate.apartment_booking_service.repositories.ApartmentRepository;
 import com.realestate.apartment_booking_service.repositories.FavoriteRepository;
-import com.realestate.apartment_booking_service.repositories.PointUsageRepository;
 import com.realestate.apartment_booking_service.repositories.ReviewRepository;
 import com.realestate.apartment_booking_service.repositories.UserRepository;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
@@ -37,10 +37,10 @@ public class ApartmentServiceImpl implements ApartmentService {
 
     private final ApartmentRepository apartmentRepository;
     private final UserRepository userRepository;
+    private final ApartmentLikeRepository apartmentLikeRepository;
     private final AppointmentRepository appointmentRepository;
     private final FavoriteRepository favoriteRepository;
     private final ReviewRepository reviewRepository;
-    private final PointUsageRepository pointUsageRepository;
     private static final List<String> ALLOWED_IMAGE_CONTENT_TYPES =
             List.of("image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif");
     private static final String UPLOAD_DIR = "uploads";
@@ -56,8 +56,8 @@ public class ApartmentServiceImpl implements ApartmentService {
         if (apartment.getStatus() == null) {
             apartment.setStatus(ApartmentStatus.AVAILABLE);
         }
-        if (apartment.getBoostPoints() == null) {
-            apartment.setBoostPoints(0L);
+        if (apartment.getLikesCount() == null) {
+            apartment.setLikesCount(0L);
         }
 
         return apartmentRepository.save(apartment);
@@ -156,6 +156,7 @@ public class ApartmentServiceImpl implements ApartmentService {
 
         reviewRepository.deleteByAppointmentApartmentId(apartmentId);
         appointmentRepository.deleteByApartmentId(apartmentId);
+        apartmentLikeRepository.deleteByApartmentId(apartmentId);
         favoriteRepository.deleteByApartmentId(apartmentId);
         apartmentRepository.delete(apartment);
     }
@@ -181,13 +182,63 @@ public class ApartmentServiceImpl implements ApartmentService {
 
         userRepository.save(agent);
         apartmentRepository.save(apartment);
-        pointUsageRepository.save(
-                PointUsage.builder()
-                        .user(agent)
-                        .apartment(apartment)
-                        .points(points)
-                        .type(PointUsageType.BOOST)
-                        .build());
+    }
+
+    @Override
+    public boolean toggleFavorite(Long apartmentId, Long userId) {
+        Apartment apartment = findById(apartmentId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        boolean favoriteAdded;
+        if (favoriteRepository.existsByUserIdAndApartmentId(userId, apartmentId)) {
+            favoriteRepository.deleteByUserIdAndApartmentId(userId, apartmentId);
+            favoriteAdded = false;
+        } else {
+            Favorite favorite = Favorite.builder()
+                    .user(user)
+                    .apartment(apartment)
+                    .build();
+            favoriteRepository.save(favorite);
+            favoriteAdded = true;
+        }
+        return favoriteAdded;
+    }
+
+    @Override
+    @Transactional
+    public boolean isFavorite(Long apartmentId, Long userId) {
+        return favoriteRepository.existsByUserIdAndApartmentId(userId, apartmentId);
+    }
+
+    @Override
+    public boolean toggleLike(Long apartmentId, Long userId) {
+        Apartment apartment = findById(apartmentId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        boolean liked;
+        if (apartmentLikeRepository.existsByUserIdAndApartmentId(userId, apartmentId)) {
+            apartmentLikeRepository.deleteByUserIdAndApartmentId(userId, apartmentId);
+            liked = false;
+        } else {
+            ApartmentLike apartmentLike = ApartmentLike.builder()
+                    .user(user)
+                    .apartment(apartment)
+                    .build();
+            apartmentLikeRepository.save(apartmentLike);
+            liked = true;
+        }
+
+        apartment.setLikesCount(apartmentLikeRepository.countByApartmentId(apartmentId));
+        apartmentRepository.save(apartment);
+        return liked;
+    }
+
+    @Override
+    @Transactional
+    public boolean isLiked(Long apartmentId, Long userId) {
+        return apartmentLikeRepository.existsByUserIdAndApartmentId(userId, apartmentId);
     }
 
     private List<String> storeImageFiles(List<MultipartFile> imageFiles) {

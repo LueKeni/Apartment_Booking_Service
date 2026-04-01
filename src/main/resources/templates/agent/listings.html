@@ -37,6 +37,8 @@
         </select>
         <input name="price" type="number" step="0.01" placeholder="Price" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
         <input name="area" type="number" step="0.1" placeholder="Area m2" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <input name="bedrooms" type="number" placeholder="Bedrooms" class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <input name="bathrooms" type="number" placeholder="Bathrooms" class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
         <select name="roomType" required class="rounded-xl border border-slate-300 bg-white px-3 py-2">
           <option value="">Room type</option>
           <option value="STUDIO">Studio</option>
@@ -82,6 +84,8 @@
         </select>
         <input name="price" type="number" step="0.01" th:value="${editApartment.price}" placeholder="Price" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
         <input name="area" type="number" step="0.1" th:value="${editApartment.area}" placeholder="Area m2" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <input name="bedrooms" type="number" th:value="${editApartment.bedrooms}" placeholder="Bedrooms" class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
+        <input name="bathrooms" type="number" th:value="${editApartment.bathrooms}" placeholder="Bathrooms" class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
         <select name="roomType" required class="rounded-xl border border-slate-300 bg-white px-3 py-2">
           <option value="">Room type</option>
           <option value="STUDIO" th:selected="${editApartment.roomType == 'STUDIO'}">Studio</option>
