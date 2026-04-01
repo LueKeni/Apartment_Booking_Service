@@ -76,12 +76,6 @@ public class Apartment {
     @Column
     private Double longitude;
 
-    @Column
-    private Integer bedrooms;
-
-    @Column
-    private Integer bathrooms;
-
     @Column(length = 120)
     private String furnitureStatus;
 

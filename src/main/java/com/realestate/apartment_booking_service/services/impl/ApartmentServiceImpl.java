@@ -79,8 +79,6 @@ public class ApartmentServiceImpl implements ApartmentService {
         apartment.setRoomType(payload.getRoomType());
         apartment.setLatitude(payload.getLatitude());
         apartment.setLongitude(payload.getLongitude());
-        apartment.setBedrooms(payload.getBedrooms());
-        apartment.setBathrooms(payload.getBathrooms());
         apartment.setFurnitureStatus(payload.getFurnitureStatus());
         apartment.setDoorDirection(payload.getDoorDirection());
         apartment.setBalconyDirection(payload.getBalconyDirection());
@@ -115,7 +113,6 @@ public class ApartmentServiceImpl implements ApartmentService {
                 keyword,
                 district,
                 roomType,
-                filterRequest.getBedrooms(),
                 filterRequest.getTransactionType(),
                 filterRequest.getStatus());
     }

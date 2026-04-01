@@ -10,7 +10,6 @@ public class ApartmentFilterRequest {
     private String keyword;
     private String district;
     private String roomType;
-    private Integer bedrooms;
     private TransactionType transactionType;
     private ApartmentStatus status;
 }

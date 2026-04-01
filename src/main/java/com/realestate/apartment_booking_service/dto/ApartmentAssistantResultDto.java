@@ -9,8 +9,6 @@ public record ApartmentAssistantResultDto(
         String priceLabel,
         String district,
         String roomType,
-        Integer bedrooms,
-        Integer bathrooms,
         String detailUrl,
         String imageUrl) {
 }

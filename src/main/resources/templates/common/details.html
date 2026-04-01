@@ -9,18 +9,10 @@
       <h1 class="text-2xl font-semibold" th:text="${apartment.title}"></h1>
       <p class="mt-1 text-slate-500" th:text="${apartment.locationAddress}"></p>
       <p class="mt-1 text-sm text-slate-600" th:text="${'Room type: ' + (apartment.roomType != null ? apartment.roomType : 'N/A')}"></p>
-      <div class="mt-2 grid grid-cols-2 gap-4 md:grid-cols-4">
+      <div class="mt-2 grid grid-cols-2 gap-4">
         <div class="rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-center">
           <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Area</p>
           <p class="mt-1 font-bold text-ink" th:text="${(apartment.area != null ? apartment.area : '0') + ' m²'}"></p>
-        </div>
-        <div class="rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-center">
-          <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Bedrooms</p>
-          <p class="mt-1 font-bold text-ink" th:text="${apartment.bedrooms != null ? apartment.bedrooms : '0'}"></p>
-        </div>
-        <div class="rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-center">
-          <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Bathrooms</p>
-          <p class="mt-1 font-bold text-ink" th:text="${apartment.bathrooms != null ? apartment.bathrooms : '0'}"></p>
         </div>
         <div class="rounded-xl border border-slate-100 bg-slate-50/50 p-3 text-center">
           <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Status</p>
@@ -42,7 +34,11 @@
                class="h-40 w-full rounded-lg object-cover" />
         </div>
       </div>
-      <p class="mt-3 text-slate-700" th:text="${apartment.description}"></p>
+      <section class="mt-5 rounded-xl border border-slate-200 bg-white/70 p-4">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Description</h2>
+        <p class="mt-2 whitespace-pre-line leading-relaxed text-slate-700"
+           th:text="${apartment.description != null and !#strings.isEmpty(apartment.description) ? apartment.description : 'No description provided.'}"></p>
+      </section>
 
       <div class="mt-6 rounded-lg border border-slate-200 p-4" th:if="${apartment.latitude != null and apartment.longitude != null}">
         <div class="mb-3 flex items-center justify-between gap-3">
@@ -95,7 +91,7 @@
               </div>
               <div>
                 <label class="block text-sm text-slate-600">Date</label>
-                <input type="date" name="scheduledDate" required class="mt-1 w-full rounded border border-slate-300 px-3 py-2" />
+                <input id="scheduledDateInput" type="date" name="scheduledDate" required class="mt-1 w-full rounded border border-slate-300 px-3 py-2" />
               </div>
               <div>
                 <label class="block text-sm text-slate-600">Time</label>
@@ -220,6 +216,18 @@
       </div>
     </section>
   </main>
+
+  <script>
+    (function () {
+      const dateInput = document.getElementById("scheduledDateInput");
+      if (!dateInput) return;
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, "0");
+      const dd = String(now.getDate()).padStart(2, "0");
+      dateInput.min = `${yyyy}-${mm}-${dd}`;
+    })();
+  </script>
 
   <div th:replace="~{fragments/footer :: siteFooter}"></div>
 </body>

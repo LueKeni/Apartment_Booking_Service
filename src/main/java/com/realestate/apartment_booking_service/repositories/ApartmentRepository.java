@@ -32,7 +32,6 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
                        or lower(coalesce(a.locationDistrict, '')) like lower(concat('%', :keyword, '%')))
                   and (:district is null or lower(a.locationDistrict) = lower(:district))
                   and (:roomType is null or upper(a.roomType) = upper(:roomType))
-                  and (:bedrooms is null or a.bedrooms = :bedrooms)
                   and (:transactionType is null or a.transactionType = :transactionType)
                   and (:status is null or a.status = :status)
                 order by coalesce(a.boostPoints, 0) desc, coalesce(ap.averageRating, 0.0) desc, a.id desc
@@ -41,7 +40,6 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
             @Param("keyword") String keyword,
             @Param("district") String district,
             @Param("roomType") String roomType,
-            @Param("bedrooms") Integer bedrooms,
             @Param("transactionType") TransactionType transactionType,
             @Param("status") ApartmentStatus status);
 

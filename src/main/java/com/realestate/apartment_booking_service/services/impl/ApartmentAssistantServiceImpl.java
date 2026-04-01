@@ -34,12 +34,6 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
             "(?:từ|tu|from)?\\s*(\\d+(?:[.,]\\d+)?)\\s*(tỷ|ty|ti|billion|triệu|trieu|million|k|nghìn|nghin|ngan)?\\s*"
                     + "(?:đến|den|to|-)\\s*(\\d+(?:[.,]\\d+)?)\\s*(tỷ|ty|ti|billion|triệu|trieu|million|k|nghìn|nghin|ngan)?",
             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-    private static final Pattern BEDROOM_PATTERN = Pattern.compile(
-            "(\\d+)\\s*(?:phong ngu|phong-ngu|pn|bedrooms?|beds?|br)(?=\\s|$|,|\\.)",
-            Pattern.CASE_INSENSITIVE);
-    private static final Pattern BATHROOM_PATTERN = Pattern.compile(
-            "(\\d+)\\s*(?:phong tam|phong-tam|wc|bathrooms?|baths?)(?=\\s|$|,|\\.)",
-            Pattern.CASE_INSENSITIVE);
     private static final Pattern DISTRICT_PATTERN = Pattern.compile(
             "(quan|district)\\s*([a-z0-9]+)",
             Pattern.CASE_INSENSITIVE);
@@ -60,7 +54,7 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
     private static final Set<String> DESCRIPTION_STOP_WORDS = Set.of(
             "tim", "kiem", "can", "ho", "phong", "chung", "cu", "mo", "ta", "co", "o", "tai", "duoi", "tren",
             "tu", "den", "gia", "quan", "district", "rent", "rental", "sale", "buy", "mua", "ban", "thue",
-            "studio", "duplex", "br", "pn", "phongngu", "phongtam", "wc", "bedroom", "bathroom");
+            "studio", "duplex", "br", "pn", "phongngu", "phongtam", "wc");
 
     private final ApartmentRepository apartmentRepository;
 
@@ -69,7 +63,7 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
         String normalizedMessage = normalize(message);
         if (normalizedMessage.isBlank()) {
             return ApartmentAssistantResponse.builder()
-                    .answer("Vui lòng nhập nhu cầu căn hộ, ví dụ: can ho thue duoi 15 trieu, 2 phong ngu, quan 2.")
+                    .answer("Vui lòng nhập nhu cầu căn hộ, ví dụ: can ho thue duoi 15 trieu, 2br, quan 2.")
                     .appliedFilters(List.of())
                     .suggestions(List.of())
                     .build();
@@ -77,7 +71,7 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
 
         if (isOutOfScope(normalizedMessage)) {
             return ApartmentAssistantResponse.builder()
-                    .answer("Tôi chỉ hỗ trợ tìm căn hộ theo giá, quận, số phòng ngủ, phòng tắm, loại phòng và hình thức thuê hoặc mua.")
+                    .answer("Tôi chỉ hỗ trợ tìm căn hộ theo giá, quận, loại phòng và hình thức thuê hoặc mua.")
                     .appliedFilters(List.of())
                     .suggestions(List.of())
                     .build();
@@ -126,12 +120,6 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
         if (query.maxPrice() != null && apartment.getPrice().compareTo(query.maxPrice()) > 0) {
             return false;
         }
-        if (query.bedrooms() != null && !query.bedrooms().equals(apartment.getBedrooms())) {
-            return false;
-        }
-        if (query.bathrooms() != null && !query.bathrooms().equals(apartment.getBathrooms())) {
-            return false;
-        }
         if (!query.featureKeywords().isEmpty()) {
             String searchableText = normalize(buildSearchableText(apartment));
             for (String featureKeyword : query.featureKeywords()) {
@@ -156,28 +144,15 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
     private ParsedQuery parse(String message) {
         TransactionType transactionType = extractTransactionType(message);
         String roomType = extractRoomType(message);
-        Integer bedrooms = extractExactNumber(BEDROOM_PATTERN, message);
-        Integer bathrooms = extractExactNumber(BATHROOM_PATTERN, message);
         String district = extractDistrict(message);
         PriceRange priceRange = extractPriceRange(message);
         List<String> featureKeywords = extractFeatureKeywords(message);
         List<String> descriptionTerms = extractDescriptionTerms(message, featureKeywords, district);
 
-        if (roomType != null && bedrooms == null) {
-            bedrooms = switch (roomType.toUpperCase(Locale.ROOT)) {
-                case "1BR" -> 1;
-                case "2BR" -> 2;
-                case "3BR" -> 3;
-                default -> bedrooms;
-            };
-        }
-
         return new ParsedQuery(
                 transactionType,
                 roomType,
                 district,
-                bedrooms,
-                bathrooms,
                 featureKeywords,
                 descriptionTerms,
                 priceRange.minPrice(),
@@ -211,14 +186,6 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
             return "3BR";
         }
         return null;
-    }
-
-    private Integer extractExactNumber(Pattern pattern, String message) {
-        Matcher matcher = pattern.matcher(message);
-        if (!matcher.find()) {
-            return null;
-        }
-        return Integer.parseInt(matcher.group(1));
     }
 
     private String extractDistrict(String message) {
@@ -281,7 +248,7 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
             String before = message.substring(Math.max(0, start - 16), start);
             String after = message.substring(end, Math.min(message.length(), end + 16));
 
-            if (looksLikeBedroomOrBathroomContext(before, after) || looksLikeDistrictContext(before)) {
+            if (looksLikeRoomContext(before, after) || looksLikeDistrictContext(before)) {
                 continue;
             }
 
@@ -290,7 +257,7 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
         return null;
     }
 
-    private boolean looksLikeBedroomOrBathroomContext(String before, String after) {
+    private boolean looksLikeRoomContext(String before, String after) {
         String context = (before + " " + after).toLowerCase(Locale.ROOT);
         return containsAny(context, "phong ngu", "phong tam", "pn", "wc", "bed", "bath", "br");
     }
@@ -333,8 +300,6 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
     private List<String> extractDescriptionTerms(String message, List<String> featureKeywords, String district) {
         String cleaned = message;
         cleaned = DISTRICT_PATTERN.matcher(cleaned).replaceAll(" ");
-        cleaned = BEDROOM_PATTERN.matcher(cleaned).replaceAll(" ");
-        cleaned = BATHROOM_PATTERN.matcher(cleaned).replaceAll(" ");
         cleaned = RANGE_PATTERN.matcher(cleaned).replaceAll(" ");
         cleaned = NUMBER_WITH_UNIT_PATTERN.matcher(cleaned).replaceAll(" ");
         cleaned = PLAIN_NUMBER_PATTERN.matcher(cleaned).replaceAll(" ");
@@ -391,12 +356,6 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
         } else if (query.minPrice() != null) {
             filters.add("Giá từ " + formatPrice(query.minPrice()));
         }
-        if (query.bedrooms() != null) {
-            filters.add(query.bedrooms() + " phòng ngủ");
-        }
-        if (query.bathrooms() != null) {
-            filters.add(query.bathrooms() + " phòng tắm");
-        }
         if (query.roomType() != null) {
             filters.add("Loại phòng: " + query.roomType());
         }
@@ -410,7 +369,7 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
 
     private String buildAnswer(ParsedQuery query, List<Apartment> matches, List<String> appliedFilters) {
         if (appliedFilters.isEmpty()) {
-            return "Tôi có thể lọc căn hộ theo giá, quận, số phòng ngủ, phòng tắm, loại phòng và thuê hoặc mua. Hãy thử: can ho thue duoi 15 trieu, 2 phong ngu, quan 2.";
+            return "Tôi có thể lọc căn hộ theo giá, quận, loại phòng và thuê hoặc mua. Hãy thử: can ho thue duoi 15 trieu, 2br, quan 2.";
         }
 
         if (matches.isEmpty()) {
@@ -432,8 +391,6 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
                 .priceLabel(formatPrice(apartment.getPrice()))
                 .district(apartment.getLocationDistrict())
                 .roomType(apartment.getRoomType())
-                .bedrooms(apartment.getBedrooms())
-                .bathrooms(apartment.getBathrooms())
                 .detailUrl("/apartments/" + apartment.getId())
                 .imageUrl(imageUrl)
                 .build();
@@ -490,8 +447,6 @@ public class ApartmentAssistantServiceImpl implements ApartmentAssistantService 
             TransactionType transactionType,
             String roomType,
             String district,
-            Integer bedrooms,
-            Integer bathrooms,
             List<String> featureKeywords,
             List<String> descriptionTerms,
             BigDecimal minPrice,

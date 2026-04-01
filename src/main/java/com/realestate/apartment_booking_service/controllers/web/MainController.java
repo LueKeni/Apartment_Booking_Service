@@ -56,7 +56,6 @@ public class MainController {
         redirectAttributes.addAttribute("keyword", filterRequest.getKeyword());
         redirectAttributes.addAttribute("district", filterRequest.getDistrict());
         redirectAttributes.addAttribute("roomType", filterRequest.getRoomType());
-        redirectAttributes.addAttribute("bedrooms", filterRequest.getBedrooms());
         redirectAttributes.addAttribute(
                 "transactionType",
                 filterRequest.getTransactionType() == null ? null : filterRequest.getTransactionType().name());

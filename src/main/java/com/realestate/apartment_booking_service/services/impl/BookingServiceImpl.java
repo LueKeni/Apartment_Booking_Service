@@ -13,6 +13,7 @@ import com.realestate.apartment_booking_service.services.interfaces.BookingServi
 import com.realestate.apartment_booking_service.services.interfaces.NotificationService;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,13 +29,15 @@ public class BookingServiceImpl implements BookingService {
     private final ApartmentRepository apartmentRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private static final ZoneId VIETNAM_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
 
     @Override
     public Appointment createBooking(Long userId, BookingRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        if (request.getScheduledDate() == null || request.getScheduledDate().isBefore(LocalDate.now())) {
+        LocalDate todayInVn = LocalDate.now(VIETNAM_ZONE);
+        if (request.getScheduledDate() == null || request.getScheduledDate().isBefore(todayInVn)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot book a date in the past");
         }
 

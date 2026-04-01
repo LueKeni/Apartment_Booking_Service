@@ -469,7 +469,7 @@ function initComparison() {
     });
   };
 
-  const addToCompare = (id, title, price, image, district, type, area, beds, baths) => {
+  const addToCompare = (id, title, price, image, district, type, area) => {
     if (compareList.length >= 3) {
       alert("You can only compare up to 3 apartments.");
       return;
@@ -479,7 +479,7 @@ function initComparison() {
       return;
     }
 
-    compareList.push({ id, title, price, image, district, type, area, beds, baths });
+    compareList.push({ id, title, price, image, district, type, area });
     updateUI();
   };
 
@@ -522,14 +522,6 @@ function initComparison() {
               ${compareList.map(item => `<td class="p-3 border border-slate-200 text-center">${item.area || "N/A"} m²</td>`).join('')}
             </tr>
             <tr>
-              <td class="p-3 border border-slate-200 font-semibold bg-slate-50">Bedrooms</td>
-              ${compareList.map(item => `<td class="p-3 border border-slate-200 text-center">${item.beds || "N/A"}</td>`).join('')}
-            </tr>
-            <tr>
-              <td class="p-3 border border-slate-200 font-semibold bg-slate-50">Bathrooms</td>
-              ${compareList.map(item => `<td class="p-3 border border-slate-200 text-center">${item.baths || "N/A"}</td>`).join('')}
-            </tr>
-            <tr>
               <td class="p-3 border border-slate-200 font-semibold bg-slate-50">Action</td>
               ${compareList.map(item => `
                 <td class="p-3 border border-slate-200 text-center">
@@ -555,9 +547,7 @@ function initComparison() {
         data.compareImage,
         data.compareDistrict,
         data.compareType,
-        data.compareArea,
-        data.compareBeds,
-        data.compareBaths
+        data.compareArea
       );
     }
   });
@@ -650,7 +640,6 @@ function initApartmentAssistant(root) {
           <div class="assistant-card-body">
             <p class="assistant-card-title">${item.title || "Apartment"}</p>
             <p class="assistant-card-meta">${item.district || "Unknown district"} • ${item.roomType || "N/A"}</p>
-            <p class="assistant-card-meta">${item.bedrooms ?? "?"} PN • ${item.bathrooms ?? "?"} PT</p>
             <p class="assistant-card-price">${item.priceLabel || "Lien he"}</p>
           </div>
         `;
