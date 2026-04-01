@@ -65,14 +65,13 @@
                 <td class="px-4 py-3 text-slate-600" th:text="${appointment.createdAt}"></td>
                 <td class="px-4 py-3"><span class="pill" th:text="${appointment.status}"></span></td>
                 <td class="px-4 py-3">
-                  <form th:action="@{/agent/bookings/{id}/status(id=${appointment.id})}" method="post" class="grid gap-2 md:grid-cols-3">
+                  <form th:action="@{/agent/bookings/{id}/status(id=${appointment.id})}" method="post" class="flex items-center gap-2">
                     <select name="status" class="rounded-xl border border-slate-300 bg-white px-2 py-1.5">
                       <option value="PENDING">PENDING</option>
                       <option value="CONFIRMED">CONFIRMED</option>
                       <option value="CANCELLED">CANCELLED</option>
                       <option value="COMPLETED">COMPLETED</option>
                     </select>
-                    <input name="agentNote" placeholder="Note" class="rounded-xl border border-slate-300 bg-white px-2 py-1.5" />
                     <button class="rounded-xl bg-tealdeep px-3 py-1.5 text-white">Apply</button>
                   </form>
                 </td>

@@ -63,7 +63,11 @@
             <input type="hidden" name="apartmentId" th:value="${apartment.id}" />
             <div>
               <label class="block text-sm text-slate-600">Date</label>
-              <input type="date" name="scheduledDate" required class="mt-1 w-full rounded border border-slate-300 px-3 py-2" />
+              <input type="date"
+                     name="scheduledDate"
+                     required
+                     th:attr="min=${today}"
+                     class="mt-1 w-full rounded border border-slate-300 px-3 py-2" />
             </div>
             <div>
               <label class="block text-sm text-slate-600">Time</label>

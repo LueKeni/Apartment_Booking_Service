@@ -12,6 +12,7 @@ import com.realestate.apartment_booking_service.repositories.UserRepository;
 import com.realestate.apartment_booking_service.services.interfaces.BookingService;
 import com.realestate.apartment_booking_service.services.interfaces.NotificationService;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,10 @@ public class BookingServiceImpl implements BookingService {
     public Appointment createBooking(Long userId, BookingRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (request.getScheduledDate() == null || request.getScheduledDate().isBefore(LocalDate.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot book a date in the past");
+        }
 
         Apartment apartment = apartmentRepository.findById(request.getApartmentId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Apartment not found"));
