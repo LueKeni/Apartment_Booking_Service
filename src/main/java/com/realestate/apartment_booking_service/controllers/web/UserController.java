@@ -121,13 +121,19 @@ public class UserController {
     }
 
     @PostMapping("/bookings")
-    public String createBooking(@ModelAttribute BookingRequest request) {
+    public String createBooking(@ModelAttribute BookingRequest request, RedirectAttributes redirectAttributes) {
         User user = currentUser();
         if (user.getRole() == Role.AGENT) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Agent cannot create booking");
         }
-        bookingService.createBooking(user.getId(), request);
-        return "redirect:/user/appointments";
+        try {
+            bookingService.createBooking(user.getId(), request);
+            return "redirect:/user/appointments";
+        } catch (ResponseStatusException ex) {
+            String errorMessage = ex.getReason() != null ? ex.getReason() : "Unable to create booking";
+            redirectAttributes.addFlashAttribute("bookingError", errorMessage);
+            return "redirect:/apartments/" + request.getApartmentId();
+        }
     }
 
     @PostMapping("/appointments/{id}/cancel")

@@ -24,6 +24,7 @@ public class SecurityConfig {
                                                                 "/apartments/**",
                                                                 "/auth/**",
                                                                 "/error",
+                                                                "/api/assistant/**",
                                                                 "/momo/**",
                                                                 "/css/**",
                                                                 "/js/**",

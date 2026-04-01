@@ -19,28 +19,30 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
         @EntityGraph(attributePaths = { "agent", "images" })
         List<Apartment> findByAgentId(Long agentId);
 
-    @EntityGraph(attributePaths = {"agent", "images"})
-    List<Apartment> findByStatus(ApartmentStatus status);
+        @EntityGraph(attributePaths = { "agent", "images" })
+        List<Apartment> findByStatus(ApartmentStatus status);
 
-    @EntityGraph(attributePaths = {"agent", "images"})
-    @Query("""
-                select a from Apartment a
-                where (:keyword is null
-                       or lower(a.title) like lower(concat('%', :keyword, '%'))
-                       or lower(a.locationAddress) like lower(concat('%', :keyword, '%'))
-                       or lower(coalesce(a.locationDistrict, '')) like lower(concat('%', :keyword, '%')))
-                  and (:district is null or lower(a.locationDistrict) = lower(:district))
-                  and (:roomType is null or upper(a.roomType) = upper(:roomType))
-                  and (:transactionType is null or a.transactionType = :transactionType)
-                  and (:status is null or a.status = :status)
-                order by coalesce(a.boostPoints, 0) desc, a.id desc
-            """)
-    List<Apartment> search(
-            @Param("keyword") String keyword,
-            @Param("district") String district,
-            @Param("roomType") String roomType,
-            @Param("transactionType") TransactionType transactionType,
-            @Param("status") ApartmentStatus status);
+        @EntityGraph(attributePaths = { "agent", "images" })
+        @Query("""
+                            select a from Apartment a
+                                     left join a.agent ag
+                                     left join ag.agentProfile ap
+                            where (:keyword is null
+                                   or lower(a.title) like lower(concat('%', :keyword, '%'))
+                                   or lower(a.locationAddress) like lower(concat('%', :keyword, '%'))
+                                   or lower(coalesce(a.locationDistrict, '')) like lower(concat('%', :keyword, '%')))
+                              and (:district is null or lower(a.locationDistrict) = lower(:district))
+                              and (:roomType is null or upper(a.roomType) = upper(:roomType))
+                              and (:transactionType is null or a.transactionType = :transactionType)
+                              and (:status is null or a.status = :status)
+                            order by coalesce(a.boostPoints, 0) desc, coalesce(ap.averageRating, 0.0) desc, a.id desc
+                        """)
+        List<Apartment> search(
+                        @Param("keyword") String keyword,
+                        @Param("district") String district,
+                        @Param("roomType") String roomType,
+                        @Param("transactionType") TransactionType transactionType,
+                        @Param("status") ApartmentStatus status);
 
         @EntityGraph(attributePaths = { "images" })
         List<Apartment> findTop6ByRoomTypeIgnoreCaseAndIdNotAndStatusOrderByIdDesc(

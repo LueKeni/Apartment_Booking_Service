@@ -433,30 +433,15 @@ function initNotificationCenter() {
     return;
   }
 
-  const toggle = root.querySelector("[data-notification-toggle]");
+  const toggleButton = root.querySelector("[data-notification-toggle]");
   const panel = root.querySelector("[data-notification-panel]");
   const list = root.querySelector("[data-notification-list]");
   const empty = root.querySelector("[data-notification-empty]");
   const markAllButton = root.querySelector("[data-notification-mark-all]");
 
-  if (!toggle || !panel || !list || !empty) {
+  if (!toggleButton || !panel || !list || !empty) {
     return;
   }
-
-  let lastUnreadCount = 0;
-
-  const setUnreadBadges = (count) => {
-    lastUnreadCount = count;
-    const display = Number.isFinite(count) && count > 99 ? "99+" : String(count || 0);
-    badges.forEach((badge) => {
-      if (count && count > 0) {
-        badge.textContent = display;
-        badge.classList.remove("hidden");
-      } else {
-        badge.classList.add("hidden");
-      }
-    });
-  };
 
   const formatTimestamp = (value) => {
     if (!value) {
@@ -474,8 +459,33 @@ function initNotificationCenter() {
     });
   };
 
+  const setBadges = (count) => {
+    const display = Number.isFinite(count) && count > 99 ? "99+" : String(count || 0);
+    badges.forEach((badge) => {
+      if (count > 0) {
+        badge.textContent = display;
+        badge.classList.remove("hidden");
+      } else {
+        badge.classList.add("hidden");
+      }
+    });
+  };
+
   const markRead = async (notificationId) => {
     await fetch(`/api/notifications/${notificationId}/read`, { method: "POST" });
+  };
+
+  const refreshUnreadCount = async () => {
+    try {
+      const response = await fetch("/api/notifications/unread-count");
+      if (!response.ok) {
+        throw new Error("Failed to load unread count");
+      }
+      const unread = Number(await response.json()) || 0;
+      setBadges(unread);
+    } catch (error) {
+      // Keep stale badge data on transient failures.
+    }
   };
 
   const renderNotifications = (notifications) => {
@@ -486,62 +496,32 @@ function initNotificationCenter() {
       return;
     }
 
-    notifications.slice(0, 8).forEach((notification) => {
-      const item = document.createElement("article");
-      item.className = `rounded-xl border px-3 py-2 ${notification.isRead ? "border-slate-200 bg-white" : "border-sky-200 bg-sky-50/60"}`;
+    notifications.forEach((notification) => {
+      const row = document.createElement("a");
+      row.href = notification.openUrl || notification.actionUrl || "/user/notifications";
+      row.className = `block rounded-xl border border-slate-200 p-3 transition-colors hover:bg-slate-50 ${
+        notification.isRead ? "bg-white" : "bg-sky-50/60"
+      }`;
 
-      const title = document.createElement("p");
-      title.className = "text-sm font-semibold text-slate-900 line-clamp-1";
-      title.textContent = notification.title || "Notification";
+      row.innerHTML = `
+        <p class="text-sm font-bold text-slate-900">${notification.title || "Notification"}</p>
+        <p class="mt-1 text-xs text-slate-600">${notification.message || ""}</p>
+        <div class="mt-2 flex items-center justify-between gap-2">
+          <span class="inline-flex items-center rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">${notification.type || "SYSTEM"}</span>
+          <span class="text-[10px] text-slate-500">${formatTimestamp(notification.createdAt)}</span>
+        </div>
+      `;
 
-      const message = document.createElement("p");
-      message.className = "mt-1 text-xs text-slate-600 line-clamp-2";
-      message.textContent = notification.message || "";
-
-      const metaRow = document.createElement("div");
-      metaRow.className = "mt-2 flex items-center justify-between gap-2";
-
-      const createdAt = document.createElement("span");
-      createdAt.className = "text-[10px] font-medium text-slate-500";
-      createdAt.textContent = formatTimestamp(notification.createdAt);
-
-      metaRow.appendChild(createdAt);
-
-      if (!notification.isRead) {
-        const readButton = document.createElement("button");
-        readButton.type = "button";
-        readButton.className = "rounded-md bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50";
-        readButton.textContent = "Mark read";
-        readButton.addEventListener("click", async (event) => {
-          event.stopPropagation();
-          try {
-            await markRead(notification.id);
-            await refreshNotifications();
-          } catch (error) {
-            // Ignore transient network errors and keep current UI.
-          }
+      if (!notification.isRead && notification.id != null) {
+        row.addEventListener("click", () => {
+          markRead(notification.id).catch(() => {
+            // Notification open action can continue even if mark-read fails.
+          });
         });
-        metaRow.appendChild(readButton);
       }
 
-      item.appendChild(title);
-      item.appendChild(message);
-      item.appendChild(metaRow);
-      list.appendChild(item);
+      list.appendChild(row);
     });
-  };
-
-  const refreshUnreadCount = async () => {
-    try {
-      const response = await fetch("/api/notifications/unread-count");
-      if (!response.ok) {
-        throw new Error("Failed to load unread notifications");
-      }
-      const count = Number(await response.json());
-      setUnreadBadges(Number.isFinite(count) ? count : 0);
-    } catch (error) {
-      setUnreadBadges(0);
-    }
   };
 
   const refreshNotifications = async () => {
@@ -552,29 +532,26 @@ function initNotificationCenter() {
       }
       const notifications = await response.json();
       renderNotifications(notifications);
-      const unreadCount = notifications.filter((notification) => !notification.isRead).length;
-      setUnreadBadges(unreadCount);
     } catch (error) {
-      renderNotifications([]);
-      if (lastUnreadCount === 0) {
-        setUnreadBadges(0);
-      }
+      list.innerHTML = "";
+      empty.classList.remove("hidden");
     }
   };
 
   const openPanel = async () => {
     panel.classList.remove("hidden");
-    toggle.setAttribute("aria-expanded", "true");
+    toggleButton.setAttribute("aria-expanded", "true");
     await refreshNotifications();
+    await refreshUnreadCount();
   };
 
   const closePanel = () => {
     panel.classList.add("hidden");
-    toggle.setAttribute("aria-expanded", "false");
+    toggleButton.setAttribute("aria-expanded", "false");
   };
 
-  toggle.addEventListener("click", async (event) => {
-    event.stopPropagation();
+  toggleButton.addEventListener("click", async (event) => {
+    event.preventDefault();
     if (panel.classList.contains("hidden")) {
       await openPanel();
     } else {
@@ -583,7 +560,7 @@ function initNotificationCenter() {
   });
 
   document.addEventListener("click", (event) => {
-    if (!root.contains(event.target)) {
+    if (!panel.classList.contains("hidden") && !root.contains(event.target)) {
       closePanel();
     }
   });
@@ -593,6 +570,7 @@ function initNotificationCenter() {
       try {
         await fetch("/api/notifications/read-all", { method: "POST" });
         await refreshNotifications();
+        await refreshUnreadCount();
       } catch (error) {
         // Ignore transient network errors and keep current UI.
       }
@@ -605,9 +583,328 @@ function initNotificationCenter() {
     if (!document.hidden) {
       refreshUnreadCount();
       if (!panel.classList.contains("hidden")) {
-        refreshNotifications();
+        refreshNotifications().catch(() => {
+          // Keep UI stable if refresh fails.
+        });
       }
     }
+  });
+}
+
+function initApartmentCompare() {
+  const addButtons = Array.from(document.querySelectorAll("[data-compare-add]"));
+  if (!addButtons.length) {
+    return;
+  }
+
+  const bar = document.getElementById("comparison-bar");
+  const countLabel = document.getElementById("compare-count");
+  const itemsContainer = document.getElementById("compare-items");
+  const clearButton = document.getElementById("clear-compare");
+  const compareNowButton = document.getElementById("compare-now-btn");
+  const modal = document.getElementById("comparison-modal");
+  const modalContent = document.getElementById("comparison-content");
+  const closeModalButton = document.getElementById("close-comparison-modal");
+
+  if (!bar || !countLabel || !itemsContainer || !clearButton || !compareNowButton || !modal || !modalContent || !closeModalButton) {
+    return;
+  }
+
+  let compareList = [];
+
+  const updateUI = () => {
+    countLabel.textContent = `${compareList.length}/3`;
+    bar.classList.toggle("translate-y-full", compareList.length === 0);
+    compareNowButton.disabled = compareList.length < 2;
+
+    itemsContainer.innerHTML = "";
+    compareList.forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "relative group h-11 w-11";
+      card.innerHTML = `
+        <img src="${item.image}" alt="${item.title}" class="h-11 w-11 rounded-lg border border-slate-200 object-cover" />
+        <button type="button" class="absolute -right-1 -top-1 hidden h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] text-white group-hover:flex" data-compare-remove="${item.id}">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      card.querySelector("[data-compare-remove]")?.addEventListener("click", () => {
+        compareList = compareList.filter((current) => current.id !== item.id);
+        updateUI();
+      });
+      itemsContainer.appendChild(card);
+    });
+  };
+
+  const addToCompare = (item) => {
+    if (!item.id) {
+      return;
+    }
+    if (compareList.some((existing) => existing.id === item.id)) {
+      return;
+    }
+    if (compareList.length >= 3) {
+      alert("Ban chi co the so sanh toi da 3 can ho.");
+      return;
+    }
+    compareList.push(item);
+    updateUI();
+  };
+
+  const renderComparisonTable = () => {
+    if (compareList.length < 2) {
+      return;
+    }
+
+    modalContent.innerHTML = `
+      <div class="overflow-x-auto">
+        <table class="min-w-[680px] w-full border-collapse text-left text-sm">
+          <thead>
+            <tr>
+              <th class="border border-slate-200 bg-slate-50 p-3 font-bold text-slate-700">Tieu chi</th>
+              ${compareList
+                .map(
+                  (item) => `
+                    <th class="border border-slate-200 bg-slate-50 p-3 text-center">
+                      <img src="${item.image}" alt="${item.title}" class="mx-auto mb-2 h-20 w-32 rounded-lg object-cover" />
+                      <p class="line-clamp-2 font-semibold text-slate-900">${item.title}</p>
+                    </th>
+                  `
+                )
+                .join("")}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="border border-slate-200 p-3 font-semibold bg-slate-50">Gia</td>
+              ${compareList.map((item) => `<td class="border border-slate-200 p-3 text-center font-bold text-midnight-700">${item.price || "-"}</td>`).join("")}
+            </tr>
+            <tr>
+              <td class="border border-slate-200 p-3 font-semibold bg-slate-50">Khu vuc</td>
+              ${compareList.map((item) => `<td class="border border-slate-200 p-3 text-center">${item.district || "-"}</td>`).join("")}
+            </tr>
+            <tr>
+              <td class="border border-slate-200 p-3 font-semibold bg-slate-50">Loai phong</td>
+              ${compareList.map((item) => `<td class="border border-slate-200 p-3 text-center">${item.type || "-"}</td>`).join("")}
+            </tr>
+            <tr>
+              <td class="border border-slate-200 p-3 font-semibold bg-slate-50">Dien tich</td>
+              ${compareList.map((item) => `<td class="border border-slate-200 p-3 text-center">${item.area || "-"} m2</td>`).join("")}
+            </tr>
+            <tr>
+              <td class="border border-slate-200 p-3 font-semibold bg-slate-50">Chi tiet</td>
+              ${compareList
+                .map(
+                  (item) => `
+                    <td class="border border-slate-200 p-3 text-center">
+                      <a href="/apartments/${item.id}" class="inline-flex rounded-lg bg-midnight-700 px-3 py-2 text-xs font-bold text-white hover:bg-midnight-600">Xem can ho</a>
+                    </td>
+                  `
+                )
+                .join("")}
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+  };
+
+  addButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const data = button.dataset;
+      addToCompare({
+        id: data.compareAdd,
+        title: data.compareTitle || "Apartment",
+        price: data.comparePrice || "-",
+        image: data.compareImage || "/images/apartment-placeholder.svg",
+        district: data.compareDistrict || "-",
+        type: data.compareType || "-",
+        area: data.compareArea || "-"
+      });
+    });
+  });
+
+  clearButton.addEventListener("click", () => {
+    compareList = [];
+    updateUI();
+  });
+
+  compareNowButton.addEventListener("click", () => {
+    renderComparisonTable();
+    modal.classList.remove("hidden");
+  });
+
+  closeModalButton.addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
+
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.classList.add("hidden");
+    }
+  });
+
+  updateUI();
+}
+
+function initApartmentAssistant(root) {
+  const toggleButton = root.querySelector("[data-assistant-toggle]");
+  const panel = root.querySelector("[data-assistant-panel]");
+  const status = root.querySelector("[data-assistant-status]");
+  const thread = root.querySelector("[data-assistant-thread]");
+  const promptButtons = Array.from(root.querySelectorAll("[data-assistant-prompt]"));
+  const form = root.querySelector("[data-assistant-form]");
+  const input = root.querySelector("[data-assistant-input]");
+  const submitButton = root.querySelector("[data-assistant-submit]");
+
+  if (!toggleButton || !panel || !status || !thread || !form || !input || !submitButton) {
+    return;
+  }
+
+  const setStatus = (text) => {
+    status.textContent = text;
+  };
+
+  const setBusy = (busy) => {
+    input.disabled = busy;
+    submitButton.disabled = busy;
+    submitButton.classList.toggle("opacity-60", busy);
+    submitButton.classList.toggle("cursor-not-allowed", busy);
+  };
+
+  const appendMessage = ({ role, text, filters, suggestions }) => {
+    const row = document.createElement("div");
+    row.className = `assistant-row ${role === "user" ? "assistant-row-user" : "assistant-row-bot"}`;
+
+    const bubble = document.createElement("div");
+    bubble.className = `assistant-bubble ${role === "user" ? "assistant-bubble-user" : "assistant-bubble-bot"}`;
+
+    const content = document.createElement("p");
+    content.textContent = text || "";
+    bubble.appendChild(content);
+
+    if (Array.isArray(filters) && filters.length > 0) {
+      const filterWrap = document.createElement("div");
+      filterWrap.className = "assistant-filter-wrap";
+      filters.forEach((filter) => {
+        const item = document.createElement("span");
+        item.className = "assistant-filter-chip";
+        item.textContent = filter;
+        filterWrap.appendChild(item);
+      });
+      bubble.appendChild(filterWrap);
+    }
+
+    if (Array.isArray(suggestions) && suggestions.length > 0) {
+      const suggestionWrap = document.createElement("div");
+      suggestionWrap.className = "assistant-suggestions";
+
+      suggestions.forEach((suggestion) => {
+        const card = document.createElement("a");
+        card.className = "assistant-suggestion-card";
+        card.href = suggestion.detailUrl || "#";
+
+        const image = document.createElement("img");
+        image.src = suggestion.imageUrl || "/images/apartment-placeholder.svg";
+        image.alt = suggestion.title || "Apartment";
+        image.className = "assistant-suggestion-image";
+
+        const info = document.createElement("div");
+        info.className = "assistant-suggestion-info";
+
+        const title = document.createElement("p");
+        title.className = "assistant-suggestion-title";
+        title.textContent = suggestion.title || "Apartment";
+
+        const meta = document.createElement("p");
+        meta.className = "assistant-suggestion-meta";
+        const district = suggestion.district || "-";
+        const roomType = suggestion.roomType || "-";
+        meta.textContent = `${district} • ${roomType}`;
+
+        const price = document.createElement("p");
+        price.className = "assistant-suggestion-price";
+        price.textContent = suggestion.priceLabel || "Contact";
+
+        info.appendChild(title);
+        info.appendChild(meta);
+        info.appendChild(price);
+
+        card.appendChild(image);
+        card.appendChild(info);
+        suggestionWrap.appendChild(card);
+      });
+
+      bubble.appendChild(suggestionWrap);
+    }
+
+    row.appendChild(bubble);
+    thread.appendChild(row);
+    thread.scrollTop = thread.scrollHeight;
+  };
+
+  const sendMessage = async (message) => {
+    const trimmed = (message || "").trim();
+    if (!trimmed) {
+      return;
+    }
+
+    appendMessage({ role: "user", text: trimmed });
+    setStatus("Thinking...");
+    setBusy(true);
+
+    try {
+      const response = await fetch("/api/assistant/apartments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: trimmed })
+      });
+
+      if (!response.ok) {
+        throw new Error("Assistant request failed");
+      }
+
+      const payload = await response.json();
+      appendMessage({
+        role: "bot",
+        text: payload.answer || "I could not process that request.",
+        filters: payload.appliedFilters || [],
+        suggestions: payload.suggestions || []
+      });
+      setStatus("Ready");
+    } catch (error) {
+      appendMessage({
+        role: "bot",
+        text: "Assistant is temporarily unavailable. Please try again in a moment."
+      });
+      setStatus("Offline");
+    } finally {
+      setBusy(false);
+      input.focus();
+    }
+  };
+
+  toggleButton.addEventListener("click", () => {
+    const willOpen = panel.classList.contains("hidden");
+    panel.classList.toggle("hidden", !willOpen);
+    toggleButton.setAttribute("aria-expanded", willOpen ? "true" : "false");
+    if (willOpen) {
+      input.focus();
+    }
+  });
+
+  promptButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      sendMessage(button.dataset.assistantPrompt || "");
+    });
+  });
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const message = input.value;
+    input.value = "";
+    sendMessage(message);
   });
 }
 
@@ -707,5 +1004,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   initChatUnreadBadge();
   initNotificationCenter();
+  initApartmentCompare();
   initImageFallbacks();
 });
