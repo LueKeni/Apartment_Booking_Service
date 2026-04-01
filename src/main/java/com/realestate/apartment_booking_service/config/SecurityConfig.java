@@ -1,5 +1,6 @@
 package com.realestate.apartment_booking_service.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -10,6 +11,9 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
+
+    @Autowired
+    private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,6 +41,11 @@ public class SecurityConfig {
                         .loginProcessingUrl("/auth/login")
                         .defaultSuccessUrl("/", true)
                         .permitAll())
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/auth/login")
+                        .successHandler(customOAuth2SuccessHandler)
+                )
+                // --------------------------------------
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")
                         .logoutSuccessUrl("/auth/login?logout")
@@ -44,10 +53,5 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
