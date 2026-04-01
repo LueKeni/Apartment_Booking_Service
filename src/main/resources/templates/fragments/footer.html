@@ -1,6 +1,63 @@
-<footer th:fragment="siteFooter" class="mt-14 border-t border-black/10 bg-white/50 backdrop-blur">
-  <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-6 text-sm text-slate-600">
-    <p>VistaNest Booking Platform</p>
-    <p>JDK 21 • Spring Boot • Thymeleaf • TailwindCSS</p>
+<footer th:fragment="siteFooter" class="bg-[#0b1437] pt-16 pb-8 text-white mt-24 rounded-t-[2.5rem] sm:rounded-t-[4rem]">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-12">
+      
+      <div class="lg:col-span-1">
+        <a href="/" class="flex items-center gap-2 text-2xl font-extrabold tracking-tight text-white mb-4">
+          <i class="fas fa-building text-amber-500"></i>
+          VistaNest
+        </a>
+        <p class="text-sm text-slate-300 font-medium leading-relaxed mb-6">
+          A premium real estate marketplace connecting buyers and renters with verified agents for a seamless booking experience.
+        </p>
+        <div class="flex gap-3">
+          <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-amber-500 hover:text-[#0b1437] transition-all"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-amber-500 hover:text-[#0b1437] transition-all"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-amber-500 hover:text-[#0b1437] transition-all"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-amber-500 hover:text-[#0b1437] transition-all"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-5">Platform</h3>
+        <ul class="space-y-3 text-sm text-slate-300 font-medium">
+          <li><a href="/#listing-search" class="hover:text-amber-400 transition-colors">Browse Listings</a></li>
+          <li><a href="/agents" class="hover:text-amber-400 transition-colors">Top Rated Agents</a></li>
+          <li><a href="/about" class="hover:text-amber-400 transition-colors">About Us</a></li>
+          <li><a href="/pricing" class="hover:text-amber-400 transition-colors">Pricing & Plans</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-5">Support</h3>
+        <ul class="space-y-3 text-sm text-slate-300 font-medium">
+          <li><a href="/help" class="hover:text-amber-400 transition-colors">Help Center</a></li>
+          <li><a href="/contact" class="hover:text-amber-400 transition-colors">Contact Us</a></li>
+          <li><a href="/privacy" class="hover:text-amber-400 transition-colors">Privacy Policy</a></li>
+          <li><a href="/terms" class="hover:text-amber-400 transition-colors">Terms of Service</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-5">Newsletter</h3>
+        <p class="text-sm text-slate-300 font-medium mb-4">Subscribe to get the latest property news and updates directly to your inbox.</p>
+        <form class="flex flex-col gap-3" onsubmit="event.preventDefault();">
+          <input type="email" placeholder="Enter your email address" class="w-full rounded-[1.2rem] border-0 bg-white/10 px-4 py-3.5 text-sm font-medium text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500 outline-none" />
+          <button class="w-full rounded-[1.2rem] bg-amber-500 px-4 py-3.5 text-sm font-bold text-[#0b1437] shadow-md hover:bg-amber-400 transition-all transform hover:-translate-y-0.5">Subscribe</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-xs font-medium text-slate-400">© 2026 VistaNest Booking Platform. All rights reserved.</p>
+      <div class="flex flex-wrap items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+        <span>Powered By</span>
+        <span class="rounded bg-white/10 px-2 py-1 text-white">Spring Boot 3</span>
+        <span class="rounded bg-white/10 px-2 py-1 text-white">Thymeleaf</span>
+        <span class="rounded bg-white/10 px-2 py-1 text-white">Tailwind CSS</span>
+      </div>
+    </div>
+    
   </div>
 </footer>

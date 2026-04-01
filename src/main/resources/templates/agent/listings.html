@@ -1,257 +1,293 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/ui-head :: uiHead('Agent Listings Studio')}"></head>
-<body>
+<body class="bg-slate-50 font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
-    <div class="workspace-grid">
+  <main class="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-[260px_1fr]">
       <div th:replace="~{fragments/agent-sidebar :: agentSidebar('listings')}"></div>
 
-      <div>
-    <section class="glass-card p-6">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 class="text-3xl font-semibold text-ink">Listings Studio</h1>
-          <p class="mt-1 text-sm text-slate-600">Create and manage your apartment inventory.</p>
+      <div class="space-y-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900">Listings Studio</h1>
+            <p class="mt-1 text-sm text-slate-500">Create, edit, and boost your apartment inventory.</p>
+          </div>
+          <a href="/agent/dashboard" class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900">&larr; Back to Dashboard</a>
         </div>
-        <a href="/agent/dashboard" class="pill">Back to Dashboard</a>
-      </div>
-    </section>
 
-    <div th:if="${param.saved}" class="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Listing created successfully.</div>
-    <div th:if="${param.updated}" class="mt-4 rounded-2xl border border-sky-300 bg-sky-50 px-4 py-3 text-sm text-sky-700">Listing updated successfully.</div>
-    <div th:if="${param.statusUpdated}" class="mt-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-700">Listing visibility updated.</div>
-    <div th:if="${param.deleted}" class="mt-4 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700">Listing deleted successfully.</div>
-    <div th:if="${param.boosted}" class="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Listing boosted successfully.</div>
-    <div th:if="${param.boostError == 'invalid'}" class="mt-4 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700">Boost points must be greater than 0.</div>
-    <div th:if="${param.boostError == 'insufficient'}" class="mt-4 rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700">Not enough points to boost this listing.</div>
+        <div th:if="${param.saved}" class="rounded-xl bg-green-50 p-4 ring-1 ring-green-600/20 text-sm font-medium text-green-800">Listing created successfully.</div>
+        <div th:if="${param.updated}" class="rounded-xl bg-blue-50 p-4 ring-1 ring-blue-600/20 text-sm font-medium text-blue-800">Listing updated successfully.</div>
+        <div th:if="${param.statusUpdated}" class="rounded-xl bg-yellow-50 p-4 ring-1 ring-yellow-600/20 text-sm font-medium text-yellow-800">Listing visibility updated.</div>
+        <div th:if="${param.deleted}" class="rounded-xl bg-slate-100 p-4 ring-1 ring-slate-400/20 text-sm font-medium text-slate-800">Listing deleted successfully.</div>
+        <div th:if="${param.boosted}" class="rounded-xl bg-indigo-50 p-4 ring-1 ring-indigo-600/20 text-sm font-medium text-indigo-800">Listing boosted successfully!</div>
+        <div th:if="${param.boostError == 'invalid'}" class="rounded-xl bg-red-50 p-4 ring-1 ring-red-600/20 text-sm font-medium text-red-800">Boost points must be greater than 0.</div>
+        <div th:if="${param.boostError == 'insufficient'}" class="rounded-xl bg-red-50 p-4 ring-1 ring-red-600/20 text-sm font-medium text-red-800">Not enough points to boost this listing.</div>
 
-    <section class="mt-6 glass-card p-6">
-      <h2 class="text-xl font-semibold">Create New Listing</h2>
-      <form action="/agent/listings" method="post" enctype="multipart/form-data" class="mt-4 grid gap-3 md:grid-cols-2">
-        <input name="title" placeholder="Listing title" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
-        <select name="transactionType" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
-          <option value="SALE">Sale</option>
-          <option value="RENT">Rent</option>
-        </select>
-        <input name="price" type="number" step="0.01" placeholder="Price" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
-        <input name="area" type="number" step="0.1" placeholder="Area m2" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
-        <select name="roomType" required class="rounded-xl border border-slate-300 bg-white px-3 py-2">
-          <option value="">Room type</option>
-          <option value="STUDIO">Studio</option>
-          <option value="1BR">1BR</option>
-          <option value="2BR">2BR</option>
-          <option value="3BR">3BR</option>
-          <option value="DUPLEX">Duplex</option>
-        </select>
-        <input id="createStreetAddress" name="locationAddress" placeholder="Street address" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
-        <div>
-          <select id="createProvinceCode" name="locationProvinceCode" data-location="province" required class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2">
-            <option value="">Select city/province</option>
-          </select>
-          <input type="hidden" id="createProvinceName" name="locationProvince" data-location-name="province" />
+        <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <h2 class="text-lg font-semibold text-slate-900 border-b border-slate-200 pb-4 mb-4">Create New Listing</h2>
+          <form action="/agent/listings" method="post" enctype="multipart/form-data" class="grid gap-x-6 gap-y-5 md:grid-cols-2">
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-700">Listing Title</label>
+              <input name="title" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-700">Transaction Type</label>
+              <select name="transactionType" class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                <option value="SALE">Sale</option>
+                <option value="RENT">Rent</option>
+              </select>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-700">Price</label>
+              <input name="price" type="number" step="0.01" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-700">Area (m2)</label>
+              <input name="area" type="number" step="0.1" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-700">Room Type</label>
+              <select name="roomType" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                <option value="">Select type...</option>
+                <option value="STUDIO">Studio</option>
+                <option value="1BR">1BR</option>
+                <option value="2BR">2BR</option>
+                <option value="3BR">3BR</option>
+                <option value="DUPLEX">Duplex</option>
+              </select>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-700">Street Address</label>
+              <input id="createStreetAddress" name="locationAddress" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-700">City / Province</label>
+              <select id="createProvinceCode" name="locationProvinceCode" data-location="province" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                <option value="">Select city/province</option>
+              </select>
+              <input type="hidden" id="createProvinceName" name="locationProvince" data-location-name="province" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-700">Ward / Commune</label>
+              <select id="createWardCode" name="locationWardCode" data-location="ward" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm disabled:bg-slate-50 disabled:text-slate-500" disabled>
+                <option value="">Select ward/commune</option>
+              </select>
+              <input type="hidden" id="createWardName" name="locationWard" data-location-name="ward" />
+            </div>
+            <input type="hidden" name="locationDistrictCode" value="" />
+            <input type="hidden" name="locationDistrict" value="" />
+            
+            <div class="md:col-span-2">
+              <label class="mb-1.5 block text-sm font-medium text-slate-700">Pick Location on Map</label>
+              <div id="createMapPicker" class="h-[350px] w-full rounded-xl overflow-hidden ring-1 ring-inset ring-slate-300 z-10 relative"></div>
+              <p class="mt-1.5 text-xs text-slate-500">Click on the map to pinpoint exact location.</p>
+            </div>
+            
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-700">Latitude</label>
+              <input id="createLatitude" name="latitude" type="number" step="0.000001" readonly class="block w-full rounded-lg border-0 py-2 px-3 text-slate-600 bg-slate-50 ring-1 ring-inset ring-slate-300 sm:text-sm" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-700">Longitude</label>
+              <input id="createLongitude" name="longitude" type="number" step="0.000001" readonly class="block w-full rounded-lg border-0 py-2 px-3 text-slate-600 bg-slate-50 ring-1 ring-inset ring-slate-300 sm:text-sm" />
+            </div>
+            
+            <div class="md:col-span-2">
+              <label class="mb-1.5 block text-sm font-medium text-slate-700">Description</label>
+              <textarea name="description" rows="4" class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"></textarea>
+            </div>
+            <div class="md:col-span-2">
+              <label for="imageFiles" class="mb-1.5 block text-sm font-medium text-slate-700">Listing Images</label>
+              <input id="imageFiles" name="imageFiles" type="file" accept="image/*" multiple class="block w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100 ring-1 ring-inset ring-slate-300 rounded-lg bg-white p-1" />
+              <p class="mt-1.5 text-xs text-slate-500">Upload high-quality images (JPG, PNG). You can select multiple files.</p>
+            </div>
+            <div class="md:col-span-2 mt-2">
+              <button class="rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-600">Publish Listing</button>
+            </div>
+          </form>
         </div>
-        <div>
-          <select id="createWardCode" name="locationWardCode" data-location="ward" required class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2" disabled>
-            <option value="">Select ward/commune</option>
-          </select>
-          <input type="hidden" id="createWardName" name="locationWard" data-location-name="ward" />
-        </div>
-        <input type="hidden" name="locationDistrictCode" value="" />
-        <input type="hidden" name="locationDistrict" value="" />
-        <div class="md:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-slate-700">Pick Location on Map</label>
-          <div id="createMapPicker" class="h-72 w-full rounded-xl border border-slate-300"></div>
-          <p class="mt-1 text-xs text-slate-500">Click on the map to set product location.</p>
-        </div>
-        <input id="createLatitude" name="latitude" type="number" step="0.000001" placeholder="Latitude" readonly class="rounded-xl border border-slate-300 bg-slate-100 px-3 py-2" />
-        <input id="createLongitude" name="longitude" type="number" step="0.000001" placeholder="Longitude" readonly class="rounded-xl border border-slate-300 bg-slate-100 px-3 py-2" />
-        <textarea name="description" placeholder="Listing description" class="md:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2"></textarea>
-        <div class="md:col-span-2">
-          <label for="imageFiles" class="mb-1 block text-sm font-medium text-slate-700">Listing Images</label>
-          <input id="imageFiles"
-                 name="imageFiles"
-                 type="file"
-                 accept="image/*"
-                 multiple
-                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" />
-          <p class="mt-1 text-xs text-slate-500">Choose one or more images from your device (JPG, PNG, WEBP, GIF).</p>
-        </div>
-        <button class="md:col-span-2 rounded-xl bg-tealdeep px-4 py-2 font-semibold text-white">Publish Listing</button>
-      </form>
-    </section>
 
-    <section th:if="${editApartment != null}" class="mt-6 glass-card p-6">
-      <div class="flex items-center justify-between gap-3">
-        <h2 class="text-xl font-semibold">Edit Listing</h2>
-        <a href="/agent/listings" class="rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700">Cancel</a>
-      </div>
-      <form th:action="@{/agent/listings/{id}(id=${editApartment.id})}" method="post" enctype="multipart/form-data" class="mt-4 grid gap-3 md:grid-cols-2">
-        <input name="title" th:value="${editApartment.title}" placeholder="Listing title" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
-        <select name="transactionType" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
-          <option value="SALE" th:selected="${editApartment.transactionType.name() == 'SALE'}">Sale</option>
-          <option value="RENT" th:selected="${editApartment.transactionType.name() == 'RENT'}">Rent</option>
-        </select>
-        <input name="price" type="number" step="0.01" th:value="${editApartment.price}" placeholder="Price" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
-        <input name="area" type="number" step="0.1" th:value="${editApartment.area}" placeholder="Area m2" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
-        <select name="roomType" required class="rounded-xl border border-slate-300 bg-white px-3 py-2">
-          <option value="">Room type</option>
-          <option value="STUDIO" th:selected="${editApartment.roomType == 'STUDIO'}">Studio</option>
-          <option value="1BR" th:selected="${editApartment.roomType == '1BR'}">1BR</option>
-          <option value="2BR" th:selected="${editApartment.roomType == '2BR'}">2BR</option>
-          <option value="3BR" th:selected="${editApartment.roomType == '3BR'}">3BR</option>
-          <option value="DUPLEX" th:selected="${editApartment.roomType == 'DUPLEX'}">Duplex</option>
-        </select>
-        <input id="editStreetAddress" name="locationAddress" th:value="${editApartment.locationAddress}" placeholder="Street address" required class="rounded-xl border border-slate-300 bg-white px-3 py-2" />
-        <div>
-          <select id="editProvinceCode"
-                  name="locationProvinceCode"
-                  data-location="province"
-                  th:attr="data-existing-code=${editApartment.locationProvinceCode},data-existing-name=${editApartment.locationProvince}"
-                  required
-                  class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2">
-            <option value="">Select city/province</option>
-          </select>
-          <input type="hidden" id="editProvinceName" name="locationProvince" data-location-name="province" th:value="${editApartment.locationProvince}" />
+        <div th:if="${editApartment != null}" class="rounded-2xl bg-slate-800 p-6 shadow-xl ring-1 ring-slate-900/10" id="edit-section">
+          <div class="flex items-center justify-between border-b border-slate-700 pb-4 mb-4">
+            <h2 class="text-lg font-semibold text-white">Edit Listing: <span class="text-indigo-400" th:text="${editApartment.title}"></span></h2>
+            <a href="/agent/listings" class="rounded-md bg-white/10 px-3 py-1.5 text-sm font-medium text-white hover:bg-white/20 transition-colors">Cancel Edit</a>
+          </div>
+          <form th:action="@{/agent/listings/{id}(id=${editApartment.id})}" method="post" enctype="multipart/form-data" class="grid gap-x-6 gap-y-5 md:grid-cols-2">
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-300">Listing Title</label>
+              <input name="title" th:value="${editApartment.title}" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-300">Transaction Type</label>
+              <select name="transactionType" class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                <option value="SALE" th:selected="${editApartment.transactionType.name() == 'SALE'}">Sale</option>
+                <option value="RENT" th:selected="${editApartment.transactionType.name() == 'RENT'}">Rent</option>
+              </select>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-300">Price</label>
+              <input name="price" type="number" step="0.01" th:value="${editApartment.price}" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 sm:text-sm" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-300">Area (m2)</label>
+              <input name="area" type="number" step="0.1" th:value="${editApartment.area}" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 sm:text-sm" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-300">Room Type</label>
+              <select name="roomType" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 sm:text-sm">
+                <option value="STUDIO" th:selected="${editApartment.roomType == 'STUDIO'}">Studio</option>
+                <option value="1BR" th:selected="${editApartment.roomType == '1BR'}">1BR</option>
+                <option value="2BR" th:selected="${editApartment.roomType == '2BR'}">2BR</option>
+                <option value="3BR" th:selected="${editApartment.roomType == '3BR'}">3BR</option>
+                <option value="DUPLEX" th:selected="${editApartment.roomType == 'DUPLEX'}">Duplex</option>
+              </select>
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-300">Street Address</label>
+              <input id="editStreetAddress" name="locationAddress" th:value="${editApartment.locationAddress}" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 sm:text-sm" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-300">City / Province</label>
+              <select id="editProvinceCode" name="locationProvinceCode" data-location="province" th:attr="data-existing-code=${editApartment.locationProvinceCode},data-existing-name=${editApartment.locationProvince}" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 sm:text-sm"></select>
+              <input type="hidden" id="editProvinceName" name="locationProvince" data-location-name="province" th:value="${editApartment.locationProvince}" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-300">Ward / Commune</label>
+              <select id="editWardCode" name="locationWardCode" data-location="ward" th:attr="data-existing-code=${editApartment.locationWardCode},data-existing-name=${editApartment.locationWard}" required class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 sm:text-sm" disabled></select>
+              <input type="hidden" id="editWardName" name="locationWard" data-location-name="ward" th:value="${editApartment.locationWard}" />
+            </div>
+            <input type="hidden" name="locationDistrictCode" value="" />
+            <input type="hidden" name="locationDistrict" value="" />
+            
+            <div class="md:col-span-2">
+              <label class="mb-1.5 block text-sm font-medium text-slate-300">Update Location Map</label>
+              <div id="editMapPicker" class="h-[350px] w-full rounded-xl overflow-hidden ring-1 ring-inset ring-slate-700 z-10 relative"></div>
+            </div>
+            
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-300">Latitude</label>
+              <input id="editLatitude" name="latitude" type="number" step="0.000001" th:value="${editApartment.latitude}" readonly class="block w-full rounded-lg border-0 py-2 px-3 text-slate-500 bg-slate-200 ring-1 ring-inset ring-slate-400 sm:text-sm" />
+            </div>
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-slate-300">Longitude</label>
+              <input id="editLongitude" name="longitude" type="number" step="0.000001" th:value="${editApartment.longitude}" readonly class="block w-full rounded-lg border-0 py-2 px-3 text-slate-500 bg-slate-200 ring-1 ring-inset ring-slate-400 sm:text-sm" />
+            </div>
+            
+            <div class="md:col-span-2">
+              <label class="mb-1.5 block text-sm font-medium text-slate-300">Description</label>
+              <textarea name="description" rows="4" class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 sm:text-sm" th:text="${editApartment.description}"></textarea>
+            </div>
+            <div class="md:col-span-2">
+              <label for="editImageFiles" class="mb-1.5 block text-sm font-medium text-slate-300">Replace Images (optional)</label>
+              <input id="editImageFiles" name="imageFiles" type="file" accept="image/*" multiple class="block w-full text-sm text-slate-300 file:mr-4 file:rounded-md file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-white/20 ring-1 ring-inset ring-slate-700 rounded-lg p-1" />
+            </div>
+            <div class="md:col-span-2 mt-2">
+              <button class="rounded-lg bg-indigo-500 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-400">Save Changes</button>
+            </div>
+          </form>
+          <script>
+            // Auto scroll to edit section if it exists
+            window.addEventListener('load', () => {
+              document.getElementById('edit-section').scrollIntoView({ behavior: 'smooth' });
+            });
+          </script>
         </div>
-        <div>
-          <select id="editWardCode"
-                  name="locationWardCode"
-                  data-location="ward"
-                  th:attr="data-existing-code=${editApartment.locationWardCode},data-existing-name=${editApartment.locationWard}"
-                  required
-                  class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2"
-                  disabled>
-            <option value="">Select ward/commune</option>
-          </select>
-          <input type="hidden" id="editWardName" name="locationWard" data-location-name="ward" th:value="${editApartment.locationWard}" />
-        </div>
-        <input type="hidden" name="locationDistrictCode" value="" />
-        <input type="hidden" name="locationDistrict" value="" />
-        <div class="md:col-span-2">
-          <label class="mb-1 block text-sm font-medium text-slate-700">Pick Location on Map</label>
-          <div id="editMapPicker" class="h-72 w-full rounded-xl border border-slate-300"></div>
-          <p class="mt-1 text-xs text-slate-500">Click on the map to update location.</p>
-        </div>
-        <input id="editLatitude" name="latitude" type="number" step="0.000001" th:value="${editApartment.latitude}" placeholder="Latitude" readonly class="rounded-xl border border-slate-300 bg-slate-100 px-3 py-2" />
-        <input id="editLongitude" name="longitude" type="number" step="0.000001" th:value="${editApartment.longitude}" placeholder="Longitude" readonly class="rounded-xl border border-slate-300 bg-slate-100 px-3 py-2" />
-        <textarea name="description" placeholder="Listing description" class="md:col-span-2 rounded-xl border border-slate-300 bg-white px-3 py-2" th:text="${editApartment.description}"></textarea>
-        <div class="md:col-span-2">
-          <label for="editImageFiles" class="mb-1 block text-sm font-medium text-slate-700">Replace Images (optional)</label>
-          <input id="editImageFiles"
-                 name="imageFiles"
-                 type="file"
-                 accept="image/*"
-                 multiple
-                 class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700" />
-          <p class="mt-1 text-xs text-slate-500">Upload new images only if you want to replace current ones.</p>
-        </div>
-        <button class="md:col-span-2 rounded-xl bg-ink px-4 py-2 font-semibold text-white">Save Changes</button>
-      </form>
-    </section>
 
-    <section class="mt-6 glass-card p-6">
-      <h2 class="text-xl font-semibold">Current Listings</h2>
-      <p class="mt-1 text-sm text-slate-600">Available points: <span th:text="${currentPoints != null ? currentPoints : 0}">0</span></p>
-      <div class="mt-4" data-table>
-      <div class="table-toolbar">
-        <input data-table-search type="text" placeholder="Search title or area..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
-        <select data-table-filter-key="status" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-          <option value="">All status</option>
-          <option value="AVAILABLE">AVAILABLE</option>
-          <option value="PENDING">PENDING</option>
-          <option value="SOLD">SOLD</option>
-          <option value="RENTED">RENTED</option>
-          <option value="HIDDEN">HIDDEN</option>
-        </select>
-        <select data-table-filter-key="transaction" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-          <option value="">All types</option>
-          <option value="SALE">SALE</option>
-          <option value="RENT">RENT</option>
-        </select>
-        <select data-table-sort class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-          <option value="">Sort by</option>
-          <option value="title:asc">Title A-Z</option>
-          <option value="title:desc">Title Z-A</option>
-          <option value="price:asc">Price Low-High</option>
-          <option value="price:desc">Price High-Low</option>
-        </select>
-      </div>
-
-      <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
-        <table class="min-w-full divide-y divide-slate-200 text-sm">
-          <thead class="bg-slate-50 text-left text-slate-600">
-            <tr>
-              <th class="px-4 py-3 font-semibold">Image</th>
-              <th class="px-4 py-3 font-semibold">Title</th>
-              <th class="px-4 py-3 font-semibold">Type</th>
-              <th class="px-4 py-3 font-semibold">Room</th>
-              <th class="px-4 py-3 font-semibold">Area</th>
-              <th class="px-4 py-3 font-semibold">Price</th>
-              <th class="px-4 py-3 font-semibold">Status</th>
-              <th class="px-4 py-3 font-semibold">Boost</th>
-              <th class="px-4 py-3 font-semibold">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100 bg-white/80" data-table-body>
-            <tr th:if="${#lists.isEmpty(apartments)}">
-              <td class="px-4 py-4 text-slate-500" colspan="9">No listings yet.</td>
-            </tr>
-            <tr data-row
-                th:each="apartment : ${apartments}"
-                th:attr="data-search=${apartment.title + ' ' + (apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '')},data-status=${apartment.status},data-transaction=${apartment.transactionType},data-title=${apartment.title},data-price=${apartment.price}">
-              <td class="px-4 py-3">
-                <img th:if="${!#lists.isEmpty(apartment.images)}"
-                     th:src="${apartment.images[0]}"
-                     alt="Apartment image"
-                     class="h-12 w-16 rounded-lg object-cover" />
-                <span th:if="${#lists.isEmpty(apartment.images)}" class="text-xs text-slate-400">No image</span>
-              </td>
-              <td class="px-4 py-3 font-semibold text-ink" th:text="${apartment.title}"></td>
-              <td class="px-4 py-3 text-slate-600" th:text="${apartment.transactionType}"></td>
-              <td class="px-4 py-3 text-slate-600" th:text="${apartment.roomType != null ? apartment.roomType : '-'}"></td>
-              <td class="px-4 py-3 text-slate-600" th:text="${apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '-'}"></td>
-              <td class="px-4 py-3 text-slate-600" th:text="${apartment.price}"></td>
-              <td class="px-4 py-3"><span class="pill" th:text="${apartment.status}"></span></td>
-              <td class="px-4 py-3">
-                <form th:action="@{/agent/listings/{id}/boost(id=${apartment.id})}" method="post" class="flex flex-wrap items-center gap-2">
-                  <input type="number"
-                         name="points"
-                         min="1"
-                         th:attr="max=${currentPoints != null ? currentPoints : 0}"
-                         placeholder="Points"
-                         class="w-24 rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs" />
-                  <button class="rounded-lg border border-tealdeep bg-tealdeep px-3 py-1.5 text-xs font-semibold text-white">Boost</button>
-                </form>
-                <p class="mt-1 text-xs text-slate-500">Boosted: <span th:text="${apartment.boostPoints != null ? apartment.boostPoints : 0}">0</span> pts</p>
-              </td>
-              <td class="px-4 py-3">
-                <div class="flex flex-wrap gap-2">
-                  <a th:href="@{/agent/listings(editId=${apartment.id})}"
-                     class="rounded-lg border border-sky-400 bg-white px-3 py-1.5 text-xs font-semibold text-sky-700">Edit</a>
-                  <form th:if="${apartment.status.name() != 'HIDDEN'}" th:action="@{/agent/listings/{id}/visibility(id=${apartment.id})}" method="post">
-                    <input type="hidden" name="hidden" value="true" />
-                    <button class="rounded-lg border border-amber-400 bg-white px-3 py-1.5 text-xs font-semibold text-amber-700">Hide</button>
-                  </form>
-                  <form th:if="${apartment.status.name() == 'HIDDEN'}" th:action="@{/agent/listings/{id}/visibility(id=${apartment.id})}" method="post">
-                    <input type="hidden" name="hidden" value="false" />
-                    <button class="rounded-lg border border-emerald-400 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700">Show</button>
-                  </form>
-                  <form th:action="@{/agent/listings/{id}/delete(id=${apartment.id})}" method="post" onsubmit="return confirm('Delete this listing?');">
-                    <button class="rounded-lg border border-rose-400 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700">Delete</button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-            <tr data-table-empty class="hidden">
-              <td class="px-4 py-4 text-slate-500" colspan="9">No listing matches current filters.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      </div>
-    </section>
+        <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200" data-table>
+          <div class="border-b border-slate-200 px-6 py-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h2 class="text-lg font-semibold text-slate-900">Current Portfolio</h2>
+              <p class="mt-1 text-sm text-slate-500">Available Points: <span class="font-bold text-indigo-600" th:text="${currentPoints != null ? currentPoints : 0}">0</span></p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <input data-table-search type="text" placeholder="Search title or area..." class="rounded-md border-0 py-1.5 pl-3 pr-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm" />
+              <select data-table-filter-key="status" class="rounded-md border-0 py-1.5 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                <option value="">All Status</option>
+                <option value="AVAILABLE">AVAILABLE</option>
+                <option value="PENDING">PENDING</option>
+                <option value="SOLD">SOLD</option>
+                <option value="HIDDEN">HIDDEN</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Listing Info</th>
+                  <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Details</th>
+                  <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Price</th>
+                  <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Visibility</th>
+                  <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Boost Panel</th>
+                  <th scope="col" class="px-6 py-3.5 text-right text-sm font-semibold text-slate-900">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 bg-white" data-table-body>
+                <tr th:if="${#lists.isEmpty(apartments)}">
+                  <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="6">No listings yet. Start by creating one above!</td>
+                </tr>
+                <tr data-row class="hover:bg-slate-50/50"
+                    th:each="apartment : ${apartments}"
+                    th:attr="data-search=${apartment.title + ' ' + (apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '')},data-status=${apartment.status},data-transaction=${apartment.transactionType},data-title=${apartment.title},data-price=${apartment.price}">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-4">
+                      <div class="h-16 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
+                        <img th:if="${!#lists.isEmpty(apartment.images)}" th:src="${apartment.images[0]}" alt="" class="h-full w-full object-cover" />
+                        <div th:if="${#lists.isEmpty(apartment.images)}" class="flex h-full w-full items-center justify-center text-xs text-slate-400">No Img</div>
+                      </div>
+                      <div class="min-w-0">
+                        <p class="font-medium text-slate-900 line-clamp-2" th:text="${apartment.title}"></p>
+                        <p class="text-xs text-slate-500 mt-1" th:text="${apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '-'}"></p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-600">
+                    <div th:text="${apartment.transactionType}"></div>
+                    <div class="text-xs text-slate-400 mt-1" th:text="${(apartment.roomType != null ? apartment.roomType : '-') + ' • ' + apartment.area + 'm2'}"></div>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-sm font-semibold text-indigo-600" th:text="${apartment.price}"></td>
+                  <td class="whitespace-nowrap px-6 py-4">
+                    <span th:classappend="${apartment.status == 'AVAILABLE' ? 'bg-green-50 text-green-700 ring-green-600/20' : (apartment.status == 'HIDDEN' ? 'bg-slate-100 text-slate-600 ring-slate-500/10' : 'bg-amber-50 text-amber-700 ring-amber-600/20')}" 
+                          class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset" th:text="${apartment.status}"></span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <form th:action="@{/agent/listings/{id}/boost(id=${apartment.id})}" method="post" class="flex items-center gap-2">
+                      <input type="number" name="points" min="1" th:attr="max=${currentPoints != null ? currentPoints : 0}" placeholder="Pts" class="w-16 rounded-md border-0 py-1 pl-2 pr-1 text-xs text-slate-900 ring-1 ring-inset ring-slate-300" />
+                      <button class="rounded-md bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-700 hover:bg-indigo-100 ring-1 ring-inset ring-indigo-300">Boost</button>
+                    </form>
+                    <p class="mt-1.5 text-[10px] text-slate-500 font-medium">Active Boost: <span class="text-indigo-600" th:text="${apartment.boostPoints != null ? apartment.boostPoints : 0}"></span> pts</p>
+                  </td>
+                  <td class="whitespace-nowrap px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <a th:href="@{/agent/listings(editId=${apartment.id})}" class="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">Edit</a>
+                      
+                      <form th:if="${apartment.status.name() != 'HIDDEN'}" th:action="@{/agent/listings/{id}/visibility(id=${apartment.id})}" method="post">
+                        <input type="hidden" name="hidden" value="true" />
+                        <button class="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">Hide</button>
+                      </form>
+                      <form th:if="${apartment.status.name() == 'HIDDEN'}" th:action="@{/agent/listings/{id}/visibility(id=${apartment.id})}" method="post">
+                        <input type="hidden" name="hidden" value="false" />
+                        <button class="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-green-700 shadow-sm ring-1 ring-inset ring-green-300 hover:bg-green-50">Show</button>
+                      </form>
+                      
+                      <div class="h-4 w-px bg-slate-200 mx-1"></div>
+                      
+                      <form th:action="@{/agent/listings/{id}/delete(id=${apartment.id})}" method="post" onsubmit="return confirm('Permanently delete this listing?');">
+                        <button class="rounded-md bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-700 shadow-sm ring-1 ring-inset ring-red-300 hover:bg-red-100">Delete</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                <tr data-table-empty class="hidden">
+                  <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="6">No listing matches current filters.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -259,414 +295,823 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
+
     (function () {
+
       const defaultLat = 10.7769;
+
       const defaultLng = 106.7009;
+
       const addressKitBaseApi = "/api/address-kit";
+
       const addressKitEffectiveDate = "2025-07-01";
+
       const geocodingApi = "https://nominatim.openstreetmap.org/search";
+
       const fallbackGeocodingApi = "https://photon.komoot.io/api/";
+
       const wardsByProvince = new Map();
 
+
+
       function hasText(value) {
+
         return typeof value === "string" && value.trim().length > 0;
+
       }
+
+
 
       function normalizeText(value) {
+
         if (!hasText(value)) {
+
           return "";
+
         }
+
         return value
+
           .normalize("NFD")
+
           .replace(/[\u0300-\u036f]/g, "")
+
           .trim()
+
           .toLowerCase();
+
       }
+
+
 
       function createOption(value, label) {
+
         const option = document.createElement("option");
+
         option.value = value;
+
         option.textContent = label;
+
         return option;
+
       }
+
+
 
       function chooseCodeByCodeOrName(items, preferredCode, preferredName) {
+
         if (hasText(preferredCode)) {
+
           const preferredCodeText = String(preferredCode).trim();
+
           const exactCodeMatch = items.find(function (item) {
+
             return String(item.code) === preferredCodeText;
+
           });
+
           if (exactCodeMatch) {
+
             return String(exactCodeMatch.code);
+
           }
+
+
 
           const normalizedPreferredCode = preferredCodeText.replace(/^0+/, "");
+
           if (hasText(normalizedPreferredCode)) {
+
             const relaxedCodeMatch = items.find(function (item) {
+
               return String(item.code).replace(/^0+/, "") === normalizedPreferredCode;
+
             });
+
             if (relaxedCodeMatch) {
+
               return String(relaxedCodeMatch.code);
+
             }
+
           }
+
         }
+
         const normalizedPreferredName = normalizeText(preferredName);
+
         if (!normalizedPreferredName) {
+
           return "";
+
         }
+
         const matchedItem = items.find(function (item) {
+
           return normalizeText(item.name) === normalizedPreferredName;
+
         });
+
         return matchedItem ? String(matchedItem.code) : "";
+
       }
+
+
 
       function setSelectOptions(selectElement, items, placeholder, selectedCode) {
+
         selectElement.innerHTML = "";
+
         selectElement.appendChild(createOption("", placeholder));
+
         items.forEach(function (item) {
+
           selectElement.appendChild(createOption(String(item.code), item.name));
+
         });
+
         if (hasText(selectedCode)) {
+
           selectElement.value = String(selectedCode);
+
         }
+
         if (!hasText(selectElement.value)) {
+
           selectElement.value = "";
+
         }
+
         selectElement.disabled = items.length === 0;
+
       }
+
+
 
       async function fetchJson(url) {
+
         const response = await fetch(url, {
+
           headers: {
+
             Accept: "application/json"
+
           }
+
         });
+
         if (!response.ok) {
+
           throw new Error("Request failed: " + response.status);
+
         }
+
         return response.json();
+
       }
+
+
 
       function toArray(value) {
+
         return Array.isArray(value) ? value : [];
+
       }
+
+
 
       function buildAddressKitUrl(path) {
+
         return addressKitBaseApi + "/" + addressKitEffectiveDate + path;
+
       }
+
+
 
       function extractProvinces(data) {
+
         return toArray(data && data.provinces);
+
       }
+
+
 
       function extractCommunes(data) {
+
         return toArray(data && data.communes);
+
       }
+
+
 
       function toCoordinateValue(value) {
+
         return Number(value).toFixed(6);
+
       }
+
+
 
       function initLocationMap(config) {
+
         const mapElement = document.getElementById(config.mapId);
+
         const latInput = document.getElementById(config.latInputId);
+
         const lngInput = document.getElementById(config.lngInputId);
+
         const streetInput = document.getElementById(config.streetInputId);
+
         const provinceSelect = document.getElementById(config.provinceSelectId);
+
         const wardSelect = document.getElementById(config.wardSelectId);
+
         const provinceNameInput = document.getElementById(config.provinceNameInputId);
+
         const wardNameInput = document.getElementById(config.wardNameInputId);
 
+
+
         if (!mapElement || !latInput || !lngInput || !streetInput || !provinceSelect || !wardSelect
+
             || !provinceNameInput || !wardNameInput || typeof L === "undefined") {
+
           return;
+
         }
+
+
 
         const hasExistingCoordinates = hasText(latInput.value) && hasText(lngInput.value);
+
         const initialLat = hasExistingCoordinates ? Number(latInput.value) : defaultLat;
+
         const initialLng = hasExistingCoordinates ? Number(lngInput.value) : defaultLng;
 
+
+
         const map = L.map(config.mapId).setView([initialLat, initialLng], hasExistingCoordinates ? 15 : 12);
+
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+
           maxZoom: 19,
+
           attribution: "&copy; OpenStreetMap contributors"
+
         }).addTo(map);
 
+
+
         let marker = L.marker([initialLat, initialLng]).addTo(map);
+
         latInput.value = toCoordinateValue(initialLat);
+
         lngInput.value = toCoordinateValue(initialLng);
 
+
+
         function setMarkerPosition(lat, lng, zoomLevel) {
+
           marker.setLatLng([lat, lng]);
+
           map.setView([lat, lng], zoomLevel || 16);
+
           latInput.value = toCoordinateValue(lat);
+
           lngInput.value = toCoordinateValue(lng);
+
         }
+
+
 
         function syncSelectedName(selectElement, hiddenInput) {
+
           const selectedOption = selectElement.options[selectElement.selectedIndex];
+
           hiddenInput.value = selectedOption && hasText(selectedOption.value) ? selectedOption.textContent.trim() : "";
+
         }
+
+
 
         async function loadProvinces() {
+
           const provinceResponse = await fetchJson(buildAddressKitUrl("/provinces"));
+
           const provinces = extractProvinces(provinceResponse).sort(function (left, right) {
+
             return String(left.name || "").localeCompare(String(right.name || ""), "vi", { sensitivity: "base" });
+
           });
+
           const existingCode = provinceSelect.dataset.existingCode;
+
           const existingName = provinceSelect.dataset.existingName || provinceNameInput.value;
+
           const selectedCode = chooseCodeByCodeOrName(provinces, existingCode, existingName);
+
           setSelectOptions(provinceSelect, provinces, "Select city/province", selectedCode);
+
           syncSelectedName(provinceSelect, provinceNameInput);
+
         }
+
+
 
         function toWardItems(communes) {
+
           const uniqueWards = new Map();
+
           toArray(communes).forEach(function (commune) {
+
             const wardCode = String(commune.code || "").trim();
+
             if (!wardCode || uniqueWards.has(wardCode)) {
+
               return;
+
             }
+
             uniqueWards.set(wardCode, {
+
               code: wardCode,
+
               name: commune.name || ""
+
             });
+
           });
+
           return Array.from(uniqueWards.values()).sort(function (left, right) {
+
             return left.name.localeCompare(right.name, "vi", { sensitivity: "base" });
+
           });
+
         }
+
+
 
         async function loadWardsByProvince(provinceCode, preferredCode, preferredName) {
+
           if (!hasText(provinceCode)) {
+
             setSelectOptions(wardSelect, [], "Select ward/commune", "");
+
             wardNameInput.value = "";
+
             return;
+
           }
+
+
 
           let wards = wardsByProvince.get(provinceCode);
+
           if (!wards) {
+
             const wardResponse = await fetchJson(buildAddressKitUrl("/provinces/" + encodeURIComponent(String(provinceCode)) + "/communes"));
+
             wards = toWardItems(extractCommunes(wardResponse));
+
             wardsByProvince.set(provinceCode, wards);
+
           }
+
+
 
           const selectedCode = chooseCodeByCodeOrName(wards, preferredCode, preferredName);
+
           setSelectOptions(wardSelect, wards, "Select ward/commune", selectedCode);
+
           syncSelectedName(wardSelect, wardNameInput);
+
         }
+
+
 
         function buildGeocodingQueries() {
+
           const street = hasText(streetInput.value) ? streetInput.value.trim() : "";
+
           const ward = hasText(wardNameInput.value) ? wardNameInput.value.trim() : "";
+
           const province = hasText(provinceNameInput.value) ? provinceNameInput.value.trim() : "";
+
           const baseSegments = [street, ward, province].filter(function (value) {
+
             return hasText(value);
+
           });
+
           if (baseSegments.length === 0) {
+
             return [];
+
           }
+
+
 
           const candidates = [];
+
           candidates.push(baseSegments.concat("Viet Nam").join(", "));
 
+
+
           if (hasText(street) && hasText(province)) {
+
             candidates.push([street, province, "Viet Nam"].join(", "));
+
           }
+
+
 
           if (hasText(street)) {
+
             candidates.push([street, "Viet Nam"].join(", "));
+
           }
+
+
 
           if (hasText(ward) && hasText(province)) {
+
             candidates.push([ward, province, "Viet Nam"].join(", "));
+
           }
+
+
 
           const seen = new Set();
+
           return candidates.filter(function (query) {
+
             if (!hasText(query) || seen.has(query)) {
+
               return false;
+
             }
+
             seen.add(query);
+
             return true;
+
           });
+
         }
+
+
 
         let geocodeTimerId = null;
+
         let geocodeController = null;
 
+
+
         async function geocodeByNominatim(query, signal) {
+
           const geocodeUrl = geocodingApi
+
             + "?format=jsonv2&limit=1&countrycodes=vn&q="
+
             + encodeURIComponent(query);
+
           const response = await fetch(geocodeUrl, {
+
             signal: signal,
+
             headers: {
+
               Accept: "application/json"
+
             }
+
           });
+
           if (!response.ok) {
+
             return null;
+
           }
+
           const results = await response.json();
+
           if (!Array.isArray(results) || results.length === 0) {
+
             return null;
+
           }
+
           const firstResult = results[0];
+
           const lat = Number(firstResult.lat);
+
           const lng = Number(firstResult.lon);
+
           if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+
             return null;
+
           }
+
           return { lat: lat, lng: lng };
+
         }
+
+
 
         async function geocodeByPhoton(query, signal) {
+
           const geocodeUrl = fallbackGeocodingApi
+
             + "?limit=1&lang=vi&q="
+
             + encodeURIComponent(query + ", Viet Nam");
+
           const response = await fetch(geocodeUrl, {
+
             signal: signal,
+
             headers: {
+
               Accept: "application/json"
+
             }
+
           });
+
           if (!response.ok) {
+
             return null;
+
           }
+
           const data = await response.json();
+
           const firstFeature = data && Array.isArray(data.features) ? data.features[0] : null;
+
           const coordinates = firstFeature && firstFeature.geometry ? firstFeature.geometry.coordinates : null;
+
           if (!Array.isArray(coordinates) || coordinates.length < 2) {
+
             return null;
+
           }
+
           const lng = Number(coordinates[0]);
+
           const lat = Number(coordinates[1]);
+
           if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+
             return null;
+
           }
+
           return { lat: lat, lng: lng };
+
         }
+
+
 
         async function geocodeAndUpdateMap() {
+
           if (!hasText(streetInput.value) && !hasText(wardNameInput.value) && !hasText(provinceNameInput.value)) {
+
             return;
+
           }
+
+
 
           const queries = buildGeocodingQueries();
+
           if (queries.length === 0) {
+
             return;
+
           }
+
+
 
           if (geocodeController) {
+
             geocodeController.abort();
+
           }
+
           geocodeController = new AbortController();
 
+
+
           try {
+
             const signal = geocodeController.signal;
+
             let result = null;
+
             for (const query of queries) {
+
               result = await geocodeByNominatim(query, signal);
+
               if (!result) {
+
                 result = await geocodeByPhoton(query, signal);
+
               }
+
               if (result) {
+
                 break;
+
               }
+
             }
+
             if (result) {
+
               setMarkerPosition(result.lat, result.lng, 16);
+
             }
+
           } catch (error) {
+
             if (error && error.name !== "AbortError") {
+
               console.warn("Geocoding failed", error);
+
             }
+
           }
+
         }
+
+
 
         function scheduleGeocoding() {
+
           if (geocodeTimerId) {
+
             clearTimeout(geocodeTimerId);
+
           }
+
           geocodeTimerId = setTimeout(function () {
+
             geocodeAndUpdateMap();
+
           }, 450);
+
         }
 
+
+
         map.on("click", function (event) {
+
           setMarkerPosition(event.latlng.lat, event.latlng.lng, map.getZoom());
+
         });
+
+
 
         provinceSelect.addEventListener("change", async function () {
+
           syncSelectedName(provinceSelect, provinceNameInput);
+
           await loadWardsByProvince(provinceSelect.value, "", "");
+
           scheduleGeocoding();
+
         });
+
+
 
         wardSelect.addEventListener("change", function () {
+
           syncSelectedName(wardSelect, wardNameInput);
+
           scheduleGeocoding();
+
         });
+
+
 
         streetInput.addEventListener("input", function () {
+
           scheduleGeocoding();
+
         });
+
         streetInput.addEventListener("change", function () {
+
           scheduleGeocoding();
+
         });
+
         streetInput.addEventListener("blur", function () {
+
           scheduleGeocoding();
+
         });
+
+
 
         Promise.resolve()
+
           .then(loadProvinces)
+
           .then(async function () {
+
             const wardExistingCode = wardSelect.dataset.existingCode;
+
             const wardExistingName = wardSelect.dataset.existingName || wardNameInput.value;
 
+
+
             if (hasText(provinceSelect.value)) {
+
               await loadWardsByProvince(provinceSelect.value, wardExistingCode, wardExistingName);
+
             } else {
+
               await loadWardsByProvince("", "", "");
+
             }
+
+
 
             if (!hasExistingCoordinates) {
+
               scheduleGeocoding();
+
             }
+
           })
+
           .catch(function (error) {
+
             console.warn("Cannot load AddressKit administrative API", error);
+
           })
+
           .finally(function () {
+
             setTimeout(function () {
+
               map.invalidateSize();
+
             }, 120);
+
           });
+
       }
 
-      initLocationMap({
-        mapId: "createMapPicker",
-        latInputId: "createLatitude",
-        lngInputId: "createLongitude",
-        streetInputId: "createStreetAddress",
-        provinceSelectId: "createProvinceCode",
-        wardSelectId: "createWardCode",
-        provinceNameInputId: "createProvinceName",
-        wardNameInputId: "createWardName"
-      });
+
 
       initLocationMap({
-        mapId: "editMapPicker",
-        latInputId: "editLatitude",
-        lngInputId: "editLongitude",
-        streetInputId: "editStreetAddress",
-        provinceSelectId: "editProvinceCode",
-        wardSelectId: "editWardCode",
-        provinceNameInputId: "editProvinceName",
-        wardNameInputId: "editWardName"
+
+        mapId: "createMapPicker",
+
+        latInputId: "createLatitude",
+
+        lngInputId: "createLongitude",
+
+        streetInputId: "createStreetAddress",
+
+        provinceSelectId: "createProvinceCode",
+
+        wardSelectId: "createWardCode",
+
+        provinceNameInputId: "createProvinceName",
+
+        wardNameInputId: "createWardName"
+
       });
+
+
+
+      initLocationMap({
+
+        mapId: "editMapPicker",
+
+        latInputId: "editLatitude",
+
+        lngInputId: "editLongitude",
+
+        streetInputId: "editStreetAddress",
+
+        provinceSelectId: "editProvinceCode",
+
+        wardSelectId: "editWardCode",
+
+        provinceNameInputId: "editProvinceName",
+
+        wardNameInputId: "editWardName"
+
+      });
+
     })();
+
   </script>
 
   <div th:replace="~{fragments/footer :: siteFooter}"></div>

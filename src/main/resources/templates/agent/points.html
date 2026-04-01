@@ -1,139 +1,107 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/ui-head :: uiHead('Agent Points')}"></head>
-<body>
+<head th:replace="~{fragments/ui-head :: uiHead('Agent Wallet')}"></head>
+<body class="bg-slate-50 font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
-    <div class="workspace-grid">
+  <main class="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-[260px_1fr]">
       <div th:replace="~{fragments/agent-sidebar :: agentSidebar('points')}"></div>
 
-      <div>
-        <section class="glass-card p-6">
-          <div class="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Agent Wallet</p>
-              <h1 class="text-2xl font-semibold text-ink">Purchase Points</h1>
-              <p class="mt-2 text-sm text-slate-600">Top up points to promote listings and unlock premium tools.</p>
-            </div>
-            <div class="text-right">
-              <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Current Points</p>
-              <p class="text-2xl font-semibold text-ink" th:text="${currentPoints != null ? currentPoints : 0}">0</p>
-              <span class="pill">MoMo Payment</span>
-            </div>
+      <div class="space-y-6">
+        <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-wider text-indigo-600">Agent Wallet</p>
+            <h1 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">Purchase Points</h1>
+            <p class="mt-1 text-sm text-slate-500">Top up points to promote listings and unlock premium tools.</p>
           </div>
-        </section>
-
-        <div th:if="${param.error}" class="mt-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          Payment is unavailable right now. Please try again later.
+          <div class="text-left sm:text-right flex flex-col sm:items-end">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Current Balance</p>
+            <div class="mt-1 flex items-baseline gap-2">
+              <span class="text-3xl font-bold tracking-tight text-slate-900" th:text="${currentPoints != null ? currentPoints : 0}">0</span>
+              <span class="text-sm font-medium text-slate-500">PTS</span>
+            </div>
+            <span class="mt-2 inline-flex items-center rounded-md bg-pink-50 px-2 py-1 text-xs font-medium text-pink-700 ring-1 ring-inset ring-pink-600/20">MoMo Supported</span>
+          </div>
         </div>
 
-        <div th:if="${paymentResult != null}" class="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-          Payment response received for order <span th:text="${paymentResult.orderId}">N/A</span>.
-          <span th:if="${paymentResult.status != null}" th:text="${'Status: ' + paymentResult.status}"></span>
-          <span th:if="${paymentResult.points != null}" th:text="${'Points: ' + paymentResult.points}"></span>
-          <span th:if="${paymentResult.errorCode != null}" th:text="${'Code: ' + paymentResult.errorCode}"></span>
-          <span th:if="${paymentResult.message != null}" th:text="${'Message: ' + paymentResult.message}"></span>
+        <div th:if="${param.error}" class="rounded-xl bg-red-50 p-4 ring-1 ring-red-600/20 text-sm font-medium text-red-800">Payment is unavailable right now. Please try again later.</div>
+        
+        <div th:if="${paymentResult != null}" class="rounded-xl bg-slate-800 p-5 ring-1 ring-slate-900/10 shadow-lg text-sm text-slate-300">
+          <p class="font-semibold text-white mb-2">Transaction Receipt</p>
+          <ul class="space-y-1">
+            <li>Order ID: <span class="text-white" th:text="${paymentResult.orderId}">N/A</span></li>
+            <li th:if="${paymentResult.status != null}">Status: <span class="text-emerald-400 font-medium" th:text="${paymentResult.status}"></span></li>
+            <li th:if="${paymentResult.points != null}">Points Added: <span class="text-white" th:text="${paymentResult.points}"></span></li>
+            <li th:if="${paymentResult.message != null}">Note: <span class="text-slate-400" th:text="${paymentResult.message}"></span></li>
+          </ul>
+        </div>
+
+        <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <h2 class="text-lg font-semibold text-slate-900 mb-6 border-b border-slate-200 pb-4">Standard Packages</h2>
+          <div class="grid gap-6 md:grid-cols-3">
+            
+            <form method="post" action="/agent/points/momo" class="flex flex-col justify-between rounded-2xl p-6 ring-1 ring-inset ring-slate-200 hover:ring-indigo-600 hover:shadow-md transition-all">
+              <input type="hidden" name="fullName" th:value="${agentProfile != null ? agentProfile.fullName : ''}" />
+              <input type="hidden" name="amount" value="50000" /><input type="hidden" name="points" value="500" /><input type="hidden" name="orderInfo" value="Mua 500 diem cho agent" />
+              <div>
+                <h3 class="text-sm font-semibold leading-6 text-slate-500">Starter</h3>
+                <div class="mt-4 flex items-baseline gap-x-2">
+                  <span class="text-3xl font-bold tracking-tight text-slate-900">50K</span>
+                  <span class="text-sm font-semibold leading-6 text-slate-500">VND</span>
+                </div>
+                <p class="mt-2 text-sm text-indigo-600 font-medium">+500 points</p>
+              </div>
+              <button class="mt-6 w-full rounded-md bg-pink-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-pink-500" type="submit">Pay via MoMo</button>
+            </form>
+
+            <form method="post" action="/agent/points/momo" class="flex flex-col justify-between rounded-2xl bg-slate-900 p-6 ring-1 ring-inset ring-slate-900 shadow-xl relative overflow-hidden transform md:-translate-y-2">
+              <div class="absolute top-0 right-0 bg-indigo-500 text-[10px] font-bold uppercase tracking-widest text-white px-3 py-1 rounded-bl-lg">Popular</div>
+              <input type="hidden" name="fullName" th:value="${agentProfile != null ? agentProfile.fullName : ''}" />
+              <input type="hidden" name="amount" value="150000" /><input type="hidden" name="points" value="1500" /><input type="hidden" name="orderInfo" value="Mua 1500 diem cho agent" />
+              <div>
+                <h3 class="text-sm font-semibold leading-6 text-indigo-400">Growth</h3>
+                <div class="mt-4 flex items-baseline gap-x-2">
+                  <span class="text-3xl font-bold tracking-tight text-white">150K</span>
+                  <span class="text-sm font-semibold leading-6 text-slate-400">VND</span>
+                </div>
+                <p class="mt-2 text-sm text-indigo-300 font-medium">+1500 points</p>
+              </div>
+              <button class="mt-6 w-full rounded-md bg-indigo-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-400" type="submit">Pay via MoMo</button>
+            </form>
+
+            <form method="post" action="/agent/points/momo" class="flex flex-col justify-between rounded-2xl p-6 ring-1 ring-inset ring-slate-200 hover:ring-indigo-600 hover:shadow-md transition-all">
+              <input type="hidden" name="fullName" th:value="${agentProfile != null ? agentProfile.fullName : ''}" />
+              <input type="hidden" name="amount" value="300000" /><input type="hidden" name="points" value="3500" /><input type="hidden" name="orderInfo" value="Mua 3500 diem cho agent" />
+              <div>
+                <h3 class="text-sm font-semibold leading-6 text-slate-500">Pro Boost</h3>
+                <div class="mt-4 flex items-baseline gap-x-2">
+                  <span class="text-3xl font-bold tracking-tight text-slate-900">300K</span>
+                  <span class="text-sm font-semibold leading-6 text-slate-500">VND</span>
+                </div>
+                <p class="mt-2 text-sm text-indigo-600 font-medium">+3500 points (Bonus included)</p>
+              </div>
+              <button class="mt-6 w-full rounded-md bg-pink-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-pink-500" type="submit">Pay via MoMo</button>
+            </form>
+
+          </div>
         </div>
 
         <section class="mt-6 glass-card p-6">
-          <h2 class="text-lg font-semibold text-ink">Choose a package</h2>
-          <div class="mt-4 grid gap-4 md:grid-cols-3">
-            <form method="post" action="/agent/points/momo" class="rounded-2xl border border-slate-200 bg-white/75 p-4">
-              <input type="hidden" name="fullName" th:value="${agentProfile != null ? agentProfile.fullName : ''}" />
-              <input type="hidden" name="amount" value="50000" />
-              <input type="hidden" name="points" value="500" />
-              <input type="hidden" name="orderInfo" value="Mua 500 diem cho agent" />
-              <p class="text-sm text-slate-500">Starter</p>
-              <p class="mt-2 text-2xl font-semibold text-ink">50,000 VND</p>
-              <p class="mt-1 text-sm text-slate-600">+500 points</p>
-              <button class="mt-4 w-full rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-white" type="submit">
-                Pay with MoMo
-              </button>
-            </form>
-
-            <form method="post" action="/agent/points/momo" class="rounded-2xl border border-slate-200 bg-white/75 p-4">
-              <input type="hidden" name="fullName" th:value="${agentProfile != null ? agentProfile.fullName : ''}" />
-              <input type="hidden" name="amount" value="150000" />
-              <input type="hidden" name="points" value="1500" />
-              <input type="hidden" name="orderInfo" value="Mua 1500 diem cho agent" />
-              <p class="text-sm text-slate-500">Growth</p>
-              <p class="mt-2 text-2xl font-semibold text-ink">150,000 VND</p>
-              <p class="mt-1 text-sm text-slate-600">+1500 points</p>
-              <button class="mt-4 w-full rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-white" type="submit">
-                Pay with MoMo
-              </button>
-            </form>
-
-            <form method="post" action="/agent/points/momo" class="rounded-2xl border border-slate-200 bg-white/75 p-4">
-              <input type="hidden" name="fullName" th:value="${agentProfile != null ? agentProfile.fullName : ''}" />
-              <input type="hidden" name="amount" value="300000" />
-              <input type="hidden" name="points" value="3500" />
-              <input type="hidden" name="orderInfo" value="Mua 3500 diem cho agent" />
-              <p class="text-sm text-slate-500">Boost</p>
-              <p class="mt-2 text-2xl font-semibold text-ink">300,000 VND</p>
-              <p class="mt-1 text-sm text-slate-600">+3500 points</p>
-              <button class="mt-4 w-full rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-white" type="submit">
-                Pay with MoMo
-              </button>
-            </form>
-          </div>
-        </section>
-
-        <section class="mt-6 glass-card p-6">
-          <h2 class="text-lg font-semibold text-ink">Purchase History</h2>
-          <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
-              <thead class="bg-slate-50 text-left text-slate-600">
-                <tr>
-                  <th class="px-4 py-3 font-semibold">Order</th>
-                  <th class="px-4 py-3 font-semibold">Amount</th>
-                  <th class="px-4 py-3 font-semibold">Points</th>
-                  <th class="px-4 py-3 font-semibold">Status</th>
-                  <th class="px-4 py-3 font-semibold">Created</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 bg-white/80">
-                <tr th:if="${#lists.isEmpty(topupHistory)}">
-                  <td class="px-4 py-4 text-slate-500" colspan="5">No purchases yet.</td>
-                </tr>
-                <tr th:each="topup : ${topupHistory}">
-                  <td class="px-4 py-3 text-slate-700" th:text="${topup.orderId}"></td>
-                  <td class="px-4 py-3 text-slate-700" th:text="${topup.amount}"></td>
-                  <td class="px-4 py-3 text-slate-700" th:text="${topup.points}"></td>
-                  <td class="px-4 py-3"><span class="pill" th:text="${topup.status}"></span></td>
-                  <td class="px-4 py-3 text-slate-600" th:text="${#temporals.format(topup.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section class="mt-6 glass-card p-6">
-          <h2 class="text-lg font-semibold text-ink">Usage History</h2>
-          <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
-              <thead class="bg-slate-50 text-left text-slate-600">
-                <tr>
-                  <th class="px-4 py-3 font-semibold">Listing</th>
-                  <th class="px-4 py-3 font-semibold">Points</th>
-                  <th class="px-4 py-3 font-semibold">Type</th>
-                  <th class="px-4 py-3 font-semibold">Created</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 bg-white/80">
-                <tr th:if="${#lists.isEmpty(usageHistory)}">
-                  <td class="px-4 py-4 text-slate-500" colspan="4">No usage yet.</td>
-                </tr>
-                <tr th:each="usage : ${usageHistory}">
-                  <td class="px-4 py-3 text-slate-700" th:text="${usage.apartment != null ? usage.apartment.title : 'N/A'}"></td>
-                  <td class="px-4 py-3 text-slate-700" th:text="${usage.points}"></td>
-                  <td class="px-4 py-3"><span class="pill" th:text="${usage.type}"></span></td>
-                  <td class="px-4 py-3 text-slate-600" th:text="${#temporals.format(usage.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <h2 class="text-lg font-semibold text-ink">Custom amount</h2>
+          <p class="mt-2 text-sm text-slate-600">Enter any amount above 1,000 VND. Default rate: 1 point per 100 VND.</p>
+          <form method="post" action="/agent/points/momo" class="mt-4 flex flex-wrap gap-3">
+            <input type="hidden" name="fullName" th:value="${agentProfile != null ? agentProfile.fullName : ''}" />
+            <input type="hidden" name="orderInfo" value="Mua diem tuy chinh cho agent" />
+            <input type="number"
+                   min="1000"
+                   name="amount"
+                   class="min-h-[44px] w-52 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
+                   placeholder="Amount (VND)" />
+            <button class="min-h-[44px] rounded-xl bg-tealdeep px-4 py-2 text-sm font-semibold text-white" type="submit">
+              Pay with MoMo
+            </button>
+          </form>
         </section>
       </div>
     </div>

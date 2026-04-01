@@ -1,44 +1,50 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/ui-head :: uiHead('Agent Booking Pipeline')}"></head>
-<body>
+<body class="bg-slate-50 font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
-    <div class="workspace-grid">
+  <main class="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-[260px_1fr]">
       <div th:replace="~{fragments/agent-sidebar :: agentSidebar('bookings')}"></div>
 
-      <div>
-      <section class="glass-card p-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="space-y-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 class="text-3xl font-semibold text-ink">Booking Pipeline</h1>
-            <p class="mt-1 text-sm text-slate-600">Approve, reject, or complete customer appointments.</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900">Booking Pipeline</h1>
+            <p class="mt-1 text-sm text-slate-500">Approve, reject, or complete customer appointments.</p>
           </div>
-          <a href="/agent/dashboard" class="pill">Back to Dashboard</a>
+          <a href="/agent/dashboard" class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900">&larr; Back to Dashboard</a>
         </div>
-      </section>
 
-      <div th:if="${param.statusUpdated}" class="mt-4 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Booking status updated.</div>
-
-      <section class="mt-6 glass-card p-6" data-table>
-        <div class="table-toolbar">
-          <input data-table-search type="text" placeholder="Search apartment or customer..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
-          <select data-table-filter-key="status" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-            <option value="">All status</option>
-            <option value="PENDING">PENDING</option>
-            <option value="CONFIRMED">CONFIRMED</option>
-            <option value="CANCELLED">CANCELLED</option>
-            <option value="COMPLETED">COMPLETED</option>
-          </select>
-          <select data-table-sort class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-            <option value="">Sort by</option>
-            <option value="scheduled:asc">Schedule Asc</option>
-            <option value="scheduled:desc">Schedule Desc</option>
-            <option value="customer:asc">Customer A-Z</option>
-            <option value="customer:desc">Customer Z-A</option>
-          </select>
+        <div th:if="${param.statusUpdated}" class="rounded-xl bg-green-50 p-4 ring-1 ring-green-600/20">
+          <p class="text-sm font-medium text-green-800">Booking status updated successfully.</p>
         </div>
+
+        <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200" data-table>
+          <div class="border-b border-slate-200 px-6 py-4">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <div class="relative flex-1">
+                <input data-table-search type="text" placeholder="Search apartment or customer..." class="block w-full rounded-lg border-0 py-2 pl-3 pr-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+              </div>
+              <div class="flex flex-wrap gap-3">
+                <select data-table-filter-key="status" class="rounded-lg border-0 py-2 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                  <option value="">All Status</option>
+                  <option value="PENDING">PENDING</option>
+                  <option value="CONFIRMED">CONFIRMED</option>
+                  <option value="CANCELLED">CANCELLED</option>
+                  <option value="COMPLETED">COMPLETED</option>
+                </select>
+                <select data-table-sort class="rounded-lg border-0 py-2 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+                  <option value="">Sort by</option>
+                  <option value="scheduled:asc">Schedule Asc</option>
+                  <option value="scheduled:desc">Schedule Desc</option>
+                  <option value="customer:asc">Customer A-Z</option>
+                  <option value="customer:desc">Customer Z-A</option>
+                </select>
+              </div>
+            </div>
+          </div>
 
         <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
           <table class="min-w-full divide-y divide-slate-200 text-sm">
@@ -65,13 +71,14 @@
                 <td class="px-4 py-3 text-slate-600" th:text="${appointment.createdAt}"></td>
                 <td class="px-4 py-3"><span class="pill" th:text="${appointment.status}"></span></td>
                 <td class="px-4 py-3">
-                  <form th:action="@{/agent/bookings/{id}/status(id=${appointment.id})}" method="post" class="flex items-center gap-2">
+                  <form th:action="@{/agent/bookings/{id}/status(id=${appointment.id})}" method="post" class="grid gap-2 md:grid-cols-3">
                     <select name="status" class="rounded-xl border border-slate-300 bg-white px-2 py-1.5">
                       <option value="PENDING">PENDING</option>
                       <option value="CONFIRMED">CONFIRMED</option>
                       <option value="CANCELLED">CANCELLED</option>
                       <option value="COMPLETED">COMPLETED</option>
                     </select>
+                    <input name="agentNote" placeholder="Note" class="rounded-xl border border-slate-300 bg-white px-2 py-1.5" />
                     <button class="rounded-xl bg-tealdeep px-3 py-1.5 text-white">Apply</button>
                   </form>
                 </td>

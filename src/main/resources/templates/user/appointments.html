@@ -1,109 +1,120 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/ui-head :: uiHead('My Appointments')}"></head>
-<body>
+<body class="bg-slate-50 font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="page-enter mx-auto max-w-7xl px-4 py-8">
-    <section class="glass-card p-6">
-      <h1 class="text-3xl font-semibold text-ink">My Appointments</h1>
-      <p class="mt-1 text-sm text-slate-600">Track booking status and submit reviews after completion.</p>
-    </section>
+  <main class="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900">My Appointments</h1>
+      <p class="mt-1 text-sm text-slate-500">Track booking status and submit reviews after completion.</p>
+    </div>
 
     <div th:replace="~{fragments/user-tabs :: userTabs('appointments')}"></div>
 
-    <div th:if="${param.reviewed}" class="mb-5 rounded-2xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Review submitted successfully.</div>
+    <div th:if="${param.reviewed}" class="mb-6 rounded-xl bg-green-50 p-4 ring-1 ring-inset ring-green-600/20 text-sm font-medium text-green-800">
+      Review submitted successfully. Thank you for your feedback!
+    </div>
 
-    <section class="data-grid cols-3">
-      <article class="glass-card metric-card p-5">
-        <p class="text-sm text-slate-600">Total Appointments</p>
-        <p class="mt-2 text-3xl font-bold text-ink" th:text="${#lists.size(appointments)}">0</p>
-      </article>
-      <article class="glass-card metric-card p-5">
-        <p class="text-sm text-slate-600">Pending</p>
-        <p class="mt-2 text-3xl font-bold text-coral" th:text="${pendingAppointmentCount}">0</p>
-      </article>
-      <article class="glass-card metric-card p-5">
-        <p class="text-sm text-slate-600">Completed</p>
-        <p class="mt-2 text-3xl font-bold text-tealdeep" th:text="${completedAppointmentCount}">0</p>
-      </article>
-    </section>
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-3 mb-8">
+      <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <p class="text-sm font-medium text-slate-500">Total Appointments</p>
+        <p class="mt-2 text-3xl font-bold text-slate-900" th:text="${#lists.size(appointments)}">0</p>
+      </div>
+      <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <p class="text-sm font-medium text-slate-500">Pending</p>
+        <p class="mt-2 text-3xl font-bold text-amber-600" th:text="${pendingAppointmentCount}">0</p>
+      </div>
+      <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <p class="text-sm font-medium text-slate-500">Completed</p>
+        <p class="mt-2 text-3xl font-bold text-emerald-600" th:text="${completedAppointmentCount}">0</p>
+      </div>
+    </div>
 
-    <section class="mt-6 glass-card p-6" data-table>
-      <div class="table-toolbar">
-        <input data-table-search type="text" placeholder="Search apartment name..." class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" />
-        <select data-table-filter-key="status" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-          <option value="">All status</option>
-          <option value="PENDING">PENDING</option>
-          <option value="CONFIRMED">CONFIRMED</option>
-          <option value="CANCELLED">CANCELLED</option>
-          <option value="COMPLETED">COMPLETED</option>
-        </select>
-        <select data-table-sort class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
-          <option value="">Sort by</option>
-          <option value="scheduled:asc">Schedule Asc</option>
-          <option value="scheduled:desc">Schedule Desc</option>
-          <option value="apartment:asc">Apartment A-Z</option>
-          <option value="apartment:desc">Apartment Z-A</option>
-        </select>
+    <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200" data-table>
+      <div class="border-b border-slate-200 px-6 py-4">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div class="relative flex-1">
+            <input data-table-search type="text" placeholder="Search apartment name..." class="block w-full rounded-md border-0 py-2 pl-3 pr-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm" />
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <select data-table-filter-key="status" class="rounded-md border-0 py-2 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+              <option value="">All Status</option>
+              <option value="PENDING">PENDING</option>
+              <option value="CONFIRMED">CONFIRMED</option>
+              <option value="CANCELLED">CANCELLED</option>
+              <option value="COMPLETED">COMPLETED</option>
+            </select>
+            <select data-table-sort class="rounded-md border-0 py-2 pl-3 pr-8 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm">
+              <option value="">Sort by</option>
+              <option value="scheduled:asc">Schedule Asc</option>
+              <option value="scheduled:desc">Schedule Desc</option>
+              <option value="apartment:asc">Apartment A-Z</option>
+              <option value="apartment:desc">Apartment Z-A</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
-        <table class="min-w-full divide-y divide-slate-200 text-sm">
-          <thead class="bg-slate-50 text-left text-slate-600">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200">
+          <thead class="bg-slate-50">
             <tr>
-              <th class="px-4 py-3 font-semibold">Apartment</th>
-              <th class="px-4 py-3 font-semibold">Schedule</th>
-              <th class="px-4 py-3 font-semibold">Status</th>
-              <th class="px-4 py-3 font-semibold">Action</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Apartment</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Schedule</th>
+              <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Status</th>
+              <th scope="col" class="px-6 py-3.5 text-right text-sm font-semibold text-slate-900">Actions</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100 bg-white/80" data-table-body>
+          <tbody class="divide-y divide-slate-200 bg-white" data-table-body>
             <tr th:if="${#lists.isEmpty(appointments)}">
-              <td class="px-4 py-4 text-slate-500" colspan="4">No appointments yet.</td>
+              <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="4">No appointments scheduled yet.</td>
             </tr>
-            <tr data-row
+            <tr data-row class="hover:bg-slate-50/50"
                 th:each="appointment : ${appointments}"
                 th:attr="data-search=${appointment.apartment.title},data-status=${appointment.status},data-scheduled=${appointment.scheduledDate + 'T' + appointment.scheduledTime},data-apartment=${appointment.apartment.title}">
-              <td class="px-4 py-3 font-semibold text-ink" th:text="${appointment.apartment.title}"></td>
-              <td class="px-4 py-3 text-slate-600" th:text="${appointment.scheduledDate + ' ' + appointment.scheduledTime}"></td>
-              <td class="px-4 py-3"><span class="pill" th:text="${appointment.status}"></span></td>
-              <td class="px-4 py-3">
-                <div class="flex flex-wrap items-center gap-2">
+              <td class="px-6 py-4 text-sm font-medium text-slate-900">
+                <a th:href="@{/apartments/{id}(id=${appointment.apartment.id})}" class="hover:text-indigo-600 hover:underline" th:text="${appointment.apartment.title}"></a>
+              </td>
+              <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-600" th:text="${appointment.scheduledDate + ' ' + appointment.scheduledTime}"></td>
+              <td class="whitespace-nowrap px-6 py-4">
+                <span th:classappend="${appointment.status.name() == 'PENDING' ? 'bg-yellow-50 text-yellow-800 ring-yellow-600/20' : (appointment.status.name() == 'CONFIRMED' ? 'bg-blue-50 text-blue-700 ring-blue-600/20' : (appointment.status.name() == 'COMPLETED' ? 'bg-green-50 text-green-700 ring-green-600/20' : 'bg-red-50 text-red-700 ring-red-600/10'))}" 
+                      class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset" th:text="${appointment.status}"></span>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
                   <form th:if="${appointment.status.name() == 'PENDING'}" th:action="@{/user/appointments/{id}/cancel(id=${appointment.id})}" method="post">
-                    <button class="rounded-lg border border-rose-400 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700">Cancel</button>
+                    <button class="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-red-700 shadow-sm ring-1 ring-inset ring-red-300 hover:bg-red-50">Cancel</button>
                   </form>
 
                   <form th:if="${appointment.status.name() == 'COMPLETED' and !reviewedAppointmentIds.contains(appointment.id)}"
-                        th:action="@{/user/reviews}"
-                        method="post"
-                        class="flex flex-wrap items-center gap-2">
+                        th:action="@{/user/reviews}" method="post" class="flex flex-col sm:flex-row items-end gap-2">
                     <input type="hidden" name="appointmentId" th:value="${appointment.id}" />
                     <input type="hidden" name="fromAppointments" value="true" />
-                    <select name="rating" required class="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs">
-                      <option value="">Rating</option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
+                    <select name="rating" required class="rounded-md border-0 py-1.5 pl-2 pr-6 text-xs text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600">
+                      <option value="">Rate</option>
+                      <option value="1">1 ★</option>
+                      <option value="2">2 ★</option>
+                      <option value="3">3 ★</option>
+                      <option value="4">4 ★</option>
+                      <option value="5">5 ★</option>
                     </select>
-                    <input name="comment" placeholder="Your review" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs" />
-                    <button class="rounded-lg bg-tealdeep px-3 py-1.5 text-xs font-semibold text-white">Submit</button>
+                    <input name="comment" placeholder="Write a review..." class="w-full sm:w-32 rounded-md border-0 py-1.5 px-2 text-xs text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-indigo-600" />
+                    <button class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-600">Submit</button>
                   </form>
 
                   <span th:if="${appointment.status.name() == 'COMPLETED' and reviewedAppointmentIds.contains(appointment.id)}"
-                        class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600">Reviewed</span>
+                        class="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">Reviewed</span>
                 </div>
               </td>
             </tr>
             <tr data-table-empty class="hidden">
-              <td class="px-4 py-4 text-slate-500" colspan="4">No appointment matches current filters.</td>
+              <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="4">No appointment matches current filters.</td>
             </tr>
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
   </main>
 
   <div th:replace="~{fragments/footer :: siteFooter}"></div>
