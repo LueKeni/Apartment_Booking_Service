@@ -1,6 +1,7 @@
 package com.realestate.apartment_booking_service.controllers.web;
 
 import com.realestate.apartment_booking_service.dto.ApartmentFilterRequest;
+import com.realestate.apartment_booking_service.entities.AgentProfile;
 import com.realestate.apartment_booking_service.entities.Apartment;
 import com.realestate.apartment_booking_service.enums.ApartmentStatus;
 import com.realestate.apartment_booking_service.repositories.AgentProfileRepository;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 @Controller
 @RequiredArgsConstructor
@@ -53,6 +56,7 @@ public class MainController {
         redirectAttributes.addAttribute("keyword", filterRequest.getKeyword());
         redirectAttributes.addAttribute("district", filterRequest.getDistrict());
         redirectAttributes.addAttribute("roomType", filterRequest.getRoomType());
+        redirectAttributes.addAttribute("bedrooms", filterRequest.getBedrooms());
         redirectAttributes.addAttribute(
                 "transactionType",
                 filterRequest.getTransactionType() == null ? null : filterRequest.getTransactionType().name());
@@ -64,7 +68,7 @@ public class MainController {
     @GetMapping("/apartments/{id}")
     public String apartmentDetails(@PathVariable Long id, Model model) {
         Apartment apartment = apartmentService.findById(id);
-        com.realestate.apartment_booking_service.entities.AgentProfile profile = 
+        AgentProfile profile = 
                 agentProfileRepository.findByUserId(apartment.getAgent().getId()).orElse(null);
         
         double averageRating = (profile != null) ? profile.getAverageRating() : 0.0;
@@ -88,6 +92,23 @@ public class MainController {
         model.addAttribute("bestAgent", bestAgent);
         
         return "common/details";
+    }
+
+    @GetMapping("/agents/{agentId}/reviews")
+    public String agentReviews(@PathVariable Long agentId, Model model) {
+        AgentProfile profile = agentProfileRepository.findByUserId(agentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Agent not found"));
+
+        var reviews = reviewService.getAgentReviews(agentId);
+        var listings = apartmentService.findByAgent(agentId);
+
+        model.addAttribute("agentProfile", profile);
+        model.addAttribute("agentUser", profile.getUser());
+        model.addAttribute("agentReviews", reviews);
+        model.addAttribute("agentListings", listings);
+        model.addAttribute("agentAverageRating", String.format(Locale.US, "%.1f", profile.getAverageRating()));
+        model.addAttribute("agentReviewCount", profile.getReviewCount());
+        return "common/agent-reviews";
     }
 
     private Long resolveCurrentUserId() {

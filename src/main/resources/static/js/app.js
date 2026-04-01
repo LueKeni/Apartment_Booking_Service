@@ -583,9 +583,166 @@ function initComparison() {
   });
 }
 
+function initApartmentAssistant(root) {
+  const toggle = root.querySelector("[data-assistant-toggle]");
+  const panel = root.querySelector("[data-assistant-panel]") || root.querySelector("#assistant-panel");
+  const form = root.querySelector("[data-assistant-form]");
+  const input = root.querySelector("[data-assistant-input]");
+  const submit = root.querySelector("[data-assistant-submit]");
+  const thread = root.querySelector("[data-assistant-thread]");
+  const status = root.querySelector("[data-assistant-status]");
+  const prompts = root.querySelectorAll("[data-assistant-prompt]");
+
+  if (!form || !input || !submit || !thread || !status) {
+    return;
+  }
+
+  const setOpen = (open) => {
+    if (!panel || !toggle) {
+      return;
+    }
+    panel.classList.toggle("hidden", !open);
+    toggle.setAttribute("aria-expanded", String(open));
+  };
+
+  const setStatus = (text) => {
+    status.textContent = text;
+  };
+
+  const scrollThreadToBottom = () => {
+    thread.scrollTop = thread.scrollHeight;
+  };
+
+  const appendMessage = (text, sender, suggestions = [], appliedFilters = []) => {
+    const row = document.createElement("div");
+    row.className = `assistant-row ${sender === "user" ? "assistant-row-user" : "assistant-row-bot"}`;
+
+    const bubble = document.createElement("div");
+    bubble.className = `assistant-bubble ${sender === "user" ? "assistant-bubble-user" : "assistant-bubble-bot"}`;
+    bubble.textContent = text;
+    row.appendChild(bubble);
+
+    if (sender === "bot" && appliedFilters.length) {
+      const filterWrap = document.createElement("div");
+      filterWrap.className = "assistant-filter-wrap";
+      appliedFilters.forEach((item) => {
+        const chip = document.createElement("span");
+        chip.className = "assistant-filter-chip";
+        chip.textContent = item;
+        filterWrap.appendChild(chip);
+      });
+      row.appendChild(filterWrap);
+    }
+
+    if (sender === "bot" && suggestions.length) {
+      const cards = document.createElement("div");
+      cards.className = "assistant-cards";
+      suggestions.forEach((item) => {
+        const card = document.createElement("a");
+        card.href = item.detailUrl;
+        card.className = "assistant-card";
+        card.innerHTML = `
+          <div class="assistant-card-image-wrap">
+            ${item.imageUrl
+              ? `<img src="${item.imageUrl}" alt="${item.title}" class="assistant-card-image" />`
+              : `<div class="assistant-card-fallback">No image</div>`}
+          </div>
+          <div class="assistant-card-body">
+            <p class="assistant-card-title">${item.title || "Apartment"}</p>
+            <p class="assistant-card-meta">${item.district || "Unknown district"} • ${item.roomType || "N/A"}</p>
+            <p class="assistant-card-meta">${item.bedrooms ?? "?"} PN • ${item.bathrooms ?? "?"} PT</p>
+            <p class="assistant-card-price">${item.priceLabel || "Lien he"}</p>
+          </div>
+        `;
+        cards.appendChild(card);
+      });
+      row.appendChild(cards);
+    }
+
+    thread.appendChild(row);
+    scrollThreadToBottom();
+  };
+
+  const appendUserMessage = (text) => {
+    appendMessage(text, "user");
+  };
+
+  const appendBotMessage = (payload) => {
+    appendMessage(payload.answer || "", "bot", payload.suggestions || [], payload.appliedFilters || []);
+  };
+
+  if (toggle && panel) {
+    toggle.addEventListener("click", () => {
+      const isOpen = toggle.getAttribute("aria-expanded") === "true";
+      setOpen(!isOpen);
+      if (!isOpen) {
+        input.focus();
+      }
+    });
+  }
+
+  const submitQuery = async (message) => {
+    const content = (message || input.value || "").trim();
+    if (!content) {
+      setStatus("Thiếu nội dung");
+      return;
+    }
+
+    setOpen(true);
+    appendUserMessage(content);
+    submit.disabled = true;
+    input.disabled = true;
+    setStatus("Đang phân tích");
+    input.value = "";
+
+    try {
+      const response = await fetch("/api/assistant/apartments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: content })
+      });
+
+      if (!response.ok) {
+        throw new Error("Assistant request failed");
+      }
+
+      const payload = await response.json();
+      appendBotMessage(payload);
+      setStatus("Hoàn tất");
+    } catch (error) {
+      appendBotMessage({
+        answer: "Không thể xử lý yêu cầu lúc này. Vui lòng thử lại.",
+        appliedFilters: [],
+        suggestions: []
+      });
+      setStatus("Lỗi");
+    } finally {
+      submit.disabled = false;
+      input.disabled = false;
+      input.focus();
+    }
+  };
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await submitQuery();
+  });
+
+  prompts.forEach((prompt) => {
+    prompt.addEventListener("click", async () => {
+      const message = prompt.dataset.assistantPrompt || "";
+      input.value = message;
+      await submitQuery(message);
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("[data-table]").forEach(initRealtimeTable);
   document.querySelectorAll("[data-chat-root]").forEach(initChat);
+  document.querySelectorAll("[data-apartment-assistant]").forEach(initApartmentAssistant);
   initChatUnreadBadge();
   initComparison();
 });

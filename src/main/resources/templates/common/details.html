@@ -166,7 +166,9 @@
                                 <img th:src="${agent.user.avatar != null ? agent.user.avatar : '/uploads/avatars/default.png'}" 
                                      class="h-10 w-10 rounded-full object-cover shadow-sm border border-white" alt="Avatar"/>
                                 <div>
-                                    <div class="font-semibold text-slate-900" th:text="${agent.user.fullName}"></div>
+                                    <a th:href="@{/agents/{agentId}/reviews(agentId=${agent.user.id})}"
+                                       class="font-semibold text-slate-900 hover:text-tealdeep"
+                                       th:text="${agent.user.fullName}"></a>
                                     <div class="text-[10px] text-slate-400 flex items-center gap-1">
                                         <i class="fas fa-check-circle text-teal-500" th:if="${agent.verifiedStatus}"></i>
                                         <span th:text="${agent.location}"></span>

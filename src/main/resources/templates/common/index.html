@@ -36,7 +36,7 @@
     </section>
 
     <section id="listing-search" class="mt-8 glass-card p-5">
-      <form action="/" method="get" class="grid gap-3 md:grid-cols-6">
+      <form action="/" method="get" class="grid gap-3 md:grid-cols-7">
         <input name="keyword"
                placeholder="Search product name or address"
                th:value="${filter != null ? filter.keyword : ''}"
@@ -52,6 +52,13 @@
           <option value="2BR" th:selected="${filter != null and filter.roomType == '2BR'}">2BR</option>
           <option value="3BR" th:selected="${filter != null and filter.roomType == '3BR'}">3BR</option>
           <option value="DUPLEX" th:selected="${filter != null and filter.roomType == 'DUPLEX'}">Duplex</option>
+        </select>
+        <select name="bedrooms" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
+          <option value="">Bedrooms</option>
+          <option value="1" th:selected="${filter != null and filter.bedrooms == 1}">1 bedroom</option>
+          <option value="2" th:selected="${filter != null and filter.bedrooms == 2}">2 bedrooms</option>
+          <option value="3" th:selected="${filter != null and filter.bedrooms == 3}">3 bedrooms</option>
+          <option value="4" th:selected="${filter != null and filter.bedrooms == 4}">4 bedrooms</option>
         </select>
         <select name="transactionType" class="rounded-xl border border-slate-300 bg-white px-3 py-2">
           <option value="">Transaction Type</option>
@@ -98,7 +105,7 @@
             <form th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}"
                   th:action="@{/user/favorites/{id}/toggle(id=${apartment.id})}"
                   method="post">
-              <input type="hidden" name="redirectTo" th:value="${'/?keyword=' + (filter != null and filter.keyword != null ? filter.keyword : '') + '&district=' + (filter != null and filter.district != null ? filter.district : '') + '&roomType=' + (filter != null and filter.roomType != null ? filter.roomType : '') + '&transactionType=' + (filter != null and filter.transactionType != null ? filter.transactionType.name() : '') + '&status=' + (filter != null and filter.status != null ? filter.status.name() : '')}" />
+              <input type="hidden" name="redirectTo" th:value="${'/?keyword=' + (filter != null and filter.keyword != null ? filter.keyword : '') + '&district=' + (filter != null and filter.district != null ? filter.district : '') + '&roomType=' + (filter != null and filter.roomType != null ? filter.roomType : '') + '&bedrooms=' + (filter != null and filter.bedrooms != null ? filter.bedrooms : '') + '&transactionType=' + (filter != null and filter.transactionType != null ? filter.transactionType.name() : '') + '&status=' + (filter != null and filter.status != null ? filter.status.name() : '')}" />
               <button class="rounded-full px-4 py-2 text-sm font-semibold text-white"
                       th:classappend="${favoriteApartmentIds.contains(apartment.id)} ? ' bg-amber-500 hover:bg-amber-600' : ' bg-slate-500 hover:bg-slate-600'"
                       th:text="${favoriteApartmentIds.contains(apartment.id)} ? 'Bo yeu thich' : 'Them vao yeu thich'">
@@ -154,7 +161,9 @@
       
       <!-- Top Agents Quick Slider/Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <div th:each="agent, stat : ${topAgents}" class="glass-card p-4 flex flex-col items-center text-center group hover:scale-[1.02] transition-transform cursor-pointer relative overflow-hidden">
+          <a th:each="agent, stat : ${topAgents}"
+             th:href="@{/agents/{agentId}/reviews(agentId=${agent.user.id})}"
+             class="glass-card p-4 flex flex-col items-center text-center group hover:scale-[1.02] transition-transform cursor-pointer relative overflow-hidden">
               <div class="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full font-bold text-[10px] shadow-sm"
                    th:classappend="${stat.index == 0} ? 'bg-amber-100 text-amber-700' : (${stat.index == 1} ? 'bg-slate-200 text-slate-700' : 'bg-orange-100 text-orange-700')"
                    th:text="${stat.index + 1}">
@@ -170,10 +179,51 @@
               <div class="mt-auto pt-2 border-t border-slate-50 w-full text-center">
                   <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Top Agent</span>
               </div>
-          </div>
+          </a>
       </div>
     </section>
   </main>
+
+  <div class="assistant-shell" data-apartment-assistant>
+    <button type="button" class="assistant-toggle" data-assistant-toggle aria-expanded="false" aria-controls="assistant-panel">
+      AI Chat
+    </button>
+    <section id="assistant-panel" class="assistant-panel hidden" data-assistant-panel>
+      <div class="assistant-header">
+        <div>
+          <p class="assistant-eyebrow">Apartment AI Assistant</p>
+          <h2 class="assistant-title">Chat theo nhu cầu căn hộ</h2>
+        </div>
+        <span class="pill" data-assistant-status>Sẵn sàng</span>
+      </div>
+
+      <div class="assistant-thread chat-thread" data-assistant-thread>
+        <div class="assistant-row assistant-row-bot">
+          <div class="assistant-bubble assistant-bubble-bot">
+            Tôi có thể tìm căn hộ theo giá, quận, số phòng ngủ, phòng tắm, loại phòng và thuê hoặc mua.
+          </div>
+        </div>
+      </div>
+
+      <div class="assistant-prompts">
+        <button type="button" data-assistant-prompt="thuê dưới 15 triệu, 2 phòng ngủ, quận 2" class="assistant-chip">Thuê dưới 15 triệu</button>
+        <button type="button" data-assistant-prompt="studio tầm 8 triệu" class="assistant-chip">Studio tầm 8 triệu</button>
+        <button type="button" data-assistant-prompt="căn hộ 2br mua ở quận 7" class="assistant-chip">Mua 2BR quận 7</button>
+      </div>
+
+      <form class="assistant-form" data-assistant-form>
+        <input type="text"
+               data-assistant-input
+               placeholder="Nhập câu hỏi về căn hộ..."
+               class="assistant-input" />
+        <button type="submit"
+                data-assistant-submit
+                class="assistant-submit">
+          Gửi
+        </button>
+      </form>
+    </section>
+  </div>
 
   <div th:replace="~{fragments/footer :: siteFooter}"></div>
 </body>
