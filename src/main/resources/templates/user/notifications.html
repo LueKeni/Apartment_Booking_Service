@@ -1,61 +1,49 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/ui-head :: uiHead('My Notifications')}"></head>
-<body class="bg-slate-50 font-sans text-slate-900 antialiased">
+<head th:replace="~{fragments/ui-head :: uiHead('My Notifications | Aurelia')}"></head>
+<body class="font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
-    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <main class="page-enter mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+    <section class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900">My Notifications</h1>
-        <p class="mt-1 text-sm text-slate-500">Unread messages: <span class="font-bold text-amber-600" th:text="${unreadNotificationCount}">0</span></p>
+        <h1 class="font-display text-3xl font-bold text-midnight-900">Notification Inbox</h1>
+        <p class="mt-1 text-sm text-slate-500">Unread updates: <span class="font-bold text-midnight-700" th:text="${unreadNotificationCount}">0</span></p>
       </div>
       <form th:if="${unreadNotificationCount > 0}" action="/user/notifications/read-all" method="post">
-        <button class="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-600 transition-colors">
-          Mark all as read
-        </button>
+        <button class="rounded-xl bg-midnight-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-midnight-600">Mark all as read</button>
       </form>
-    </div>
+    </section>
 
     <div th:replace="~{fragments/user-tabs :: userTabs('notifications')}"></div>
 
-    <div th:if="${param.updated}" class="mb-6 rounded-xl bg-green-50 p-4 ring-1 ring-inset ring-green-600/20 text-sm font-medium text-green-800">
-      Notification marked as read.
+    <div th:if="${param.updated}" class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">
+      Notifications updated.
     </div>
 
-    <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
-      <div th:if="${#lists.isEmpty(notifications)}" class="p-12 text-center text-sm text-slate-500">
-        You have no notifications.
+    <section class="rounded-2xl bg-white p-2 sm:p-4">
+      <div th:if="${#lists.isEmpty(notifications)}" class="rounded-xl border border-dashed border-slate-300 p-12 text-center text-sm text-slate-500">
+        You do not have notifications yet.
       </div>
-      
-      <ul role="list" class="divide-y divide-slate-100">
-        <li th:each="notification : ${notifications}" th:classappend="${!notification.isRead ? 'bg-blue-50/40' : 'bg-white'}" class="p-6 transition-colors hover:bg-slate-50">
-          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-            <div class="flex gap-4">
-              <div class="mt-1 h-2.5 w-2.5 flex-shrink-0 rounded-full" th:classappend="${!notification.isRead ? 'bg-indigo-600' : 'bg-slate-200'}"></div>
-              <div>
-                <h2 class="text-base font-semibold text-slate-900" th:text="${notification.title}"></h2>
-                <p class="mt-1 text-sm text-slate-600" th:text="${notification.message}"></p>
-                <div class="mt-3 flex items-center gap-3">
-                  <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10" th:text="${notification.type}"></span>
-                  <span class="text-xs text-slate-500 flex items-center gap-1">
-                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span th:text="${#temporals.format(notification.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
-                  </span>
-                </div>
+
+      <ul th:if="${!#lists.isEmpty(notifications)}" class="space-y-3">
+        <li th:each="notification : ${notifications}" class="rounded-xl border border-slate-200 p-5" th:classappend="${!notification.isRead} ? ' bg-sky-50/60' : ' bg-white'">
+          <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+            <div class="min-w-0">
+              <p class="text-base font-bold text-slate-900" th:text="${notification.title}"></p>
+              <p class="mt-1 text-sm text-slate-600" th:text="${notification.message}"></p>
+              <div class="mt-3 flex flex-wrap items-center gap-2.5">
+                <span class="pill" th:text="${notification.type}"></span>
+                <span class="text-xs text-slate-500" th:text="${#temporals.format(notification.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
               </div>
             </div>
-            
-            <form th:if="${notification.isRead == false}" th:action="@{/user/notifications/{id}/read(id=${notification.id})}" method="post" class="ml-6 sm:ml-0 flex-shrink-0">
-              <button class="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">Mark read</button>
+
+            <form th:if="${notification.isRead == false}" th:action="@{/user/notifications/{id}/read(id=${notification.id})}" method="post">
+              <button class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Mark read</button>
             </form>
           </div>
-
-          <form th:if="${notification.isRead == false}" th:action="@{/user/notifications/{id}/read(id=${notification.id})}" method="post">
-            <button class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700">Mark as read</button>
-          </form>
-        </div>
-      </article>
+        </li>
+      </ul>
     </section>
   </main>
 

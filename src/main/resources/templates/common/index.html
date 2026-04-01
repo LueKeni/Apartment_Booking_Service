@@ -1,53 +1,78 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/ui-head :: uiHead('VistaNest Home')}"></head>
-<body class="bg-[#f4f2eb] font-sans text-slate-900 antialiased selection:bg-[#0b1437] selection:text-white">
+<head th:replace="~{fragments/ui-head :: uiHead('Aurelia Grand Estates | Home')}"></head>
+<body class="font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main>
-    <section class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-6">
-      <div class="relative w-full h-[450px] lg:h-[550px] rounded-[2.5rem] overflow-hidden shadow-sm">
-        <img class="absolute inset-0 h-full w-full object-cover object-center" 
-             src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80" 
-             alt="Modern apartment interior">
-        <div class="absolute inset-0 bg-black/40"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
-
-        <div class="relative h-full flex flex-col justify-center p-8 sm:p-12 lg:p-20">
-          <span class="mb-5 inline-block w-max rounded-full border border-white/40 bg-white/10 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur-md">
-            VistaNest Platform
-          </span>
-          <h1 class="max-w-3xl text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Find apartments. Chat instantly. Book visits confidently.
-          </h1>
-          <p class="mt-6 max-w-xl text-sm font-medium text-white/90 sm:text-base leading-relaxed">
-            A modern booking workspace for tenants, agents, and admins with real-time coordination.
-          </p>
-          <div class="mt-8 flex flex-wrap gap-4">
-            <a href="/#listing-search" class="rounded-[1.2rem] bg-white px-6 py-3.5 font-bold text-[#0b1437] shadow-lg hover:bg-slate-100 transition-all">Explore Listings</a>
-            <a href="/auth/register" class="rounded-[1.2rem] border border-white/50 bg-black/20 px-6 py-3.5 font-bold text-white backdrop-blur-md hover:bg-black/40 transition-all">Create Account</a>
+  <main class="page-enter pb-10">
+    <section class="mx-auto mt-6 max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="hero-rotator relative h-[460px] sm:h-[520px]" data-hero-slider data-interval="5200">
+        <article class="hero-slide is-active" data-hero-slide>
+          <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2075&q=80" alt="Luxury apartment lobby" class="h-full w-full object-cover" />
+          <div class="hero-overlay"></div>
+          <div class="relative z-10 flex h-full flex-col justify-center p-8 sm:p-12 lg:p-16">
+            <span class="mb-5 inline-flex w-max rounded-full border border-white/30 bg-white/10 px-4 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur">Aurelia Collection</span>
+            <h1 class="max-w-3xl font-display text-4xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl">Premium apartment booking made effortless.</h1>
+            <p class="mt-5 max-w-xl text-sm font-medium leading-relaxed text-white/90 sm:text-base">Discover elegant homes, connect with verified agents, and manage every appointment in one polished platform.</p>
+            <div class="mt-8 flex flex-wrap gap-3">
+              <a href="/#listing-search" class="rounded-xl bg-white px-6 py-3 text-sm font-bold text-midnight-900 shadow-lg transition-all hover:-translate-y-0.5">Explore Listings</a>
+              <a href="/auth/register" class="rounded-xl border border-white/40 bg-black/20 px-6 py-3 text-sm font-bold text-white backdrop-blur transition-colors hover:bg-black/35">Create Account</a>
+            </div>
           </div>
+        </article>
+
+        <article class="hero-slide" data-hero-slide>
+          <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1974&q=80" alt="City apartment building" class="h-full w-full object-cover" />
+          <div class="hero-overlay"></div>
+          <div class="relative z-10 flex h-full flex-col justify-center p-8 sm:p-12 lg:p-16">
+            <span class="mb-5 inline-flex w-max rounded-full border border-white/30 bg-white/10 px-4 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur">Trusted by Agents</span>
+            <h2 class="max-w-3xl font-display text-4xl font-bold leading-tight text-white sm:text-5xl">One workspace for listing, booking, and growth.</h2>
+            <p class="mt-5 max-w-xl text-sm font-medium leading-relaxed text-white/90 sm:text-base">Agent and admin tools are streamlined to help teams respond faster and close deals with confidence.</p>
+          </div>
+        </article>
+
+        <article class="hero-slide" data-hero-slide>
+          <img src="https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=2070&q=80" alt="Modern apartment interior" class="h-full w-full object-cover" />
+          <div class="hero-overlay"></div>
+          <div class="relative z-10 flex h-full flex-col justify-center p-8 sm:p-12 lg:p-16">
+            <span class="mb-5 inline-flex w-max rounded-full border border-white/30 bg-white/10 px-4 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white backdrop-blur">Real-Time Experience</span>
+            <h2 class="max-w-3xl font-display text-4xl font-bold leading-tight text-white sm:text-5xl">Smart notifications and messaging that keep everyone synced.</h2>
+            <p class="mt-5 max-w-xl text-sm font-medium leading-relaxed text-white/90 sm:text-base">From first inquiry to final appointment, every update is captured in a clear, friendly workflow.</p>
+          </div>
+        </article>
+
+        <div class="absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-3">
+          <button type="button" class="hero-nav" data-hero-prev aria-label="Previous slide">
+            <i class="fas fa-chevron-left text-xs"></i>
+          </button>
+          <div class="hero-indicators">
+            <button type="button" class="hero-indicator is-active" data-hero-indicator data-index="0" aria-label="Slide 1"></button>
+            <button type="button" class="hero-indicator" data-hero-indicator data-index="1" aria-label="Slide 2"></button>
+            <button type="button" class="hero-indicator" data-hero-indicator data-index="2" aria-label="Slide 3"></button>
+          </div>
+          <button type="button" class="hero-nav" data-hero-next aria-label="Next slide">
+            <i class="fas fa-chevron-right text-xs"></i>
+          </button>
         </div>
       </div>
     </section>
 
-    <section id="listing-search" class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8">
-      <div class="rounded-[2rem] bg-white p-3 shadow-sm ring-1 ring-slate-200/50 overflow-hidden">
-        <form action="/" method="get" class="flex flex-col lg:flex-row items-center divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
-          
-          <div class="flex-1 w-full px-4 py-3 hover:bg-slate-50 transition-colors cursor-text">
+    <section id="listing-search" class="relative z-10 mx-auto mt-8 max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-[1.6rem] border border-slate-200 bg-white p-3 shadow-xl shadow-slate-900/5">
+        <form action="/" method="get" class="flex flex-col items-center divide-y divide-slate-100 lg:flex-row lg:divide-x lg:divide-y-0">
+          <div class="w-full flex-1 px-4 py-3">
             <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Keyword</label>
-            <input name="keyword" th:value="${filter != null ? filter.keyword : ''}" placeholder="Product name or address..." class="w-full border-0 bg-transparent p-0 text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-0 sm:text-sm font-bold" />
+            <input name="keyword" th:value="${filter != null ? filter.keyword : ''}" placeholder="Apartment title or address" class="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-0" />
           </div>
 
-          <div class="flex-1 w-full px-4 py-3 hover:bg-slate-50 transition-colors cursor-text">
+          <div class="w-full flex-1 px-4 py-3">
             <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Location</label>
-            <input name="district" th:value="${filter != null ? filter.district : ''}" placeholder="Ward/District/City" class="w-full border-0 bg-transparent p-0 text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-0 sm:text-sm font-bold" />
+            <input name="district" th:value="${filter != null ? filter.district : ''}" placeholder="District or city" class="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-0" />
           </div>
 
-          <div class="flex-1 w-full px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer">
+          <div class="w-full flex-1 px-4 py-3">
             <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Room Type</label>
-            <select name="roomType" class="w-full border-0 bg-transparent p-0 text-slate-900 focus:outline-none focus:ring-0 sm:text-sm font-bold cursor-pointer">
+            <select name="roomType" class="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-0">
               <option value="">Any Type</option>
               <option value="STUDIO" th:selected="${filter != null and filter.roomType == 'STUDIO'}">Studio</option>
               <option value="1BR" th:selected="${filter != null and filter.roomType == '1BR'}">1 Bedroom</option>
@@ -57,243 +82,100 @@
             </select>
           </div>
 
-          <div class="flex-1 w-full px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer">
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">For</label>
-            <select name="transactionType" class="w-full border-0 bg-transparent p-0 text-slate-900 focus:outline-none focus:ring-0 sm:text-sm font-bold cursor-pointer">
+          <div class="w-full flex-1 px-4 py-3">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Transaction</label>
+            <select name="transactionType" class="w-full border-0 bg-transparent p-0 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-0">
               <option value="">Rent & Sale</option>
               <option value="SALE" th:selected="${filter != null and filter.transactionType != null and filter.transactionType.name() == 'SALE'}">Sale</option>
               <option value="RENT" th:selected="${filter != null and filter.transactionType != null and filter.transactionType.name() == 'RENT'}">Rent</option>
             </select>
           </div>
 
-          <div class="flex-1 w-full px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer">
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Status</label>
-            <select name="status" class="w-full border-0 bg-transparent p-0 text-slate-900 focus:outline-none focus:ring-0 sm:text-sm font-bold cursor-pointer">
-              <option value="">All Status</option>
-              <option value="AVAILABLE" th:selected="${filter != null and filter.status != null and filter.status.name() == 'AVAILABLE'}">Available</option>
-              <option value="PENDING" th:selected="${filter != null and filter.status != null and filter.status.name() == 'PENDING'}">Pending</option>
-            </select>
-          </div>
-
-          <div class="w-full lg:w-auto p-2">
-            <button type="submit" class="w-full lg:w-auto rounded-[1.2rem] bg-[#0b1437] px-8 py-4 text-sm font-bold text-white shadow-md hover:bg-[#1a234b] transition-all transform hover:-translate-y-0.5">
-              Search
-            </button>
+          <div class="w-full px-3 py-3 lg:w-auto">
+            <button type="submit" class="w-full rounded-xl bg-midnight-700 px-7 py-3 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-midnight-600 lg:w-auto">Search</button>
           </div>
         </form>
       </div>
     </section>
 
-    <section class="mx-auto max-w-7xl px-4 mt-20 sm:px-6 lg:px-8">
+    <section class="mx-auto mt-16 max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="mb-8 flex items-center justify-between">
-        <h2 class="text-3xl font-extrabold tracking-tight text-[#111827]">Listings</h2>
+        <h2 class="font-display text-3xl font-bold tracking-tight text-midnight-900">Featured Listings</h2>
       </div>
 
-      <div th:if="${#lists.isEmpty(apartments)}" class="rounded-[2rem] border-2 border-dashed border-slate-300 py-24 text-center bg-white/50">
-        <h3 class="text-sm font-bold text-slate-900">No properties found</h3>
-        <p class="mt-1 text-sm text-slate-500">Try adjusting your search filters.</p>
+      <div th:if="${#lists.isEmpty(apartments)}" class="rounded-[1.6rem] border-2 border-dashed border-slate-300 bg-white/70 py-20 text-center">
+        <h3 class="text-sm font-bold text-slate-900">No listings found</h3>
+        <p class="mt-1 text-sm text-slate-500">Try adjusting your search criteria.</p>
       </div>
-      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <article th:each="apartment : ${apartments}" class="glass-card p-5">
-          <img th:if="${!#lists.isEmpty(apartment.images)}"
-               th:src="${apartment.images[0]}"
-               alt="Apartment image"
-               class="mb-3 h-40 w-full rounded-2xl object-cover" />
-          <h3 class="text-lg font-semibold text-ink" th:text="${apartment.title}"></h3>
-          <p class="mt-1 text-sm text-slate-600" th:text="${apartment.locationDistrict}"></p>
-          <p class="mt-3 text-xl font-bold text-tealdeep" th:text="${apartment.price}"></p>
-          <div class="mt-4 flex flex-wrap gap-2">
-            <a th:href="@{/apartments/{id}(id=${apartment.id})}" class="inline-block rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">View Details</a>
-            <form th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}"
-                  th:action="@{/user/likes/{id}/toggle(id=${apartment.id})}"
-                  method="post">
-              <input type="hidden" name="redirectTo" th:value="${'/?keyword=' + (filter != null and filter.keyword != null ? filter.keyword : '') + '&district=' + (filter != null and filter.district != null ? filter.district : '') + '&roomType=' + (filter != null and filter.roomType != null ? filter.roomType : '') + '&transactionType=' + (filter != null and filter.transactionType != null ? filter.transactionType.name() : '') + '&status=' + (filter != null and filter.status != null ? filter.status.name() : '')}" />
-              <button class="rounded-full px-4 py-2 text-sm font-semibold text-white"
-                      th:classappend="${likedApartmentIds.contains(apartment.id)} ? ' bg-rose-500 hover:bg-rose-600' : ' bg-slate-700 hover:bg-slate-800'"
-                      th:text="${likedApartmentIds.contains(apartment.id)} ? 'Bo like' : 'Like'">
-              </button>
-            </form>
-            <form th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}"
-                  th:action="@{/user/favorites/{id}/toggle(id=${apartment.id})}"
-                  method="post">
-              <input type="hidden" name="redirectTo" th:value="${'/?keyword=' + (filter != null and filter.keyword != null ? filter.keyword : '') + '&district=' + (filter != null and filter.district != null ? filter.district : '') + '&roomType=' + (filter != null and filter.roomType != null ? filter.roomType : '') + '&transactionType=' + (filter != null and filter.transactionType != null ? filter.transactionType.name() : '') + '&status=' + (filter != null and filter.status != null ? filter.status.name() : '')}" />
-              <button class="rounded-full px-4 py-2 text-sm font-semibold text-white"
-                      th:classappend="${favoriteApartmentIds.contains(apartment.id)} ? ' bg-amber-500 hover:bg-amber-600' : ' bg-slate-500 hover:bg-slate-600'"
-                      th:text="${favoriteApartmentIds.contains(apartment.id)} ? 'Bo yeu thich' : 'Them vao yeu thich'">
-              </button>
-            </form>
-          </div>
-          </article>
-          </div>
-          </section>
 
-          <!-- Apartment Comparison Bar -->
-          <div id="comparison-bar" class="fixed bottom-0 left-0 right-0 z-50 translate-y-full bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] transition-transform duration-300">
-          <div class="mx-auto max-w-7xl">
-          <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div class="flex items-center gap-4">
-            <h3 class="font-bold text-ink">Compare Apartments <span id="compare-count" class="ml-2 rounded-full bg-teal-100 px-2 py-0.5 text-xs text-tealdeep">0/3</span></h3>
-            <div id="compare-items" class="flex gap-2">
-              <!-- Items will be injected here -->
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <article th:each="apartment : ${apartments}" class="listing-card group flex flex-col rounded-[1.6rem] p-3 transition-all duration-300">
+          <div class="relative aspect-[4/3] overflow-hidden rounded-[1.2rem] bg-slate-100">
+            <img th:src="${apartment.primaryImageUrl}" alt="Apartment image" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <div class="absolute left-3 top-3 flex gap-2">
+              <span class="rounded-full bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-800" th:text="${apartment.transactionType == 'SALE' ? 'Sale' : 'Rent'}"></span>
+              <span class="rounded-full bg-midnight-700/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white" th:text="${apartment.status}"></span>
             </div>
           </div>
-          <div class="flex gap-3">
-            <button id="clear-compare" class="text-sm font-semibold text-slate-500 hover:text-slate-700">Clear All</button>
-            <button id="compare-now-btn" class="rounded-full bg-ink px-6 py-2 text-sm font-semibold text-white shadow-lg disabled:opacity-50" disabled>Compare Now</button>
-          </div>
-          </div>
-          </div>
-          </div>
 
-          <!-- Comparison Modal -->
-          <div id="comparison-modal" class="fixed inset-0 z-[60] hidden bg-slate-900/60 backdrop-blur-sm">
-          <div class="absolute inset-4 overflow-hidden rounded-2xl bg-white shadow-2xl md:inset-x-20 md:inset-y-10">
-           <div class="flex h-full flex-col">
-               <div class="flex items-center justify-between border-b border-slate-100 p-4">
-                   <h2 class="text-xl font-bold text-ink">Apartment Comparison</h2>
-                   <button id="close-comparison-modal" class="rounded-full p-2 hover:bg-slate-100">
-                       <i class="fas fa-times text-slate-500"></i>
-                   </button>
-               </div>
-               <div id="comparison-content" class="flex-1 overflow-auto p-6">
-                   <!-- Comparison table will be injected here -->
-               </div>
-           </div>
+          <div class="flex flex-1 flex-col px-2 pb-2 pt-4">
+            <h3 class="line-clamp-2 text-lg font-bold text-slate-900" th:text="${apartment.title}"></h3>
+            <p class="mt-1 line-clamp-1 text-sm text-slate-500" th:text="${apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '-'}"></p>
+            <p class="mt-4 text-2xl font-extrabold text-midnight-700" th:text="${apartment.price}"></p>
+
+            <div class="mt-4 flex items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+              <div class="flex min-w-0 items-center gap-2.5">
+                <div class="h-10 w-10 overflow-hidden rounded-full border border-slate-200 bg-white">
+                  <img th:src="${apartment.agent.avatarUrl}" alt="Agent avatar" class="h-full w-full object-cover" />
+                </div>
+                <div class="min-w-0">
+                  <p class="truncate text-xs font-bold uppercase tracking-wider text-slate-400">Listed by</p>
+                  <p class="truncate text-sm font-semibold text-slate-800" th:text="${apartment.agent.fullName}"></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              <a th:href="@{/apartments/{id}(id=${apartment.id})}" class="rounded-xl bg-midnight-700 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-midnight-600">View Details</a>
+              <form th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}" th:action="@{/user/favorites/{id}/toggle(id=${apartment.id})}" method="post">
+                <input type="hidden" name="redirectTo" th:value="${'/?keyword=' + (filter != null and filter.keyword != null ? filter.keyword : '') + '&district=' + (filter != null and filter.district != null ? filter.district : '') + '&roomType=' + (filter != null and filter.roomType != null ? filter.roomType : '') + '&transactionType=' + (filter != null and filter.transactionType != null ? filter.transactionType.name() : '')}" />
+                <button class="rounded-xl border px-4 py-2 text-sm font-bold transition-colors"
+                        th:classappend="${favoriteApartmentIds != null and favoriteApartmentIds.contains(apartment.id)} ? ' border-amber-300 bg-amber-50 text-amber-700' : ' border-slate-300 bg-white text-slate-700 hover:bg-slate-50'"
+                        th:text="${favoriteApartmentIds != null and favoriteApartmentIds.contains(apartment.id)} ? 'Saved' : 'Save'"></button>
+              </form>
+            </div>
           </div>
-          </div>
-    <section class="mt-12 border-t border-slate-100 pt-8">
-      <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h2 class="text-2xl font-bold text-ink flex items-center gap-2">
-            <i class="fas fa-medal text-amber-500"></i>
-            Top Rated Agents
-        </h2>
-        <div class="text-sm text-slate-500 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm">Recommended based on actual user ratings</div>
-      </div>
-      
-      <!-- Top Agents Quick Slider/Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          <a th:each="agent, stat : ${topAgents}"
-             th:href="@{/agents/{agentId}/reviews(agentId=${agent.user.id})}"
-             class="glass-card p-4 flex flex-col items-center text-center group hover:scale-[1.02] transition-transform cursor-pointer relative overflow-hidden">
-              <div class="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full font-bold text-[10px] shadow-sm"
-                   th:classappend="${stat.index == 0} ? 'bg-amber-100 text-amber-700' : (${stat.index == 1} ? 'bg-slate-200 text-slate-700' : 'bg-orange-100 text-orange-700')"
-                   th:text="${stat.index + 1}">
-              </div>
-              <img th:src="${agent.user.avatar != null ? agent.user.avatar : '/uploads/avatars/default.png'}" 
-                   class="h-16 w-16 rounded-full object-cover border-4 border-white shadow-md mb-3" alt="Avatar"/>
-              <h3 class="font-bold text-slate-900 truncate w-full" th:text="${agent.user.fullName}"></h3>
-              <div class="flex items-center gap-1 text-amber-500 font-bold text-sm mb-1">
-                  <span th:text="${#numbers.formatDecimal(agent.averageRating, 1, 1)}"></span>
-                  <i class="fas fa-star text-[10px]"></i>
-              </div>
-              <p class="text-[10px] text-slate-500 mb-1" th:text="${agent.reviewCount + ' reviews'}"></p>
-              <div class="mt-auto pt-2 border-t border-slate-50 w-full text-center">
-                  <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Top Agent</span>
-              </div>
-          </a>
+        </article>
       </div>
     </section>
 
-    <div id="comparison-bar" class="fixed bottom-0 left-0 right-0 z-50 translate-y-full bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] transition-transform duration-300">
-      <div class="mx-auto max-w-7xl">
-        <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div class="flex items-center gap-4">
-            <h3 class="font-bold text-[#111827]">Compare Apartments <span id="compare-count" class="ml-2 rounded-full bg-indigo-100 px-2 py-0.5 text-xs text-indigo-700">0/3</span></h3>
-            <div id="compare-items" class="flex gap-2"></div>
-          </div>
-          <div class="flex gap-3">
-            <button id="clear-compare" class="text-sm font-semibold text-slate-500 hover:text-slate-700">Clear All</button>
-            <button id="compare-now-btn" class="rounded-[1rem] bg-[#0b1437] px-6 py-2.5 text-sm font-bold text-white shadow-lg disabled:opacity-50" disabled>Compare Now</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="comparison-modal" class="fixed inset-0 z-[60] hidden bg-slate-900/60 backdrop-blur-sm">
-      <div class="absolute inset-4 overflow-hidden rounded-[2rem] bg-white shadow-2xl md:inset-x-20 md:inset-y-10">
-        <div class="flex h-full flex-col">
-          <div class="flex items-center justify-between border-b border-slate-100 p-6">
-            <h2 class="text-xl font-bold text-[#111827]">Apartment Comparison</h2>
-            <button id="close-comparison-modal" class="rounded-full bg-slate-100 p-2 hover:bg-slate-200 transition-colors">
-              <i class="fas fa-times text-slate-500"></i>
-            </button>
-          </div>
-          <div id="comparison-content" class="flex-1 overflow-auto p-6"></div>
-        </div>
-      </div>
-    </div>
-
-    <section class="mx-auto max-w-7xl px-4 mt-20 pb-20 sm:px-6 lg:px-8">
-      <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <section id="top-agents" class="mx-auto mt-20 max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+      <div class="mb-8 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
         <div>
-          <h2 class="text-3xl font-extrabold tracking-tight text-[#111827] flex items-center gap-3">
-            <i class="fas fa-medal text-amber-500"></i>
-            Top Rated Agents
-          </h2>
-          <p class="mt-2 text-sm text-slate-500">Recommended professionals based on verified user reviews.</p>
+          <h2 class="font-display text-3xl font-bold tracking-tight text-midnight-900">Top Rated Agents</h2>
+          <p class="mt-2 text-sm text-slate-500">Professionals ranked by verified customer reviews.</p>
         </div>
       </div>
-      
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
-          <a th:each="agent, stat : ${topAgents}" th:href="@{/agents/{agentId}/reviews(agentId=${agent.user.id})}" class="group relative flex flex-col items-center rounded-[2rem] bg-white p-6 shadow-sm hover:shadow-xl transition-all duration-300">
-              <div class="absolute top-4 left-4 flex h-7 w-7 items-center justify-center rounded-full font-bold text-[11px] shadow-sm"
-                   th:classappend="${stat.index == 0} ? 'bg-amber-100 text-amber-700' : (${stat.index == 1} ? 'bg-slate-200 text-slate-700' : 'bg-orange-100 text-orange-700')"
-                   th:text="${stat.index + 1}">
-              </div>
-              <div class="h-20 w-20 overflow-hidden rounded-full border-[3px] border-slate-100 shadow-sm mb-4 group-hover:border-indigo-100 transition-colors">
-                 <img th:src="${agent.user.avatar != null ? agent.user.avatar : '/uploads/avatars/default.png'}" class="h-full w-full object-cover" alt="Avatar"/>
-              </div>
-              <h3 class="font-bold text-slate-900 truncate w-full text-center" th:text="${agent.user.fullName}"></h3>
-              <div class="mt-1 flex items-center gap-1.5 text-amber-500 font-bold text-sm">
-                  <span th:text="${#numbers.formatDecimal(agent.averageRating, 1, 1)}"></span>
-                  <i class="fas fa-star text-[11px]"></i>
-              </div>
-              <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mt-1" th:text="${agent.reviewCount + ' reviews'}"></p>
-          </a>
+
+      <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <a th:each="agent, stat : ${topAgents}" th:href="@{/agents/{agentId}/reviews(agentId=${agent.user.id})}" class="top-agent-card group relative flex flex-col items-center rounded-[1.5rem] p-5 text-center transition-all duration-300">
+          <div class="absolute left-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold"
+               th:classappend="${stat.index == 0} ? 'bg-amber-100 text-amber-700' : (${stat.index == 1} ? 'bg-slate-200 text-slate-700' : 'bg-orange-100 text-orange-700')"
+               th:text="${stat.index + 1}">
+          </div>
+          <div class="mb-3 h-16 w-16 overflow-hidden rounded-full border-2 border-white shadow-md">
+            <img th:src="${agent.user.avatarUrl}" class="h-full w-full object-cover" alt="Agent avatar" />
+          </div>
+          <h3 class="w-full truncate font-bold text-slate-900" th:text="${agent.user.fullName}"></h3>
+          <div class="mt-1 flex items-center gap-1 text-sm font-bold text-amber-500">
+            <span th:text="${#numbers.formatDecimal(agent.averageRating, 1, 1)}"></span>
+            <i class="fas fa-star text-[11px]"></i>
+          </div>
+          <p class="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-400" th:text="${agent.reviewCount + ' reviews'}"></p>
+        </a>
       </div>
     </section>
   </main>
-
-  <div class="assistant-shell" data-apartment-assistant>
-    <button type="button" class="assistant-toggle" data-assistant-toggle aria-expanded="false" aria-controls="assistant-panel">
-      AI Chat
-    </button>
-    <section id="assistant-panel" class="assistant-panel hidden" data-assistant-panel>
-      <div class="assistant-header">
-        <div>
-          <p class="assistant-eyebrow">Apartment AI Assistant</p>
-          <h2 class="assistant-title">Chat theo nhu cầu căn hộ</h2>
-        </div>
-        <span class="pill" data-assistant-status>Sẵn sàng</span>
-      </div>
-
-      <div class="assistant-thread chat-thread" data-assistant-thread>
-        <div class="assistant-row assistant-row-bot">
-          <div class="assistant-bubble assistant-bubble-bot">
-            Tôi có thể tìm căn hộ theo giá, quận, loại phòng và hình thức thuê hoặc mua.
-          </div>
-        </div>
-      </div>
-
-      <div class="assistant-prompts">
-        <button type="button" data-assistant-prompt="thuê dưới 15 triệu, 2br, quận 2" class="assistant-chip">Thuê dưới 15 triệu</button>
-        <button type="button" data-assistant-prompt="studio tầm 8 triệu" class="assistant-chip">Studio tầm 8 triệu</button>
-        <button type="button" data-assistant-prompt="căn hộ 2br mua ở quận 7" class="assistant-chip">Mua 2BR quận 7</button>
-      </div>
-
-      <form class="assistant-form" data-assistant-form>
-        <input type="text"
-               data-assistant-input
-               placeholder="Nhập câu hỏi về căn hộ..."
-               class="assistant-input" />
-        <button type="submit"
-                data-assistant-submit
-                class="assistant-submit">
-          Gửi
-        </button>
-      </form>
-    </section>
-  </div>
 
   <div th:replace="~{fragments/footer :: siteFooter}"></div>
 </body>

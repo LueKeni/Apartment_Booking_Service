@@ -1,108 +1,102 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/ui-head :: uiHead('User Dashboard')}"></head>
-<body class="bg-slate-50 font-sans text-slate-900 antialiased">
+<head th:replace="~{fragments/ui-head :: uiHead('User Dashboard | Aurelia')}"></head>
+<body class="font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold tracking-tight text-slate-900">User Dashboard</h1>
-      <p class="mt-1 text-sm text-slate-500">Track your bookings, favorites, and notifications in one place.</p>
-    </div>
+  <main class="page-enter mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+    <section class="mb-6 rounded-[1.6rem] bg-gradient-to-r from-midnight-900 via-midnight-700 to-midnight-600 p-6 text-white shadow-xl shadow-midnight-900/20">
+      <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-champagne-300">Resident Workspace</p>
+      <h1 class="mt-2 font-display text-3xl font-bold">Welcome to your control desk</h1>
+      <p class="mt-2 max-w-2xl text-sm text-white/85">Track appointments, favorites, and updates with a cleaner workflow designed for quick actions.</p>
+    </section>
 
     <div th:replace="~{fragments/user-tabs :: userTabs('dashboard')}"></div>
 
-    <div th:if="${param.notificationRead}" class="mb-6 rounded-xl bg-green-50 p-4 ring-1 ring-inset ring-green-600/20 text-sm font-medium text-green-800">
+    <div th:if="${param.notificationRead}" class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-700">
       Notification marked as read.
     </div>
 
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-3 mb-8">
-      <div class="overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-        <p class="text-sm font-medium text-slate-500">Saved Favorites</p>
-        <div class="mt-2 flex items-center gap-3">
-          <p class="text-3xl font-bold text-slate-900" th:text="${favoriteCount}">0</p>
-          <div class="rounded-lg bg-rose-50 p-2 text-rose-500"><svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/></svg></div>
-        </div>
-      </div>
-      <div class="overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-        <p class="text-sm font-medium text-slate-500">Appointments</p>
-        <div class="mt-2 flex items-center gap-3">
-          <p class="text-3xl font-bold text-slate-900" th:text="${appointmentCount}">0</p>
-          <div class="rounded-lg bg-indigo-50 p-2 text-indigo-500"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
-        </div>
-      </div>
-      <div class="overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-        <p class="text-sm font-medium text-slate-500">Unread Notifications</p>
-        <div class="mt-2 flex items-center gap-3">
-          <p class="text-3xl font-bold text-amber-600" th:text="${unreadNotificationCount}">0</p>
-          <div class="rounded-lg bg-amber-50 p-2 text-amber-500"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg></div>
-        </div>
-      </div>
-    </div>
+    <section class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <article class="glass-card metric-card p-6">
+        <p class="text-sm font-semibold text-slate-500">Saved Favorites</p>
+        <p class="mt-2 text-3xl font-bold text-midnight-900" th:text="${favoriteCount}">0</p>
+      </article>
+      <article class="glass-card metric-card p-6">
+        <p class="text-sm font-semibold text-slate-500">Appointments</p>
+        <p class="mt-2 text-3xl font-bold text-midnight-900" th:text="${appointmentCount}">0</p>
+      </article>
+      <article class="glass-card metric-card p-6">
+        <p class="text-sm font-semibold text-slate-500">Pending</p>
+        <p class="mt-2 text-3xl font-bold text-amber-600" th:text="${pendingAppointmentCount}">0</p>
+      </article>
+      <article class="glass-card metric-card p-6">
+        <p class="text-sm font-semibold text-slate-500">Unread Notifications</p>
+        <p class="mt-2 text-3xl font-bold text-mint-700" th:text="${unreadNotificationCount}">0</p>
+      </article>
+    </section>
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-8">
-      <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+    <section class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <article class="rounded-2xl bg-white">
         <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-          <h2 class="text-base font-semibold text-slate-900">Recent Appointments</h2>
-          <a href="/user/appointments" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View all &rarr;</a>
+          <h2 class="text-base font-bold text-midnight-900">Recent Appointments</h2>
+          <a href="/user/appointments" class="text-sm font-semibold text-midnight-700 hover:text-midnight-600">View all</a>
         </div>
         <div class="p-6">
-          <div th:if="${#lists.isEmpty(recentAppointments)}" class="rounded-xl border-2 border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">No appointments scheduled.</div>
-          <ul role="list" class="divide-y divide-slate-100">
-            <li th:each="appointment : ${recentAppointments}" class="py-4">
+          <div th:if="${#lists.isEmpty(recentAppointments)}" class="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">No appointments yet.</div>
+          <ul th:if="${!#lists.isEmpty(recentAppointments)}" class="space-y-3">
+            <li th:each="appointment : ${recentAppointments}" class="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
               <p class="font-semibold text-slate-900 line-clamp-1" th:text="${appointment.apartment.title}"></p>
-              <div class="mt-1 flex items-center justify-between">
-                <p class="text-sm text-slate-500" th:text="${appointment.scheduledDate + ' ' + appointment.scheduledTime}"></p>
-                <span th:classappend="${appointment.status.name() == 'PENDING' ? 'bg-yellow-50 text-yellow-800 ring-yellow-600/20' : (appointment.status.name() == 'CONFIRMED' ? 'bg-blue-50 text-blue-700 ring-blue-600/20' : (appointment.status.name() == 'COMPLETED' ? 'bg-green-50 text-green-700 ring-green-600/20' : 'bg-red-50 text-red-700 ring-red-600/10'))}" 
-                      class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset" th:text="${appointment.status}"></span>
+              <p class="mt-1 text-sm text-slate-500" th:text="${appointment.scheduledDate + ' ' + appointment.scheduledTime}"></p>
+              <div class="mt-2">
+                <span th:classappend="${appointment.status.name() == 'PENDING' ? ' bg-amber-50 text-amber-700 border-amber-200' : (appointment.status.name() == 'CONFIRMED' ? ' bg-blue-50 text-blue-700 border-blue-200' : (appointment.status.name() == 'COMPLETED' ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : ' bg-rose-50 text-rose-700 border-rose-200'))}"
+                      class="inline-flex rounded-full border px-2.5 py-1 text-xs font-bold" th:text="${appointment.status}"></span>
               </div>
             </li>
           </ul>
         </div>
-      </div>
+      </article>
 
-      <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+      <article class="rounded-2xl bg-white">
         <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-          <h2 class="text-base font-semibold text-slate-900">Recent Notifications</h2>
-          <a href="/user/notifications" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View all &rarr;</a>
+          <h2 class="text-base font-bold text-midnight-900">Recent Notifications</h2>
+          <a href="/user/notifications" class="text-sm font-semibold text-midnight-700 hover:text-midnight-600">View all</a>
         </div>
-        <div class="space-y-3">
-          <div th:if="${#lists.isEmpty(recentNotifications)}" class="rounded-xl border border-dashed border-slate-300 p-3 text-sm text-slate-500">No notifications yet.</div>
-          <div th:each="notification : ${recentNotifications}" class="rounded-xl border border-slate-200 bg-white/75 p-3">
-            <p class="font-semibold text-ink" th:text="${notification.title}"></p>
-            <p class="mt-1 text-sm text-slate-600" th:text="${notification.message}"></p>
-            <div class="mt-2 flex items-center justify-between">
-              <span class="pill" th:text="${notification.type}"></span>
-              <form th:if="${notification.isRead == false}" th:action="@{/user/notifications/{id}/read(id=${notification.id})}" method="post">
-                <input type="hidden" name="fromDashboard" value="true" />
-                <button class="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700">Mark read</button>
-              </form>
-            </div>
+        <div class="p-6">
+          <div th:if="${#lists.isEmpty(recentNotifications)}" class="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">No notifications yet.</div>
+          <div th:if="${!#lists.isEmpty(recentNotifications)}" class="space-y-3">
+            <article th:each="notification : ${recentNotifications}" class="rounded-xl border border-slate-200 p-4" th:classappend="${!notification.isRead} ? ' bg-sky-50/60' : ' bg-white'">
+              <p class="font-semibold text-slate-900" th:text="${notification.title}"></p>
+              <p class="mt-1 text-sm text-slate-600" th:text="${notification.message}"></p>
+              <div class="mt-3 flex items-center justify-between">
+                <span class="pill" th:text="${notification.type}"></span>
+                <form th:if="${notification.isRead == false}" th:action="@{/user/notifications/{id}/read(id=${notification.id})}" method="post">
+                  <input type="hidden" name="fromDashboard" value="true" />
+                  <button class="rounded-lg border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50">Mark read</button>
+                </form>
+              </div>
+            </article>
           </div>
         </div>
-      </div>
-    </div>
+      </article>
+    </section>
 
-    <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
+    <section class="mt-6 rounded-2xl bg-white">
       <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
-        <h2 class="text-base font-semibold text-slate-900">Recent Favorites</h2>
-        <a href="/user/favorites" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View all &rarr;</a>
+        <h2 class="text-base font-bold text-midnight-900">Recent Favorites</h2>
+        <a href="/user/favorites" class="text-sm font-semibold text-midnight-700 hover:text-midnight-600">View all</a>
       </div>
       <div class="p-6">
-        <div th:if="${#lists.isEmpty(recentFavorites)}" class="rounded-xl border-2 border-dashed border-slate-200 p-12 text-center text-sm text-slate-500">You haven't saved any properties yet.</div>
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          <article th:each="favorite : ${recentFavorites}" class="group relative flex flex-col justify-between overflow-hidden rounded-xl ring-1 ring-slate-200 bg-white hover:shadow-md transition-shadow">
-            <div class="p-4 flex-1">
-              <h3 class="font-semibold text-slate-900 line-clamp-2"><a th:href="@{/apartments/{id}(id=${favorite.apartment.id})}"><span class="absolute inset-0"></span><span th:text="${favorite.apartment.title}"></span></a></h3>
-              <p class="mt-1 text-sm text-slate-500 line-clamp-1" th:text="${favorite.apartment.locationAreaLabel != null ? favorite.apartment.locationAreaLabel : '-'}"></p>
-            </div>
-            <div class="px-4 pb-4">
-              <p class="text-sm font-bold text-indigo-600 group-hover:text-indigo-500" th:text="${favorite.apartment.price}"></p>
-            </div>
+        <div th:if="${#lists.isEmpty(recentFavorites)}" class="rounded-xl border border-dashed border-slate-300 p-12 text-center text-sm text-slate-500">No saved properties yet.</div>
+        <div th:if="${!#lists.isEmpty(recentFavorites)}" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <article th:each="favorite : ${recentFavorites}" class="rounded-xl border border-slate-200 bg-slate-50/50 p-4 transition-colors hover:bg-slate-50">
+            <h3 class="line-clamp-2 font-semibold text-slate-900"><a th:href="@{/apartments/{id}(id=${favorite.apartment.id})}" th:text="${favorite.apartment.title}"></a></h3>
+            <p class="mt-1 text-sm text-slate-500 line-clamp-1" th:text="${favorite.apartment.locationAreaLabel != null ? favorite.apartment.locationAreaLabel : '-'}"></p>
+            <p class="mt-3 text-sm font-bold text-midnight-700" th:text="${favorite.apartment.price}"></p>
           </article>
         </div>
       </div>
-    </div>
+    </section>
   </main>
 
   <div th:replace="~{fragments/footer :: siteFooter}"></div>

@@ -235,8 +235,7 @@
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-4">
                       <div class="h-16 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100">
-                        <img th:if="${!#lists.isEmpty(apartment.images)}" th:src="${apartment.images[0]}" alt="" class="h-full w-full object-cover" />
-                        <div th:if="${#lists.isEmpty(apartment.images)}" class="flex h-full w-full items-center justify-center text-xs text-slate-400">No Img</div>
+                        <img th:src="${apartment.primaryImageUrl}" alt="Apartment thumbnail" class="h-full w-full object-cover" />
                       </div>
                       <div class="min-w-0">
                         <p class="font-medium text-slate-900 line-clamp-2" th:text="${apartment.title}"></p>

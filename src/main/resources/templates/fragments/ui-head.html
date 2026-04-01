@@ -1,12 +1,43 @@
 <head th:fragment="uiHead(pageTitle)">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title th:text="${pageTitle}">VistaNest Booking</title>
+  <title th:text="${pageTitle}">Aurelia Grand Estates</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ["Manrope", "system-ui", "sans-serif"],
+            display: ["Playfair Display", "Georgia", "serif"]
+          },
+          colors: {
+            midnight: {
+              50: "#eef1fb",
+              100: "#dce3f7",
+              600: "#1f3f84",
+              700: "#1a336b",
+              900: "#0b1a36"
+            },
+            champagne: {
+              300: "#f3deab",
+              400: "#eacb85",
+              500: "#deb965"
+            },
+            mint: {
+              100: "#dcfaf1",
+              500: "#16a57b",
+              700: "#0f7f5f"
+            }
+          }
+        }
+      }
+    };
+  </script>
   <link rel="stylesheet" href="/css/app.css" />
   <script defer src="/js/app.js"></script>
 </head>

@@ -488,7 +488,7 @@ function initNotificationCenter() {
 
     notifications.slice(0, 8).forEach((notification) => {
       const item = document.createElement("article");
-      item.className = `rounded-xl border px-3 py-2 ${notification.isRead ? "border-slate-200 bg-white" : "border-teallite/40 bg-teallite/10"}`;
+      item.className = `rounded-xl border px-3 py-2 ${notification.isRead ? "border-slate-200 bg-white" : "border-sky-200 bg-sky-50/60"}`;
 
       const title = document.createElement("p");
       title.className = "text-sm font-semibold text-slate-900 line-clamp-1";
@@ -611,7 +611,95 @@ function initNotificationCenter() {
   });
 }
 
+function initImageFallbacks() {
+  const apartmentFallback = "/images/apartment-placeholder.svg";
+  const avatarFallback = "/images/avatar-placeholder.svg";
+
+  document.querySelectorAll("img").forEach((img) => {
+    img.addEventListener("error", () => {
+      if (img.dataset.fallbackApplied === "1") {
+        return;
+      }
+      img.dataset.fallbackApplied = "1";
+
+      const isAvatar = img.classList.contains("rounded-full") || !!img.closest(".rounded-full");
+      img.src = isAvatar ? avatarFallback : apartmentFallback;
+      img.classList.add("image-fallback");
+    });
+  });
+}
+
+function initHeroSlider(root) {
+  const slides = Array.from(root.querySelectorAll("[data-hero-slide]"));
+  const indicators = Array.from(root.querySelectorAll("[data-hero-indicator]"));
+  const prevButton = root.querySelector("[data-hero-prev]");
+  const nextButton = root.querySelector("[data-hero-next]");
+
+  if (slides.length <= 1) {
+    return;
+  }
+
+  const intervalMs = Number(root.dataset.interval) || 5000;
+  let current = 0;
+  let timerId = null;
+
+  const setActive = (index) => {
+    current = (index + slides.length) % slides.length;
+    slides.forEach((slide, slideIndex) => {
+      slide.classList.toggle("is-active", slideIndex === current);
+    });
+    indicators.forEach((indicator, indicatorIndex) => {
+      indicator.classList.toggle("is-active", indicatorIndex === current);
+      indicator.setAttribute("aria-current", indicatorIndex === current ? "true" : "false");
+    });
+  };
+
+  const next = () => setActive(current + 1);
+  const prev = () => setActive(current - 1);
+
+  const start = () => {
+    if (timerId) {
+      clearInterval(timerId);
+    }
+    timerId = setInterval(next, intervalMs);
+  };
+
+  const stop = () => {
+    if (timerId) {
+      clearInterval(timerId);
+      timerId = null;
+    }
+  };
+
+  indicators.forEach((indicator) => {
+    indicator.addEventListener("click", () => {
+      const index = Number(indicator.dataset.index);
+      if (Number.isFinite(index)) {
+        setActive(index);
+        start();
+      }
+    });
+  });
+
+  prevButton?.addEventListener("click", () => {
+    prev();
+    start();
+  });
+
+  nextButton?.addEventListener("click", () => {
+    next();
+    start();
+  });
+
+  root.addEventListener("mouseenter", stop);
+  root.addEventListener("mouseleave", start);
+
+  setActive(0);
+  start();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("[data-hero-slider]").forEach(initHeroSlider);
   document.querySelectorAll("[data-table]").forEach(initRealtimeTable);
   document.querySelectorAll("[data-chat-root]").forEach(initChat);
   if (typeof initApartmentAssistant === "function") {
@@ -619,4 +707,5 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   initChatUnreadBadge();
   initNotificationCenter();
+  initImageFallbacks();
 });

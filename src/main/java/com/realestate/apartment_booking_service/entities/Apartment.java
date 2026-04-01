@@ -127,6 +127,14 @@ public class Apartment {
     @Default
     private List<String> images = new ArrayList<>();
 
+    public String getPrimaryImageUrl() {
+        if (images == null || images.isEmpty()) {
+            return null;
+        }
+        String firstImage = images.get(0);
+        return hasText(firstImage) ? firstImage.trim() : null;
+    }
+
     public String getLocationAreaLabel() {
         List<String> areaParts = new ArrayList<>();
         if (hasText(locationWard)) {

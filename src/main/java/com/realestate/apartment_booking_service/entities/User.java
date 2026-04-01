@@ -64,6 +64,10 @@ public class User {
     @jakarta.persistence.OneToOne(mappedBy = "user", fetch = jakarta.persistence.FetchType.LAZY)
     private AgentProfile agentProfile;
 
+    public String getAvatarUrl() {
+        return (avatar == null || avatar.isBlank()) ? null : avatar.trim();
+    }
+
     @PrePersist
     public void prePersist() {
         if (createdAt == null) {

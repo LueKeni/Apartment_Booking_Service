@@ -1,88 +1,88 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/ui-head :: uiHead('Agent Command Center')}"></head>
-<body class="bg-slate-50 font-sans text-slate-900 antialiased">
+<head th:replace="~{fragments/ui-head :: uiHead('Agent Command Center | Aurelia')}"></head>
+<body class="font-sans text-slate-900 antialiased">
   <div th:replace="~{fragments/header :: siteHeader}"></div>
 
-  <main class="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+  <main class="page-enter mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-[260px_1fr]">
       <div th:replace="~{fragments/agent-sidebar :: agentSidebar('dashboard')}"></div>
 
       <div class="space-y-6">
-        <div class="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 class="text-2xl font-bold tracking-tight text-slate-900">Agent Command Center</h1>
-            <p class="mt-1 text-sm text-slate-500">Manage listings and booking pipeline in one place.</p>
+        <section class="rounded-[1.6rem] bg-gradient-to-r from-midnight-900 via-midnight-700 to-midnight-600 p-6 text-white shadow-xl shadow-midnight-900/20">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-champagne-300">Agent Command Center</p>
+              <h1 class="mt-2 font-display text-3xl font-bold">Manage listings with confidence</h1>
+              <p class="mt-2 text-sm text-white/85">Your portfolio, bookings, and performance in one easy workspace.</p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <a href="/agent/listings" class="rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-midnight-900 transition-colors hover:bg-slate-100">Manage Listings</a>
+              <a href="/agent/bookings" class="rounded-xl border border-white/40 bg-black/20 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-black/35">Review Bookings</a>
+            </div>
           </div>
-          <div class="flex flex-wrap gap-3">
-            <a href="/agent/listings" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-600">
-              Manage Listings
-            </a>
-            <a href="/agent/bookings" class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 transition-all hover:bg-slate-50">
-              Review Bookings
-            </a>
-          </div>
-        </div>
+        </section>
 
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <div class="overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <p class="text-sm font-medium text-slate-500">Active Listings</p>
-            <p class="mt-2 text-3xl font-bold text-slate-900" th:text="${listingCount}">0</p>
-          </div>
-          <div class="overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <p class="text-sm font-medium text-slate-500">Pending Requests</p>
+        <section class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          <article class="glass-card metric-card p-6">
+            <p class="text-sm font-semibold text-slate-500">Active Listings</p>
+            <p class="mt-2 text-3xl font-bold text-midnight-900" th:text="${listingCount}">0</p>
+          </article>
+          <article class="glass-card metric-card p-6">
+            <p class="text-sm font-semibold text-slate-500">Pending Requests</p>
             <p class="mt-2 text-3xl font-bold text-amber-600" th:text="${pendingCount}">0</p>
-          </div>
-          <div class="overflow-hidden rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <p class="text-sm font-medium text-slate-500">Completed Appointments</p>
+          </article>
+          <article class="glass-card metric-card p-6">
+            <p class="text-sm font-semibold text-slate-500">Completed Visits</p>
             <p class="mt-2 text-3xl font-bold text-emerald-600" th:text="${completedCount}">0</p>
-          </div>
-        </div>
+          </article>
+          <article class="glass-card metric-card p-6">
+            <p class="text-sm font-semibold text-slate-500">Hidden Listings</p>
+            <p class="mt-2 text-3xl font-bold text-rose-600" th:text="${hiddenListingCount}">0</p>
+          </article>
+        </section>
 
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
-            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
-              <h2 class="text-base font-semibold text-slate-900">Recent Bookings</h2>
-              <a href="/agent/bookings" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View all &rarr;</a>
+        <section class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <article class="rounded-2xl bg-white">
+            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+              <h2 class="text-base font-bold text-midnight-900">Recent Bookings</h2>
+              <a href="/agent/bookings" class="text-sm font-semibold text-midnight-700 hover:text-midnight-600">View all</a>
             </div>
             <div class="p-6">
-              <div th:if="${#lists.isEmpty(recentAppointments)}" class="rounded-xl border-2 border-dashed border-slate-200 p-8 text-center text-sm text-slate-500">No bookings yet.</div>
-              <ul role="list" class="divide-y divide-slate-100">
-                <li th:each="appointment : ${recentAppointments}" class="py-4">
-                  <p class="font-semibold text-slate-900 truncate" th:text="${appointment.apartment.title}"></p>
-                  <p class="mt-1 text-sm text-slate-600" th:text="${appointment.user.fullName + ' • ' + appointment.scheduledDate + ' ' + appointment.scheduledTime}"></p>
-                  <div class="mt-2 flex items-center justify-between">
-                    <p class="text-xs text-slate-500" th:text="${'Booked: ' + appointment.createdAt}"></p>
-                    <span th:classappend="${appointment.status == 'PENDING' ? 'bg-yellow-50 text-yellow-800 ring-yellow-600/20' : (appointment.status == 'COMPLETED' ? 'bg-green-50 text-green-700 ring-green-600/20' : 'bg-slate-50 text-slate-600 ring-slate-500/10')}" 
-                          class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset" th:text="${appointment.status}"></span>
-                  </div>
+              <div th:if="${#lists.isEmpty(recentAppointments)}" class="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">No bookings yet.</div>
+              <ul th:if="${!#lists.isEmpty(recentAppointments)}" class="space-y-3">
+                <li th:each="appointment : ${recentAppointments}" class="rounded-xl border border-slate-200 bg-slate-50/60 p-4">
+                  <p class="font-semibold text-slate-900 line-clamp-1" th:text="${appointment.apartment.title}"></p>
+                  <p class="mt-1 text-sm text-slate-600" th:text="${appointment.user.fullName + ' - ' + appointment.scheduledDate + ' ' + appointment.scheduledTime}"></p>
+                  <span class="mt-2 inline-flex rounded-full border px-2.5 py-1 text-xs font-bold"
+                        th:classappend="${appointment.status.name() == 'PENDING' ? ' bg-amber-50 text-amber-700 border-amber-200' : (appointment.status.name() == 'COMPLETED' ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : ' bg-slate-100 text-slate-700 border-slate-200')}"
+                        th:text="${appointment.status}"></span>
                 </li>
               </ul>
             </div>
-          </div>
+          </article>
 
-          <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
-            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
-              <div class="flex items-center gap-3">
-                <h2 class="text-base font-semibold text-slate-900">Recent Listings</h2>
-                <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10" th:text="${hiddenListingCount + ' hidden'}"></span>
-              </div>
+          <article class="rounded-2xl bg-white">
+            <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+              <h2 class="text-base font-bold text-midnight-900">Recent Listings</h2>
+              <a href="/agent/listings" class="text-sm font-semibold text-midnight-700 hover:text-midnight-600">Open Studio</a>
             </div>
             <div class="p-6">
-              <ul role="list" class="divide-y divide-slate-100">
-                <li th:each="apartment : ${recentListings}" class="py-4 flex justify-between items-center gap-4">
+              <div th:if="${#lists.isEmpty(recentListings)}" class="rounded-xl border border-dashed border-slate-300 p-8 text-center text-sm text-slate-500">No listings yet.</div>
+              <ul th:if="${!#lists.isEmpty(recentListings)}" class="space-y-3">
+                <li th:each="apartment : ${recentListings}" class="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-slate-50/60 p-4">
                   <div class="min-w-0">
-                    <p class="font-semibold text-slate-900 truncate" th:text="${apartment.title}"></p>
-                    <p class="mt-1 text-sm text-slate-500 truncate" th:text="${apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '-'}"></p>
+                    <p class="truncate font-semibold text-slate-900" th:text="${apartment.title}"></p>
+                    <p class="truncate text-sm text-slate-500" th:text="${apartment.locationAreaLabel != null ? apartment.locationAreaLabel : '-'}"></p>
                   </div>
-                  <span th:classappend="${apartment.status == 'AVAILABLE' ? 'bg-green-50 text-green-700 ring-green-600/20' : 'bg-amber-50 text-amber-700 ring-amber-600/20'}" 
-                        class="whitespace-nowrap inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset" th:text="${apartment.status}"></span>
+                  <span class="inline-flex rounded-full border px-2.5 py-1 text-xs font-bold"
+                        th:classappend="${apartment.status == 'AVAILABLE' ? ' bg-emerald-50 text-emerald-700 border-emerald-200' : ' bg-amber-50 text-amber-700 border-amber-200'}"
+                        th:text="${apartment.status}"></span>
                 </li>
               </ul>
             </div>
-          </div>
-        </div>
-
+          </article>
+        </section>
       </div>
     </div>
   </main>
