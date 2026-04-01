@@ -81,20 +81,59 @@
         </section>
 
         <section class="mt-6 glass-card p-6">
-          <h2 class="text-lg font-semibold text-ink">Custom amount</h2>
-          <p class="mt-2 text-sm text-slate-600">Enter any amount above 1,000 VND. Default rate: 1 point per 100 VND.</p>
-          <form method="post" action="/agent/points/momo" class="mt-4 flex flex-wrap gap-3">
-            <input type="hidden" name="fullName" th:value="${agentProfile != null ? agentProfile.fullName : ''}" />
-            <input type="hidden" name="orderInfo" value="Mua diem tuy chinh cho agent" />
-            <input type="number"
-                   min="1000"
-                   name="amount"
-                   class="min-h-[44px] w-52 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
-                   placeholder="Amount (VND)" />
-            <button class="min-h-[44px] rounded-xl bg-tealdeep px-4 py-2 text-sm font-semibold text-white" type="submit">
-              Pay with MoMo
-            </button>
-          </form>
+          <h2 class="text-lg font-semibold text-ink">Purchase History</h2>
+          <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+              <thead class="bg-slate-50 text-left text-slate-600">
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Order</th>
+                  <th class="px-4 py-3 font-semibold">Amount</th>
+                  <th class="px-4 py-3 font-semibold">Points</th>
+                  <th class="px-4 py-3 font-semibold">Status</th>
+                  <th class="px-4 py-3 font-semibold">Created</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 bg-white/80">
+                <tr th:if="${#lists.isEmpty(topupHistory)}">
+                  <td class="px-4 py-4 text-slate-500" colspan="5">No purchases yet.</td>
+                </tr>
+                <tr th:each="topup : ${topupHistory}">
+                  <td class="px-4 py-3 text-slate-700" th:text="${topup.orderId}"></td>
+                  <td class="px-4 py-3 text-slate-700" th:text="${topup.amount}"></td>
+                  <td class="px-4 py-3 text-slate-700" th:text="${topup.points}"></td>
+                  <td class="px-4 py-3"><span class="pill" th:text="${topup.status}"></span></td>
+                  <td class="px-4 py-3 text-slate-600" th:text="${#temporals.format(topup.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="mt-6 glass-card p-6">
+          <h2 class="text-lg font-semibold text-ink">Usage History</h2>
+          <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+              <thead class="bg-slate-50 text-left text-slate-600">
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Listing</th>
+                  <th class="px-4 py-3 font-semibold">Points</th>
+                  <th class="px-4 py-3 font-semibold">Type</th>
+                  <th class="px-4 py-3 font-semibold">Created</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 bg-white/80">
+                <tr th:if="${#lists.isEmpty(usageHistory)}">
+                  <td class="px-4 py-4 text-slate-500" colspan="4">No usage yet.</td>
+                </tr>
+                <tr th:each="usage : ${usageHistory}">
+                  <td class="px-4 py-3 text-slate-700" th:text="${usage.apartment != null ? usage.apartment.title : 'N/A'}"></td>
+                  <td class="px-4 py-3 text-slate-700" th:text="${usage.points}"></td>
+                  <td class="px-4 py-3"><span class="pill" th:text="${usage.type}"></span></td>
+                  <td class="px-4 py-3 text-slate-600" th:text="${#temporals.format(usage.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </div>

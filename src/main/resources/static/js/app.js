@@ -171,10 +171,10 @@ function initChat(root) {
       title.textContent = activeConversation.otherUserName || "Conversation";
       subtitle.textContent = activeConversation.apartmentTitle
         ? `Listing: ${activeConversation.apartmentTitle}`
-        : "Listing chat";
+        : "General Inquiry";
       return;
     }
-    if (state.recipientId && state.apartmentId) {
+    if (state.recipientId) {
       title.textContent = "New conversation";
       subtitle.textContent = "Send your first message to start this chat.";
       return;
@@ -239,7 +239,7 @@ function initChat(root) {
 
       const listing = document.createElement("p");
       listing.className = `mt-1 text-xs ${isActive ? "text-white/70" : "text-slate-500"}`;
-      listing.textContent = conversation.apartmentTitle || "Listing";
+      listing.textContent = conversation.apartmentTitle || "General Inquiry";
 
       const meta = document.createElement("p");
       meta.className = `mt-2 text-xs ${isActive ? "text-white/60" : "text-slate-400"}`;
@@ -261,7 +261,7 @@ function initChat(root) {
     activeConversation = conversation;
     state.conversationId = conversation.conversationId;
     state.recipientId = conversation.otherUserId;
-    state.apartmentId = conversation.apartmentId;
+    state.apartmentId = conversation.apartmentId || null;
     updateHeader();
     setComposerEnabled(true);
     loadMessages();
@@ -274,7 +274,7 @@ function initChat(root) {
       if (placeholder) {
         placeholder.classList.remove("hidden");
       }
-      setComposerEnabled(Boolean(state.recipientId && state.apartmentId));
+      setComposerEnabled(Boolean(state.recipientId));
       updateHeader();
       return;
     }
@@ -310,9 +310,9 @@ function initChat(root) {
       if (state.conversationId) {
         const matched = cachedConversations.find((item) => item.conversationId === state.conversationId);
         activeConversation = matched || null;
-      } else if (state.recipientId && state.apartmentId) {
+      } else if (state.recipientId) {
         const matched = cachedConversations.find(
-          (item) => item.otherUserId === state.recipientId && item.apartmentId === state.apartmentId
+          (item) => item.otherUserId === state.recipientId && (state.apartmentId ? item.apartmentId === state.apartmentId : true)
         );
         if (matched) {
           selectConversation(matched);
@@ -321,7 +321,7 @@ function initChat(root) {
       }
 
       updateHeader();
-      setComposerEnabled(Boolean(state.recipientId && state.apartmentId));
+      setComposerEnabled(Boolean(state.recipientId));
       setStatus("Ready");
       if (state.conversationId) {
         loadMessages(true);
@@ -337,7 +337,7 @@ function initChat(root) {
     if (!content) {
       return;
     }
-    if (!state.recipientId || !state.apartmentId) {
+    if (!state.recipientId) {
       setStatus("Select a conversation first");
       return;
     }
@@ -424,211 +424,9 @@ function initChatUnreadBadge() {
   });
 }
 
-function initNotificationCenter() {
-  const root = document.querySelector("[data-notification-root]");
-  const badges = Array.from(document.querySelectorAll("[data-notification-unread-badge]"));
-  if (!root || !badges.length) {
-    return;
-  }
-
-  const toggle = root.querySelector("[data-notification-toggle]");
-  const panel = root.querySelector("[data-notification-panel]");
-  const list = root.querySelector("[data-notification-list]");
-  const empty = root.querySelector("[data-notification-empty]");
-  const markAllButton = root.querySelector("[data-notification-mark-all]");
-
-  if (!toggle || !panel || !list || !empty) {
-    return;
-  }
-
-  let lastUnreadCount = 0;
-
-  const setUnreadBadges = (count) => {
-    lastUnreadCount = count;
-    const display = Number.isFinite(count) && count > 99 ? "99+" : String(count || 0);
-    badges.forEach((badge) => {
-      if (count && count > 0) {
-        badge.textContent = display;
-        badge.classList.remove("hidden");
-      } else {
-        badge.classList.add("hidden");
-      }
-    });
-  };
-
-  const formatTimestamp = (value) => {
-    if (!value) {
-      return "";
-    }
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return value;
-    }
-    return date.toLocaleString(undefined, {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  };
-
-  const markRead = async (notificationId) => {
-    await fetch(`/api/notifications/${notificationId}/read`, { method: "POST" });
-  };
-
-  const renderNotifications = (notifications) => {
-    list.innerHTML = "";
-    const hasItems = Array.isArray(notifications) && notifications.length > 0;
-    empty.classList.toggle("hidden", hasItems);
-    if (!hasItems) {
-      return;
-    }
-
-    notifications.slice(0, 8).forEach((notification) => {
-      const item = document.createElement("article");
-      item.className = `rounded-xl border px-3 py-2 transition hover:border-tealdeep/50 hover:bg-white ${notification.isRead ? "border-slate-200 bg-white" : "border-teallite/40 bg-teallite/10"}`;
-      item.role = "button";
-      item.tabIndex = 0;
-
-      const openNotification = () => {
-        const href = notification.openUrl || notification.actionUrl;
-        if (href) {
-          window.location.href = href;
-        }
-      };
-
-      item.addEventListener("click", openNotification);
-      item.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          openNotification();
-        }
-      });
-
-      const title = document.createElement("p");
-      title.className = "text-sm font-semibold text-ink";
-      title.textContent = notification.title || "Notification";
-
-      const message = document.createElement("p");
-      message.className = "mt-1 text-xs text-slate-600";
-      message.textContent = notification.message || "";
-
-      const metaRow = document.createElement("div");
-      metaRow.className = "mt-2 flex items-center justify-between gap-2";
-
-      const createdAt = document.createElement("span");
-      createdAt.className = "text-[11px] text-slate-500";
-      createdAt.textContent = formatTimestamp(notification.createdAt);
-
-      metaRow.appendChild(createdAt);
-
-      if (!notification.isRead) {
-        const readButton = document.createElement("button");
-        readButton.type = "button";
-        readButton.className = "rounded-full border border-slate-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700";
-        readButton.textContent = "Mark read";
-        readButton.addEventListener("click", async (event) => {
-          event.stopPropagation();
-          try {
-            await markRead(notification.id);
-            await refreshNotifications();
-          } catch (error) {
-            // Ignore transient network errors and keep current UI.
-          }
-        });
-        metaRow.appendChild(readButton);
-      }
-
-      item.appendChild(title);
-      item.appendChild(message);
-      item.appendChild(metaRow);
-      list.appendChild(item);
-    });
-  };
-
-  const refreshUnreadCount = async () => {
-    try {
-      const response = await fetch("/api/notifications/unread-count");
-      if (!response.ok) {
-        throw new Error("Failed to load unread notifications");
-      }
-      const count = Number(await response.json());
-      setUnreadBadges(Number.isFinite(count) ? count : 0);
-    } catch (error) {
-      setUnreadBadges(0);
-    }
-  };
-
-  const refreshNotifications = async () => {
-    try {
-      const response = await fetch("/api/notifications");
-      if (!response.ok) {
-        throw new Error("Failed to load notifications");
-      }
-      const notifications = await response.json();
-      renderNotifications(notifications);
-      const unreadCount = notifications.filter((notification) => !notification.isRead).length;
-      setUnreadBadges(unreadCount);
-    } catch (error) {
-      renderNotifications([]);
-      if (lastUnreadCount === 0) {
-        setUnreadBadges(0);
-      }
-    }
-  };
-
-  const openPanel = async () => {
-    panel.classList.remove("hidden");
-    toggle.setAttribute("aria-expanded", "true");
-    await refreshNotifications();
-  };
-
-  const closePanel = () => {
-    panel.classList.add("hidden");
-    toggle.setAttribute("aria-expanded", "false");
-  };
-
-  toggle.addEventListener("click", async (event) => {
-    event.stopPropagation();
-    if (panel.classList.contains("hidden")) {
-      await openPanel();
-    } else {
-      closePanel();
-    }
-  });
-
-  document.addEventListener("click", (event) => {
-    if (!root.contains(event.target)) {
-      closePanel();
-    }
-  });
-
-  if (markAllButton) {
-    markAllButton.addEventListener("click", async () => {
-      try {
-        await fetch("/api/notifications/read-all", { method: "POST" });
-        await refreshNotifications();
-      } catch (error) {
-        // Ignore transient network errors and keep current UI.
-      }
-    });
-  }
-
-  refreshUnreadCount();
-  setInterval(refreshUnreadCount, 10000);
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) {
-      refreshUnreadCount();
-      if (!panel.classList.contains("hidden")) {
-        refreshNotifications();
-      }
-    }
-  });
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("[data-table]").forEach(initRealtimeTable);
   document.querySelectorAll("[data-chat-root]").forEach(initChat);
+  document.querySelectorAll("[data-apartment-assistant]").forEach(initApartmentAssistant);
   initChatUnreadBadge();
-  initNotificationCenter();
 });

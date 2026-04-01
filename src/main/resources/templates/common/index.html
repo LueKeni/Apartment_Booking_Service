@@ -79,18 +79,32 @@
                class="mb-3 h-40 w-full rounded-2xl object-cover" />
           <h3 class="text-lg font-semibold text-ink" th:text="${apartment.title}"></h3>
           <p class="mt-1 text-sm text-slate-600" th:text="${apartment.locationDistrict}"></p>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="text-xs font-medium text-amber-500">
+                <i class="fas fa-star"></i>
+                <span th:text="${apartment.agent.agentProfile != null ? #numbers.formatDecimal(apartment.agent.agentProfile.averageRating, 1, 1) : '0.0'}"></span>
+            </span>
+            <span class="text-xs text-slate-400" th:text="${'(' + (apartment.agent.agentProfile != null ? apartment.agent.agentProfile.reviewCount : 0) + ' reviews)'}"></span>
+            <span th:if="${apartment.agent.agentProfile != null and apartment.agent.agentProfile.averageRating >= 4.5 and apartment.agent.agentProfile.reviewCount > 0}" 
+                  class="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-amber-700">
+                <i class="fas fa-thumbs-up mr-0.5"></i> Recommended
+            </span>
+            <span class="text-xs font-medium text-rose-600" th:text="${'Luot thich: ' + (apartment.likesCount != null ? apartment.likesCount : 0)}"></span>
+          </div>
           <p class="mt-3 text-xl font-bold text-tealdeep" th:text="${apartment.price}"></p>
           <div class="mt-4 flex flex-wrap gap-2">
             <a th:href="@{/apartments/{id}(id=${apartment.id})}" class="inline-block rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white">View Details</a>
-            <form th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}"
-                  th:action="@{/user/likes/{id}/toggle(id=${apartment.id})}"
-                  method="post">
-              <input type="hidden" name="redirectTo" th:value="${'/?keyword=' + (filter != null and filter.keyword != null ? filter.keyword : '') + '&district=' + (filter != null and filter.district != null ? filter.district : '') + '&roomType=' + (filter != null and filter.roomType != null ? filter.roomType : '') + '&transactionType=' + (filter != null and filter.transactionType != null ? filter.transactionType.name() : '') + '&status=' + (filter != null and filter.status != null ? filter.status.name() : '')}" />
-              <button class="rounded-full px-4 py-2 text-sm font-semibold text-white"
-                      th:classappend="${likedApartmentIds.contains(apartment.id)} ? ' bg-rose-500 hover:bg-rose-600' : ' bg-slate-700 hover:bg-slate-800'"
-                      th:text="${likedApartmentIds.contains(apartment.id)} ? 'Bo like' : 'Like'">
-              </button>
-            </form>
+            <button type="button" 
+                    class="rounded-full bg-teal-50 px-4 py-2 text-sm font-semibold text-tealdeep hover:bg-teal-100 transition-all hover:scale-105"
+                    th:attr="data-compare-add=${apartment.id}, 
+                             data-compare-title=${apartment.title}, 
+                             data-compare-price=${apartment.price}, 
+                             data-compare-image=${!#lists.isEmpty(apartment.images) ? apartment.images[0] : '/uploads/default-apt.jpg'},
+                             data-compare-district=${apartment.locationDistrict},
+                             data-compare-type=${apartment.roomType},
+                             data-compare-area=${apartment.area}">
+              Compare
+            </button>
             <form th:if="${isAuthenticated and hasRoleUser and !hasRoleAgent}"
                   th:action="@{/user/favorites/{id}/toggle(id=${apartment.id})}"
                   method="post">
@@ -101,10 +115,118 @@
               </button>
             </form>
           </div>
-        </article>
+          </article>
+          </div>
+          </section>
+
+          <!-- Apartment Comparison Bar -->
+          <div id="comparison-bar" class="fixed bottom-0 left-0 right-0 z-50 translate-y-full bg-white p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] transition-transform duration-300">
+          <div class="mx-auto max-w-7xl">
+          <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
+          <div class="flex items-center gap-4">
+            <h3 class="font-bold text-ink">Compare Apartments <span id="compare-count" class="ml-2 rounded-full bg-teal-100 px-2 py-0.5 text-xs text-tealdeep">0/3</span></h3>
+            <div id="compare-items" class="flex gap-2">
+              <!-- Items will be injected here -->
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button id="clear-compare" class="text-sm font-semibold text-slate-500 hover:text-slate-700">Clear All</button>
+            <button id="compare-now-btn" class="rounded-full bg-ink px-6 py-2 text-sm font-semibold text-white shadow-lg disabled:opacity-50" disabled>Compare Now</button>
+          </div>
+          </div>
+          </div>
+          </div>
+
+          <!-- Comparison Modal -->
+          <div id="comparison-modal" class="fixed inset-0 z-[60] hidden bg-slate-900/60 backdrop-blur-sm">
+          <div class="absolute inset-4 overflow-hidden rounded-2xl bg-white shadow-2xl md:inset-x-20 md:inset-y-10">
+           <div class="flex h-full flex-col">
+               <div class="flex items-center justify-between border-b border-slate-100 p-4">
+                   <h2 class="text-xl font-bold text-ink">Apartment Comparison</h2>
+                   <button id="close-comparison-modal" class="rounded-full p-2 hover:bg-slate-100">
+                       <i class="fas fa-times text-slate-500"></i>
+                   </button>
+               </div>
+               <div id="comparison-content" class="flex-1 overflow-auto p-6">
+                   <!-- Comparison table will be injected here -->
+               </div>
+           </div>
+          </div>
+          </div>
+    <section class="mt-12 border-t border-slate-100 pt-8">
+      <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <h2 class="text-2xl font-bold text-ink flex items-center gap-2">
+            <i class="fas fa-medal text-amber-500"></i>
+            Top Rated Agents
+        </h2>
+        <div class="text-sm text-slate-500 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-sm">Recommended based on actual user ratings</div>
+      </div>
+      
+      <!-- Top Agents Quick Slider/Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <a th:each="agent, stat : ${topAgents}"
+             th:href="@{/agents/{agentId}/reviews(agentId=${agent.user.id})}"
+             class="glass-card p-4 flex flex-col items-center text-center group hover:scale-[1.02] transition-transform cursor-pointer relative overflow-hidden">
+              <div class="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full font-bold text-[10px] shadow-sm"
+                   th:classappend="${stat.index == 0} ? 'bg-amber-100 text-amber-700' : (${stat.index == 1} ? 'bg-slate-200 text-slate-700' : 'bg-orange-100 text-orange-700')"
+                   th:text="${stat.index + 1}">
+              </div>
+              <img th:src="${agent.user.avatar != null ? agent.user.avatar : '/uploads/avatars/default.png'}" 
+                   class="h-16 w-16 rounded-full object-cover border-4 border-white shadow-md mb-3" alt="Avatar"/>
+              <h3 class="font-bold text-slate-900 truncate w-full" th:text="${agent.user.fullName}"></h3>
+              <div class="flex items-center gap-1 text-amber-500 font-bold text-sm mb-1">
+                  <span th:text="${#numbers.formatDecimal(agent.averageRating, 1, 1)}"></span>
+                  <i class="fas fa-star text-[10px]"></i>
+              </div>
+              <p class="text-[10px] text-slate-500 mb-1" th:text="${agent.reviewCount + ' reviews'}"></p>
+              <div class="mt-auto pt-2 border-t border-slate-50 w-full text-center">
+                  <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Top Agent</span>
+              </div>
+          </a>
       </div>
     </section>
   </main>
+
+  <div class="assistant-shell" data-apartment-assistant>
+    <button type="button" class="assistant-toggle" data-assistant-toggle aria-expanded="false" aria-controls="assistant-panel">
+      AI Chat
+    </button>
+    <section id="assistant-panel" class="assistant-panel hidden" data-assistant-panel>
+      <div class="assistant-header">
+        <div>
+          <p class="assistant-eyebrow">Apartment AI Assistant</p>
+          <h2 class="assistant-title">Chat theo nhu cầu căn hộ</h2>
+        </div>
+        <span class="pill" data-assistant-status>Sẵn sàng</span>
+      </div>
+
+      <div class="assistant-thread chat-thread" data-assistant-thread>
+        <div class="assistant-row assistant-row-bot">
+          <div class="assistant-bubble assistant-bubble-bot">
+            Tôi có thể tìm căn hộ theo giá, quận, loại phòng và hình thức thuê hoặc mua.
+          </div>
+        </div>
+      </div>
+
+      <div class="assistant-prompts">
+        <button type="button" data-assistant-prompt="thuê dưới 15 triệu, 2br, quận 2" class="assistant-chip">Thuê dưới 15 triệu</button>
+        <button type="button" data-assistant-prompt="studio tầm 8 triệu" class="assistant-chip">Studio tầm 8 triệu</button>
+        <button type="button" data-assistant-prompt="căn hộ 2br mua ở quận 7" class="assistant-chip">Mua 2BR quận 7</button>
+      </div>
+
+      <form class="assistant-form" data-assistant-form>
+        <input type="text"
+               data-assistant-input
+               placeholder="Nhập câu hỏi về căn hộ..."
+               class="assistant-input" />
+        <button type="submit"
+                data-assistant-submit
+                class="assistant-submit">
+          Gửi
+        </button>
+      </form>
+    </section>
+  </div>
 
   <div th:replace="~{fragments/footer :: siteFooter}"></div>
 </body>

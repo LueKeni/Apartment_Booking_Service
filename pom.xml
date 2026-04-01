@@ -98,6 +98,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<jvmArguments>-XX:+EnableDynamicAgentLoading -Xshare:off</jvmArguments>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

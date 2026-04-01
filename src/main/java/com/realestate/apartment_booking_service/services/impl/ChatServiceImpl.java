@@ -35,8 +35,7 @@ public class ChatServiceImpl implements ChatService {
     public Conversation getOrCreateConversation(Long senderId, Long recipientId, Long apartmentId) {
         User sender = getUser(senderId);
         User recipient = getUser(recipientId);
-        Apartment apartment = apartmentRepository.findById(apartmentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Apartment not found"));
+        Apartment apartment = apartmentId != null ? apartmentRepository.findById(apartmentId).orElse(null) : null;
 
         User userParty = sender.getRole() == Role.AGENT ? recipient : sender;
         User agentParty = sender.getRole() == Role.AGENT ? sender : recipient;

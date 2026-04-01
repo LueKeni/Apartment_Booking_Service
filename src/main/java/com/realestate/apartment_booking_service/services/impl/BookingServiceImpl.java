@@ -12,6 +12,8 @@ import com.realestate.apartment_booking_service.repositories.UserRepository;
 import com.realestate.apartment_booking_service.services.interfaces.BookingService;
 import com.realestate.apartment_booking_service.services.interfaces.NotificationService;
 import jakarta.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,19 +25,18 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional
 public class BookingServiceImpl implements BookingService {
 
-        private final AppointmentRepository appointmentRepository;
-        private final ApartmentRepository apartmentRepository;
-        private final UserRepository userRepository;
-        private final NotificationService notificationService;
+    private final AppointmentRepository appointmentRepository;
+    private final ApartmentRepository apartmentRepository;
+    private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
         @Override
         public Appointment createBooking(Long userId, BookingRequest request) {
                 User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-                Apartment apartment = apartmentRepository.findById(request.getApartmentId())
-                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                                "Apartment not found"));
+        Apartment apartment = apartmentRepository.findById(request.getApartmentId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Apartment not found"));
 
                 boolean conflict = appointmentRepository.existsByApartmentIdAndScheduledDateAndScheduledTimeAndStatusIn(
                                 apartment.getId(),

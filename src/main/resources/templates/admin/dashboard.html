@@ -35,11 +35,30 @@
         <p class="text-sm text-slate-600">Hidden Listings</p>
         <p class="mt-2 text-3xl font-bold text-coral" th:text="${hiddenListingCount}"></p>
       </article>
+      <article class="glass-card metric-card p-5">
+        <p class="text-sm text-slate-600">Point Revenue</p>
+        <p class="mt-2 text-3xl font-bold text-tealdeep" th:text="${pointRevenue + ' VND'}">0</p>
+      </article>
       <article class="glass-card p-5">
         <p class="text-sm text-slate-600">Quick Access</p>
         <div class="mt-3 flex flex-wrap gap-2">
           <a href="/admin/users" class="pill">User Status</a>
           <a href="/admin/listings" class="pill">Listing Status</a>
+          <a href="/admin/points" class="pill">Point Sales</a>
+        </div>
+      </article>
+    </section>
+
+    <section class="mt-6">
+      <article class="glass-card p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-semibold">Point Revenue Trend</h2>
+            <p class="text-sm text-slate-600">Monthly totals from successful MoMo purchases.</p>
+          </div>
+        </div>
+        <div class="mt-4">
+          <canvas id="pointRevenueChart" height="120"></canvas>
         </div>
       </article>
     </section>
@@ -60,6 +79,43 @@
       </div>
     </div>
   </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script th:inline="javascript">
+    const revenueLabels = /*[[${revenueLabels}]]*/ [];
+    const revenueValues = /*[[${revenueValues}]]*/ [];
+    const revenueCtx = document.getElementById("pointRevenueChart");
+    if (revenueCtx) {
+      new Chart(revenueCtx, {
+        type: "line",
+        data: {
+          labels: revenueLabels,
+          datasets: [{
+            label: "Revenue (VND)",
+            data: revenueValues,
+            borderColor: "#146c72",
+            backgroundColor: "rgba(20, 108, 114, 0.12)",
+            borderWidth: 2,
+            fill: true,
+            tension: 0.35
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+  </script>
 
   <div th:replace="~{fragments/footer :: siteFooter}"></div>
 </body>
