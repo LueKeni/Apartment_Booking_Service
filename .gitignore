@@ -32,5 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 
-# Local OAuth credentials
+# Local OAuth credentials (do not commit)
 oauth-local.properties
+

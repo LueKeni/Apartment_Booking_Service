@@ -1,14 +1,7 @@
-# Copy this file to oauth-local.properties in the project root, then fill real values.
-# Do NOT commit oauth-local.properties.
+# Copy this file to oauth-local.properties and fill your real credentials.
+# This file is safe to commit; oauth-local.properties is ignored by git.
 
-# Google OAuth2
-# Redirect URI must match your running port.
-# If running on 8080: http://localhost:8080/login/oauth2/code/google
-# If running on 8086: http://localhost:8086/login/oauth2/code/google
-
-google.oauth.client-id=your-google-client-id
-google.oauth.client-secret=your-google-client-secret
-
-# Optional Facebook OAuth2
-# facebook.oauth.client-id=your-facebook-client-id
-# facebook.oauth.client-secret=your-facebook-client-secret
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+FACEBOOK_CLIENT_ID=your-facebook-app-id
+FACEBOOK_CLIENT_SECRET=your-facebook-app-secret

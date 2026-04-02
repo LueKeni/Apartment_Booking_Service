@@ -112,7 +112,11 @@ public class MainController {
         if (email == null) {
             return null;
         }
-        return userService.findByEmail(email).getId();
+        try {
+            return userService.findByEmail(email).getId();
+        } catch (ResponseStatusException ex) {
+            return null;
+        }
     }
 
     private Set<Long> resolveFavoriteApartmentIds(Long currentUserId) {

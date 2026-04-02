@@ -1,6 +1,6 @@
 package com.realestate.apartment_booking_service.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.realestate.apartment_booking_service.services.impl.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -10,8 +10,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-        @Autowired
-        private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+        private final CustomOAuth2UserService customOAuth2UserService;
+
+        public SecurityConfig(CustomOAuth2UserService customOAuth2UserService) {
+                this.customOAuth2UserService = customOAuth2UserService;
+        }
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -23,6 +26,8 @@ public class SecurityConfig {
                                                                 "/search",
                                                                 "/apartments/**",
                                                                 "/auth/**",
+                                                                "/oauth2/**",
+                                                                "/login/oauth2/**",
                                                                 "/error",
                                                                 "/api/assistant/**",
                                                                 "/momo/**",
@@ -45,7 +50,10 @@ public class SecurityConfig {
                                                 .permitAll())
                                 .oauth2Login(oauth2 -> oauth2
                                                 .loginPage("/auth/login")
-                                                .successHandler(customOAuth2SuccessHandler))
+                                                .userInfoEndpoint(userInfo -> userInfo
+                                                                .userService(customOAuth2UserService))
+                                                .defaultSuccessUrl("/", true)
+                                                .failureUrl("/auth/login?error"))
                                 // --------------------------------------
                                 .logout(logout -> logout
                                                 .logoutUrl("/auth/logout")

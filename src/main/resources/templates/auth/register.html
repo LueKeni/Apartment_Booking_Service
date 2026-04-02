@@ -44,32 +44,6 @@
         </button>
       </form>
 
-      <div class="mt-6 mb-4 relative flex items-center justify-center" th:if="${socialOAuthEnabled}">
-        <div class="absolute inset-0 flex items-center" aria-hidden="true">
-          <div class="w-full border-t border-slate-300/60"></div>
-        </div>
-        <div class="relative flex justify-center">
-          <span class="bg-[#fcf6e8] px-4 text-[11px] font-bold uppercase tracking-wider text-slate-400">Or continue with</span>
-        </div>
-      </div>
-
-      <div class="flex gap-3" th:if="${socialOAuthEnabled}">
-        <a th:if="${googleOAuthEnabled}" href="/oauth2/authorization/google" class="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#fdfaf2] px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-black/5 hover:bg-white hover:shadow-md transition-all">
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" class="h-5 w-5" />
-          Google
-        </a>
-        <a th:if="${facebookOAuthEnabled}" href="/oauth2/authorization/facebook" class="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#fdfaf2] px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm ring-1 ring-inset ring-black/5 hover:bg-white hover:shadow-md transition-all">
-          <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" alt="Facebook" class="h-5 w-5" />
-          Facebook
-        </a>
-      </div>
-
-      <div th:if="${!socialOAuthEnabled}" class="mt-6 rounded-xl bg-amber-50 p-4 text-xs font-semibold text-amber-800 border border-amber-200 text-center leading-relaxed">
-        Chua cau hinh Google OAuth. Hay tao file <strong>oauth-local.properties</strong> (tu
-        <strong>oauth-local.properties.example</strong>) va dien
-        <strong>google.oauth.client-id</strong>, <strong>google.oauth.client-secret</strong>.
-      </div>
-
       <div class="mt-8 text-center">
         <p class="text-sm text-slate-500">
           Already have an account? <a href="/auth/login" class="font-bold text-[#0b1437] hover:underline">Sign in</a>
