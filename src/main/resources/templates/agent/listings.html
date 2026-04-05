@@ -100,10 +100,26 @@
               <label class="mb-1.5 block text-sm font-medium text-slate-700">Description</label>
               <textarea name="description" rows="4" class="block w-full rounded-lg border-0 py-2 px-3 text-slate-900 ring-1 ring-inset ring-slate-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"></textarea>
             </div>
-            <div class="md:col-span-2">
-              <label for="imageFiles" class="mb-1.5 block text-sm font-medium text-slate-700">Listing Images</label>
-              <input id="imageFiles" name="imageFiles" type="file" accept="image/*" multiple class="block w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100 ring-1 ring-inset ring-slate-300 rounded-lg bg-white p-1" />
-              <p class="mt-1.5 text-xs text-slate-500">Upload high-quality images (JPG, PNG). You can select multiple files.</p>
+            <div class="md:col-span-2 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
+              <label class="mb-1.5 block text-sm font-bold text-indigo-900">
+                <i class="fas fa-camera-retro mr-1"></i> Verified Live Photo (Required)
+              </label>
+              <p class="mb-3 text-xs text-indigo-700">To maintain platform quality, you must take a live photo at the property. Your GPS location will be automatically recorded.</p>
+              
+              <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <button type="button" id="btnLiveCapture" class="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:ring-2 focus:ring-indigo-600 flex items-center gap-2 transition-all">
+                  <i class="fas fa-crosshairs"></i> Get Location & Take Photo
+                </button>
+                
+                <span id="captureStatus" class="text-sm font-medium text-slate-500">Waiting for capture...</span>
+              </div>
+
+              <input id="liveCameraInput" name="imageFiles" type="file" accept="image/*" capture="environment" required class="hidden" />
+              
+              <div class="mt-4 pt-4 border-t border-indigo-100">
+                <label for="extraImageFiles" class="mb-1.5 block text-xs font-semibold text-slate-600">Additional Gallery Images (Optional)</label>
+                <input id="extraImageFiles" name="imageFiles" type="file" accept="image/*" multiple class="block w-full text-sm text-slate-500 file:mr-4 file:rounded-md file:border-0 file:bg-white file:px-4 file:py-2 file:text-sm file:font-semibold file:text-slate-700 hover:file:bg-slate-50 ring-1 ring-inset ring-slate-300 rounded-lg bg-white p-1" />
+              </div>
             </div>
             <div class="md:col-span-2 mt-2">
               <button class="rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-600">Publish Listing</button>
@@ -295,6 +311,99 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
+    // === SCRIPT XỬ LÝ CHỤP ẢNH XÁC THỰC & BẮT BUỘC ĐÚNG VỊ TRÍ ===
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnLiveCapture = document.getElementById('btnLiveCapture');
+      const liveCameraInput = document.getElementById('liveCameraInput');
+      const captureStatus = document.getElementById('captureStatus');
+      
+      // Lấy input của phần Create hoặc Edit (tùy trang nào đang mở)
+      const latInput = document.getElementById('createLatitude') || document.getElementById('editLatitude');
+      const lngInput = document.getElementById('createLongitude') || document.getElementById('editLongitude');
+
+      // Thuật toán Haversine: Tính khoảng cách giữa 2 tọa độ GPS (trả về số Mét)
+      function getDistanceInMeters(lat1, lon1, lat2, lon2) {
+        const R = 6371e3; // Bán kính trái đất (mét)
+        const p1 = lat1 * Math.PI / 180;
+        const p2 = lat2 * Math.PI / 180;
+        const deltaP = (lat2 - lat1) * Math.PI / 180;
+        const deltaLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(deltaP / 2) * Math.sin(deltaP / 2) +
+                  Math.cos(p1) * Math.cos(p2) *
+                  Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      }
+
+      if (btnLiveCapture && liveCameraInput) {
+        btnLiveCapture.addEventListener('click', () => {
+          
+          // 1. Kiểm tra xem Agent đã ghim vị trí trên bản đồ chưa
+          const pinnedLat = parseFloat(latInput.value);
+          const pinnedLng = parseFloat(lngInput.value);
+          
+          if (!pinnedLat || !pinnedLng || isNaN(pinnedLat)) {
+            alert("Vui lòng ghim vị trí căn hộ trên bản đồ (Map) trước khi chụp ảnh xác thực!");
+            captureStatus.innerHTML = '<i class="fas fa-exclamation-circle text-amber-500"></i> Please pin location first.';
+            return;
+          }
+
+          // 2. Bắt đầu lấy tọa độ GPS của thiết bị
+          if (navigator.geolocation) {
+            captureStatus.innerHTML = '<i class="fas fa-spinner fa-spin text-indigo-500"></i> Checking your location...';
+            
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const actualLat = position.coords.latitude;
+                const actualLng = position.coords.longitude;
+                
+                // 3. TÍNH TOÁN KHOẢNG CÁCH (VÍ DỤ: GIỚI HẠN 500 MÉT)
+                const distance = getDistanceInMeters(actualLat, actualLng, pinnedLat, pinnedLng);
+                const MAX_DISTANCE_METERS = 500; // Bạn có thể chỉnh sửa con số này
+                
+                if (distance > MAX_DISTANCE_METERS) {
+                  // NẾU SAI VỊ TRÍ -> CHẶN LẠI VÀ BÁO LỖI
+                  captureStatus.innerHTML = `<i class="fas fa-times-circle text-red-500"></i> Location mismatch! You are ${Math.round(distance)}m away.`;
+                  alert(`CẢNH BÁO: Bạn đang đứng cách căn hộ ${Math.round(distance)} mét!\n\nHệ thống yêu cầu bạn phải có mặt tại hiện trường (bán kính ${MAX_DISTANCE_METERS}m) để chụp ảnh xác thực.`);
+                  return; 
+                }
+
+                // NẾU ĐÚNG VỊ TRÍ -> MỞ CAMERA
+                captureStatus.innerHTML = '<i class="fas fa-check text-emerald-500"></i> Location verified. Opening camera...';
+                
+                // Cập nhật lại tọa độ chính xác từng mét của Agent vào hệ thống
+                latInput.value = actualLat.toFixed(6);
+                lngInput.value = actualLng.toFixed(6);
+                latInput.classList.add('bg-emerald-50', 'text-emerald-700', 'ring-emerald-500');
+                lngInput.classList.add('bg-emerald-50', 'text-emerald-700', 'ring-emerald-500');
+
+                // Mở ứng dụng Camera
+                setTimeout(() => {
+                   liveCameraInput.click();
+                }, 500);
+              },
+              (error) => {
+                captureStatus.innerHTML = '<i class="fas fa-exclamation-triangle text-red-500"></i> Location access denied!';
+                alert("Lỗi: Bạn phải cho phép trình duyệt truy cập Vị trí (Location) để xác minh vị trí chụp ảnh!");
+              },
+              { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+            );
+          } else {
+            alert("Trình duyệt của thiết bị không hỗ trợ GPS.");
+          }
+        });
+
+        // 4. Lắng nghe sự kiện sau khi chụp ảnh xong
+        liveCameraInput.addEventListener('change', function() {
+          if (this.files && this.files.length > 0) {
+            captureStatus.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fas fa-shield-check"></i> Verified Photo Captured!</span>`;
+            btnLiveCapture.classList.replace('bg-indigo-600', 'bg-emerald-600');
+            btnLiveCapture.classList.replace('hover:bg-indigo-500', 'hover:bg-emerald-500');
+            btnLiveCapture.innerHTML = '<i class="fas fa-camera"></i> Retake Photo';
+          }
+        });
+      }
+    });
 
     (function () {
 
