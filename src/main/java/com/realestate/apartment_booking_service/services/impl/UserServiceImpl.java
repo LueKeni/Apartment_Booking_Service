@@ -48,8 +48,8 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional
 public class UserServiceImpl implements UserService {
 
-    private static final List<String> ALLOWED_IMAGE_CONTENT_TYPES =
-        List.of("image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif");
+    private static final List<String> ALLOWED_IMAGE_CONTENT_TYPES = List.of("image/jpeg", "image/jpg", "image/png",
+            "image/webp", "image/gif");
     private final UserRepository userRepository;
     private final AgentProfileRepository agentProfileRepository;
     private final NotificationService notificationService;
@@ -63,8 +63,8 @@ public class UserServiceImpl implements UserService {
     private static final String PORTRAIT_PUBLIC_PREFIX = "/uploads/verifications/portraits";
     private static final long MAX_ID_CARD_FILE_SIZE = 5L * 1024 * 1024;
     private static final Set<String> FRONT_SIDE_TYPES = Set.of("old", "new", "chip_front");
-    private static final Set<String> FRONT_SIDE_TYPE_NEW =
-        Set.of("cmnd_09_front", "cmnd_12_front", "cccd_12_front", "cccd_chip_front");
+    private static final Set<String> FRONT_SIDE_TYPE_NEW = Set.of("cmnd_09_front", "cmnd_12_front", "cccd_12_front",
+            "cccd_chip_front");
 
     @Value("${fpt.ai.idr.url:https://api.fpt.ai/vision/idr/vnm/}")
     private String fptIdRecognitionUrl;

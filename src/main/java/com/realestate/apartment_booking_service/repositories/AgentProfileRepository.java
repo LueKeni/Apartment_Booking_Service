@@ -10,10 +10,10 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface AgentProfileRepository extends JpaRepository<AgentProfile, Long> {
 
-    @EntityGraph(attributePaths = {"user"})
+    @EntityGraph(attributePaths = { "user" })
     Optional<AgentProfile> findByUserId(Long userId);
 
-    @EntityGraph(attributePaths = {"user"})
+    @EntityGraph(attributePaths = { "user" })
     List<AgentProfile> findByVerificationSubmittedAtIsNotNullAndVerificationReviewedAtIsNullAndVerifiedStatusFalseOrderByVerificationSubmittedAtAsc();
 
     long countByVerificationSubmittedAtIsNotNullAndVerificationReviewedAtIsNullAndVerifiedStatusFalse();

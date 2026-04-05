@@ -49,11 +49,11 @@ public class AdminController {
 
         long hiddenListings = apartmentRepository.findAll()
                 .stream()
-            .filter(apartment -> apartment.getStatus() == ApartmentStatus.COMING_SOON
-                || apartment.getStatus() == ApartmentStatus.HIDDEN)
+                .filter(apartment -> apartment.getStatus() == ApartmentStatus.COMING_SOON
+                        || apartment.getStatus() == ApartmentStatus.HIDDEN)
                 .count();
         long pendingVerificationCount = agentProfileRepository
-            .countByVerificationSubmittedAtIsNotNullAndVerificationReviewedAtIsNullAndVerifiedStatusFalse();
+                .countByVerificationSubmittedAtIsNotNullAndVerificationReviewedAtIsNullAndVerifiedStatusFalse();
 
         model.addAttribute("userCount", userRepository.count());
         model.addAttribute("listingCount", apartmentRepository.count());
@@ -83,9 +83,8 @@ public class AdminController {
 
     @GetMapping("/agent-verifications")
     public String pendingAgentVerifications(Model model) {
-        List<AgentProfile> pendingProfiles =
-                agentProfileRepository
-                        .findByVerificationSubmittedAtIsNotNullAndVerificationReviewedAtIsNullAndVerifiedStatusFalseOrderByVerificationSubmittedAtAsc();
+        List<AgentProfile> pendingProfiles = agentProfileRepository
+                .findByVerificationSubmittedAtIsNotNullAndVerificationReviewedAtIsNullAndVerifiedStatusFalseOrderByVerificationSubmittedAtAsc();
         model.addAttribute("pendingProfiles", pendingProfiles);
         return "admin/agent-verifications";
     }

@@ -64,8 +64,8 @@ public class AgentController {
                 .count();
         long hiddenListings = apartments
                 .stream()
-            .filter(apartment -> apartment.getStatus() == ApartmentStatus.COMING_SOON
-                || apartment.getStatus() == ApartmentStatus.HIDDEN)
+                .filter(apartment -> apartment.getStatus() == ApartmentStatus.COMING_SOON
+                        || apartment.getStatus() == ApartmentStatus.HIDDEN)
                 .count();
 
         model.addAttribute("appointmentCount", appointments.size());
@@ -137,18 +137,18 @@ public class AgentController {
     }
 
     @PostMapping("/listings/{id}/visibility")
-        public String updateListingVisibility(
+    public String updateListingVisibility(
             @PathVariable Long id,
             @RequestParam(required = false) Boolean comingSoon,
             @RequestParam(required = false) Boolean hidden) {
         User agent = currentUser();
         boolean setComingSoon = comingSoon != null
-            ? comingSoon
-            : (hidden != null && hidden);
+                ? comingSoon
+                : (hidden != null && hidden);
         apartmentService.updateStatusForAgent(
-            id,
-            setComingSoon ? ApartmentStatus.COMING_SOON : ApartmentStatus.AVAILABLE,
-            agent.getId());
+                id,
+                setComingSoon ? ApartmentStatus.COMING_SOON : ApartmentStatus.AVAILABLE,
+                agent.getId());
         return "redirect:/agent/listings?statusUpdated";
     }
 
@@ -309,12 +309,14 @@ public class AgentController {
         }
         return switch (reason) {
             case "verification_api_key_missing" -> "config";
-            case "verification_not_id_card", "verification_front_side_required", "verification_ocr_failed" -> "notIdCard";
+            case "verification_not_id_card", "verification_front_side_required", "verification_ocr_failed" ->
+                "notIdCard";
             case "verification_file_required",
                     "verification_invalid_image_type",
                     "verification_invalid_image_data",
                     "verification_id_card_file_too_large",
-                    "verification_id_card_resolution_too_low" -> "invalidImage";
+                    "verification_id_card_resolution_too_low" ->
+                "invalidImage";
             default -> "failed";
         };
     }

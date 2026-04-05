@@ -24,7 +24,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "agent_profiles")
-public class  AgentProfile {
+public class AgentProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
