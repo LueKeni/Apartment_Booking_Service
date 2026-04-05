@@ -3,13 +3,16 @@ package com.realestate.apartment_booking_service.controllers.web;
 import com.realestate.apartment_booking_service.dto.BookingRequest;
 import com.realestate.apartment_booking_service.dto.CreateReviewRequest;
 import com.realestate.apartment_booking_service.entities.Appointment;
+import com.realestate.apartment_booking_service.entities.ContractAgreement;
 import com.realestate.apartment_booking_service.entities.Favorite;
 import com.realestate.apartment_booking_service.entities.User;
 import com.realestate.apartment_booking_service.enums.Role;
 import com.realestate.apartment_booking_service.enums.AppointmentStatus;
+import com.realestate.apartment_booking_service.enums.NotificationType;
 import com.realestate.apartment_booking_service.repositories.FavoriteRepository;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
 import com.realestate.apartment_booking_service.services.interfaces.BookingService;
+import com.realestate.apartment_booking_service.services.interfaces.ContractAgreementService;
 import com.realestate.apartment_booking_service.services.interfaces.NotificationService;
 import com.realestate.apartment_booking_service.services.interfaces.ReviewService;
 import com.realestate.apartment_booking_service.services.interfaces.UserService;
@@ -37,6 +40,7 @@ public class UserController {
     private final FavoriteRepository favoriteRepository;
     private final ApartmentService apartmentService;
     private final BookingService bookingService;
+    private final ContractAgreementService contractAgreementService;
     private final NotificationService notificationService;
     private final ReviewService reviewService;
     private final UserService userService;
@@ -92,7 +96,40 @@ public class UserController {
         model.addAttribute("pendingAppointmentCount", pendingAppointments);
         model.addAttribute("completedAppointmentCount", completedAppointments);
         model.addAttribute("reviewedAppointmentIds", reviewService.getReviewedAppointmentIds(user.getId()));
+        model.addAttribute("signedContractAppointmentIds",
+                contractAgreementService.getSignedAppointmentIds(
+                        user.getId(),
+                        appointments.stream().map(Appointment::getId).toList()));
         return "user/appointments";
+    }
+
+    @GetMapping("/appointments/{id}/contract")
+    public String contract(@PathVariable Long id, Model model) {
+        User user = currentUser();
+        ContractAgreement contractAgreement = contractAgreementService.getOrCreateForUser(user.getId(), id);
+        model.addAttribute("contract", contractAgreement);
+        model.addAttribute("appointment", contractAgreement.getAppointment());
+        model.addAttribute("isSigned", contractAgreement.getUserSignedAt() != null);
+        model.addAttribute("websiteName", "Apartment Booking Service");
+        return "user/contract";
+    }
+
+    @PostMapping("/appointments/{id}/contract/sign")
+    public String signContract(@PathVariable Long id,
+            @RequestParam String signerName,
+            @RequestParam String signatureDataUrl) {
+        User user = currentUser();
+        ContractAgreement contractAgreement = contractAgreementService.signForUser(user.getId(), id, signerName,
+                signatureDataUrl);
+        Appointment appointment = contractAgreement.getAppointment();
+
+        notificationService.createNotification(
+                appointment.getAgent().getId(),
+                "E-contract signed",
+                appointment.getUser().getFullName() + " signed contract " + contractAgreement.getContractCode(),
+                NotificationType.BOOKING,
+                "/agent/bookings/" + appointment.getId() + "/contract");
+        return "redirect:/user/appointments/" + id + "/contract?signed";
     }
 
     @GetMapping("/notifications")

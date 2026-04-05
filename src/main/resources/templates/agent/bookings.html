@@ -80,6 +80,16 @@
                       <input name="agentNote" placeholder="Internal note" class="rounded-lg border border-slate-300 px-2 py-1.5 text-xs text-slate-900" />
                       <button class="rounded-lg bg-midnight-700 px-3 py-1.5 text-xs font-bold text-white hover:bg-midnight-600">Apply</button>
                     </form>
+                    <a th:if="${appointment.status.name() == 'COMPLETED' and userSignedContractAppointmentIds.contains(appointment.id) and !agentSignedContractAppointmentIds.contains(appointment.id)}"
+                       th:href="@{/agent/bookings/{id}/contract(id=${appointment.id})}"
+                       class="mt-2 inline-flex rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-500">
+                      Ky hop dong
+                    </a>
+                    <a th:if="${appointment.status.name() == 'COMPLETED' and agentSignedContractAppointmentIds.contains(appointment.id)}"
+                       th:href="@{/agent/bookings/{id}/contract(id=${appointment.id})}"
+                       class="mt-2 inline-flex rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 ring-1 ring-inset ring-emerald-300 hover:bg-emerald-100">
+                      Xem hop dong
+                    </a>
                   </td>
                 </tr>
                 <tr data-table-empty class="hidden">

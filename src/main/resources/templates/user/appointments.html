@@ -109,6 +109,18 @@
                     <button class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-600">Submit</button>
                   </form>
 
+                  <a th:if="${appointment.status.name() == 'COMPLETED' and !signedContractAppointmentIds.contains(appointment.id)}"
+                     th:href="@{/user/appointments/{id}/contract(id=${appointment.id})}"
+                     class="rounded-md bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-emerald-500">
+                    Chot can ho
+                  </a>
+
+                  <a th:if="${appointment.status.name() == 'COMPLETED' and signedContractAppointmentIds.contains(appointment.id)}"
+                     th:href="@{/user/appointments/{id}/contract(id=${appointment.id})}"
+                     class="rounded-md bg-emerald-50 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 shadow-sm ring-1 ring-inset ring-emerald-300 hover:bg-emerald-100">
+                    Xem hop dong
+                  </a>
+
                   <span th:if="${appointment.status.name() == 'COMPLETED' and reviewedAppointmentIds.contains(appointment.id)}"
                         class="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">Reviewed</span>
                 </div>

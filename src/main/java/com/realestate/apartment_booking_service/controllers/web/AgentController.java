@@ -2,12 +2,15 @@ package com.realestate.apartment_booking_service.controllers.web;
 
 import com.realestate.apartment_booking_service.entities.Apartment;
 import com.realestate.apartment_booking_service.entities.Appointment;
+import com.realestate.apartment_booking_service.entities.ContractAgreement;
 import com.realestate.apartment_booking_service.entities.User;
 import com.realestate.apartment_booking_service.enums.ApartmentStatus;
 import com.realestate.apartment_booking_service.enums.AppointmentStatus;
+import com.realestate.apartment_booking_service.enums.NotificationType;
 import com.realestate.apartment_booking_service.dto.MomoOrderInfoRequest;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
 import com.realestate.apartment_booking_service.services.interfaces.BookingService;
+import com.realestate.apartment_booking_service.services.interfaces.ContractAgreementService;
 import com.realestate.apartment_booking_service.services.interfaces.MomoService;
 import com.realestate.apartment_booking_service.services.interfaces.NotificationService;
 import com.realestate.apartment_booking_service.services.interfaces.ReviewService;
@@ -40,6 +43,7 @@ public class AgentController {
 
     private final ApartmentService apartmentService;
     private final BookingService bookingService;
+    private final ContractAgreementService contractAgreementService;
     private final ReviewService reviewService;
     private final UserService userService;
     private final MomoService momoService;
@@ -168,8 +172,43 @@ public class AgentController {
     @GetMapping("/bookings")
     public String bookings(Model model) {
         User agent = currentUser();
-        model.addAttribute("appointments", bookingService.getAgentAppointments(agent.getId()));
+        List<Appointment> appointments = bookingService.getAgentAppointments(agent.getId());
+        List<Long> appointmentIds = appointments.stream().map(Appointment::getId).toList();
+        model.addAttribute("appointments", appointments);
+        model.addAttribute("userSignedContractAppointmentIds",
+                contractAgreementService.getUserSignedAppointmentIdsForAgent(agent.getId(), appointmentIds));
+        model.addAttribute("agentSignedContractAppointmentIds",
+                contractAgreementService.getAgentSignedAppointmentIds(agent.getId(), appointmentIds));
         return "agent/bookings";
+    }
+
+    @GetMapping("/bookings/{id}/contract")
+    public String contract(@PathVariable Long id, Model model) {
+        User agent = currentUser();
+        ContractAgreement contractAgreement = contractAgreementService.getOrCreateForAgent(agent.getId(), id);
+        model.addAttribute("contract", contractAgreement);
+        model.addAttribute("appointment", contractAgreement.getAppointment());
+        model.addAttribute("isUserSigned", contractAgreement.getUserSignedAt() != null);
+        model.addAttribute("isAgentSigned", contractAgreement.getAgentSignedAt() != null);
+        model.addAttribute("websiteName", "Apartment Booking Service");
+        return "agent/contract";
+    }
+
+    @PostMapping("/bookings/{id}/contract/sign")
+    public String signContract(@PathVariable Long id,
+            @RequestParam String signerName,
+            @RequestParam String signatureDataUrl) {
+        User agent = currentUser();
+        ContractAgreement contractAgreement = contractAgreementService.signForAgent(agent.getId(), id, signerName,
+                signatureDataUrl);
+
+        notificationService.createNotification(
+                contractAgreement.getAppointment().getUser().getId(),
+                "Contract fully signed",
+                "Agent signed contract " + contractAgreement.getContractCode(),
+                NotificationType.BOOKING,
+                "/user/appointments/" + id + "/contract");
+        return "redirect:/agent/bookings/" + id + "/contract?signed";
     }
 
     @PostMapping("/bookings/{id}/status")
