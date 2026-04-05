@@ -14,9 +14,14 @@
             <h1 class="text-2xl font-bold tracking-tight text-slate-900">User Management</h1>
             <p class="mt-1 text-sm text-slate-500">Manage accounts, roles, and platform access.</p>
           </div>
-          <a href="/admin/dashboard" class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900">
-            &larr; Back to Dashboard
-          </a>
+          <div class="flex items-center gap-3">
+            <a href="/admin/agent-verifications" class="inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800 hover:bg-amber-100">
+              Pending Verification Queue
+            </a>
+            <a href="/admin/dashboard" class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900">
+              &larr; Back to Dashboard
+            </a>
+          </div>
         </div>
 
         <div th:if="${param.updated}" class="rounded-xl bg-blue-50 p-4 ring-1 ring-blue-600/20">
@@ -27,6 +32,12 @@
         </div>
         <div th:if="${param.roleDenied}" class="rounded-xl bg-red-50 p-4 ring-1 ring-red-600/20">
           <p class="text-sm font-medium text-red-800">Action denied: You cannot change your own administrative role.</p>
+        </div>
+        <div th:if="${param.verified}" class="rounded-xl bg-green-50 p-4 ring-1 ring-green-600/20">
+          <p class="text-sm font-medium text-green-800">Agent verification status has been updated.</p>
+        </div>
+        <div th:if="${param.verifyError}" class="rounded-xl bg-red-50 p-4 ring-1 ring-red-600/20">
+          <p class="text-sm font-medium text-red-800">Cannot approve this account yet. Agent must submit CMND/CCCD verification first.</p>
         </div>
 
         <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200" data-table>
@@ -69,12 +80,13 @@
                   <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">User Profile</th>
                   <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Role</th>
                   <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Status</th>
+                  <th scope="col" class="px-6 py-3.5 text-left text-sm font-semibold text-slate-900">Agent Verification</th>
                   <th scope="col" class="px-6 py-3.5 text-right text-sm font-semibold text-slate-900">Administration</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-200 bg-white" data-table-body>
                 <tr th:if="${#lists.isEmpty(users)}">
-                  <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="4">No users found.</td>
+                  <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="5">No users found.</td>
                 </tr>
                 <tr data-row class="hover:bg-slate-50/50"
                     th:each="u : ${users}"
@@ -96,6 +108,22 @@
                   <td class="whitespace-nowrap px-6 py-4">
                     <span th:classappend="${u.status.name() == 'ACTIVE' ? 'bg-green-50 text-green-700 ring-green-600/20' : 'bg-red-50 text-red-700 ring-red-600/10'}" 
                           class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset" th:text="${u.status}"></span>
+                  </td>
+                  <td class="px-6 py-4 align-top text-sm text-slate-600">
+                    <div th:if="${u.role.name() != 'AGENT'}">
+                      <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 ring-1 ring-inset ring-slate-300">N/A</span>
+                    </div>
+                    <div th:if="${u.role.name() == 'AGENT'}">
+                      <span th:if="${agentProfiles[u.id] != null and agentProfiles[u.id].verifiedStatus}" class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">APPROVED</span>
+                      <span th:if="${agentProfiles[u.id] != null and !agentProfiles[u.id].verifiedStatus and agentProfiles[u.id].verificationSubmittedAt != null and agentProfiles[u.id].verificationReviewedAt == null}" class="inline-flex items-center rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">PENDING</span>
+                      <span th:if="${agentProfiles[u.id] != null and !agentProfiles[u.id].verifiedStatus and agentProfiles[u.id].verificationSubmittedAt != null and agentProfiles[u.id].verificationReviewedAt != null}" class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">REJECTED</span>
+                      <span th:if="${agentProfiles[u.id] == null or agentProfiles[u.id].verificationSubmittedAt == null}" class="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700 ring-1 ring-inset ring-slate-300">NOT SUBMITTED</span>
+
+                      <div class="mt-2 flex flex-wrap gap-2 text-xs">
+                        <a th:if="${agentProfiles[u.id] != null and agentProfiles[u.id].idCardImage != null}" th:href="${agentProfiles[u.id].idCardImage}" target="_blank" class="rounded-md border border-slate-300 bg-white px-2 py-1 font-semibold text-slate-700 hover:bg-slate-50">ID Card</a>
+                        <a th:if="${agentProfiles[u.id] != null and agentProfiles[u.id].portraitImage != null}" th:href="${agentProfiles[u.id].portraitImage}" target="_blank" class="rounded-md border border-slate-300 bg-white px-2 py-1 font-semibold text-slate-700 hover:bg-slate-50">Portrait</a>
+                      </div>
+                    </div>
                   </td>
                   <td class="whitespace-nowrap px-6 py-4 text-right">
                     <div class="flex items-center justify-end gap-2">
@@ -119,11 +147,23 @@
                         <input type="hidden" name="banned" value="false" />
                         <button class="rounded-md bg-white px-2.5 py-1.5 text-xs font-semibold text-green-700 shadow-sm ring-1 ring-inset ring-green-300 hover:bg-green-50">Unban</button>
                       </form>
+
+                      <div th:if="${u.role.name() == 'AGENT' and agentProfiles[u.id] != null and agentProfiles[u.id].verificationSubmittedAt != null}" class="ml-2 flex items-center gap-2">
+                        <form th:action="@{/admin/users/{id}/verify-agent(id=${u.id})}" method="post">
+                          <input type="hidden" name="verified" value="true" />
+                          <button class="rounded-md bg-green-50 px-2.5 py-1.5 text-xs font-semibold text-green-700 shadow-sm ring-1 ring-inset ring-green-300 hover:bg-green-100">Approve</button>
+                        </form>
+                        <form th:action="@{/admin/users/{id}/verify-agent(id=${u.id})}" method="post">
+                          <input type="hidden" name="verified" value="false" />
+                          <button class="rounded-md bg-amber-50 px-2.5 py-1.5 text-xs font-semibold text-amber-700 shadow-sm ring-1 ring-inset ring-amber-300 hover:bg-amber-100">Reject</button>
+                        </form>
+                      </div>
+                      <span th:if="${u.role.name() == 'AGENT' and (agentProfiles[u.id] == null or agentProfiles[u.id].verificationSubmittedAt == null)}" class="ml-2 text-xs font-medium text-slate-400">No submission</span>
                     </div>
                   </td>
                 </tr>
                 <tr data-table-empty class="hidden">
-                  <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="4">No user matches current filters.</td>
+                  <td class="px-6 py-12 text-center text-sm text-slate-500" colspan="5">No user matches current filters.</td>
                 </tr>
               </tbody>
             </table>

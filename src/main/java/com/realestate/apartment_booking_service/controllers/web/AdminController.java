@@ -1,6 +1,7 @@
 package com.realestate.apartment_booking_service.controllers.web;
 
 import com.realestate.apartment_booking_service.entities.User;
+import com.realestate.apartment_booking_service.entities.AgentProfile;
 import com.realestate.apartment_booking_service.enums.ApartmentStatus;
 import com.realestate.apartment_booking_service.enums.PaymentStatus;
 import com.realestate.apartment_booking_service.enums.Role;
@@ -8,10 +9,13 @@ import com.realestate.apartment_booking_service.services.interfaces.ApartmentSer
 import com.realestate.apartment_booking_service.services.interfaces.UserService;
 import com.realestate.apartment_booking_service.utils.SecurityUtils;
 import com.realestate.apartment_booking_service.repositories.ApartmentRepository;
+import com.realestate.apartment_booking_service.repositories.AgentProfileRepository;
 import com.realestate.apartment_booking_service.repositories.PointTopUpRepository;
 import com.realestate.apartment_booking_service.repositories.UserRepository;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,6 +36,7 @@ public class AdminController {
     private final UserRepository userRepository;
     private final ApartmentRepository apartmentRepository;
     private final PointTopUpRepository pointTopUpRepository;
+    private final AgentProfileRepository agentProfileRepository;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -46,10 +52,13 @@ public class AdminController {
             .filter(apartment -> apartment.getStatus() == ApartmentStatus.COMING_SOON
                 || apartment.getStatus() == ApartmentStatus.HIDDEN)
                 .count();
+        long pendingVerificationCount = agentProfileRepository
+            .countByVerificationSubmittedAtIsNotNullAndVerificationReviewedAtIsNullAndVerifiedStatusFalse();
 
         model.addAttribute("userCount", userRepository.count());
         model.addAttribute("listingCount", apartmentRepository.count());
         model.addAttribute("hiddenListingCount", hiddenListings);
+        model.addAttribute("pendingVerificationCount", pendingVerificationCount);
         model.addAttribute("pointRevenue", pointTopUpRepository.sumAmountByStatus(PaymentStatus.SUCCESS));
         var monthlyRevenue = pointTopUpRepository.findMonthlyRevenue();
         model.addAttribute("revenueLabels", monthlyRevenue.stream()
@@ -64,8 +73,21 @@ public class AdminController {
 
     @GetMapping("/users")
     public String users(Model model) {
-        model.addAttribute("users", userService.findAll());
+        List<User> users = userService.findAll();
+        Map<Long, AgentProfile> agentProfiles = mapAgentProfiles(users);
+
+        model.addAttribute("users", users);
+        model.addAttribute("agentProfiles", agentProfiles);
         return "admin/users";
+    }
+
+    @GetMapping("/agent-verifications")
+    public String pendingAgentVerifications(Model model) {
+        List<AgentProfile> pendingProfiles =
+                agentProfileRepository
+                        .findByVerificationSubmittedAtIsNotNullAndVerificationReviewedAtIsNullAndVerifiedStatusFalseOrderByVerificationSubmittedAtAsc();
+        model.addAttribute("pendingProfiles", pendingProfiles);
+        return "admin/agent-verifications";
     }
 
     @PostMapping("/users/{id}/ban")
@@ -75,9 +97,17 @@ public class AdminController {
     }
 
     @PostMapping("/users/{id}/verify-agent")
-    public String verifyAgent(@PathVariable Long id, @RequestParam boolean verified) {
-        userService.verifyAgent(id, verified);
-        return "redirect:/admin/users?verified";
+    public String verifyAgent(
+            @PathVariable Long id,
+            @RequestParam boolean verified,
+            @RequestParam(required = false) String source) {
+        String redirectPath = "queue".equalsIgnoreCase(source) ? "/admin/agent-verifications" : "/admin/users";
+        try {
+            userService.verifyAgent(id, verified);
+            return "redirect:" + redirectPath + "?verified";
+        } catch (ResponseStatusException ex) {
+            return "redirect:" + redirectPath + "?verifyError=invalid";
+        }
     }
 
     @PostMapping("/users/{id}/role")
@@ -109,6 +139,17 @@ public class AdminController {
     public String updateListingStatus(@PathVariable Long id, @RequestParam String status) {
         apartmentService.updateStatus(id, status);
         return "redirect:/admin/listings?updated";
+    }
+
+    private Map<Long, AgentProfile> mapAgentProfiles(List<User> users) {
+        Map<Long, AgentProfile> agentProfiles = new HashMap<>();
+        for (User user : users) {
+            if (user.getRole() == Role.AGENT) {
+                agentProfileRepository.findByUserId(user.getId())
+                        .ifPresent(profile -> agentProfiles.put(user.getId(), profile));
+            }
+        }
+        return agentProfiles;
     }
 
 }

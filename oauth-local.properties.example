@@ -5,3 +5,8 @@ GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 FACEBOOK_CLIENT_ID=your-facebook-app-id
 FACEBOOK_CLIENT_SECRET=your-facebook-app-secret
+FPT_AI_IDR_API_KEY=your-fpt-ai-idr-api-key
+fpt.ai.idr.api-key=your-fpt-ai-idr-api-key
+
+# OCR test command:
+# curl -X POST https://api.fpt.ai/vision/idr/vnm -H "api-key: your-fpt-ai-idr-api-key" -F "image=@<path_to_id_image>"

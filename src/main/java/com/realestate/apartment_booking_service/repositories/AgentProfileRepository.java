@@ -13,6 +13,11 @@ public interface AgentProfileRepository extends JpaRepository<AgentProfile, Long
     @EntityGraph(attributePaths = {"user"})
     Optional<AgentProfile> findByUserId(Long userId);
 
+    @EntityGraph(attributePaths = {"user"})
+    List<AgentProfile> findByVerificationSubmittedAtIsNotNullAndVerificationReviewedAtIsNullAndVerifiedStatusFalseOrderByVerificationSubmittedAtAsc();
+
+    long countByVerificationSubmittedAtIsNotNullAndVerificationReviewedAtIsNullAndVerifiedStatusFalse();
+
     @Query("SELECT ap FROM AgentProfile ap JOIN FETCH ap.user u WHERE ap.reviewCount > 0 ORDER BY ap.averageRating DESC, ap.reviewCount DESC")
     List<AgentProfile> findTopAgents(Pageable pageable);
 }

@@ -1,6 +1,7 @@
 package com.realestate.apartment_booking_service.controllers.web;
 
 import com.realestate.apartment_booking_service.entities.Apartment;
+import com.realestate.apartment_booking_service.entities.AgentProfile;
 import com.realestate.apartment_booking_service.entities.Appointment;
 import com.realestate.apartment_booking_service.entities.User;
 import com.realestate.apartment_booking_service.enums.ApartmentStatus;
@@ -80,9 +81,12 @@ public class AgentController {
     @GetMapping("/listings")
     public String listings(@RequestParam(required = false) Long editId, Model model) {
         User agent = currentUser();
+        AgentProfile verificationProfile = userService.findAgentProfileByUserId(agent.getId());
         model.addAttribute("apartments", apartmentService.findByAgent(agent.getId()));
         model.addAttribute("apartment", new Apartment());
         model.addAttribute("currentPoints", agent.getPoints());
+        model.addAttribute("canPublishListing", userService.canAgentPublishListing(agent.getId()));
+        model.addAttribute("verificationProfile", verificationProfile);
 
         if (editId != null) {
             Apartment editApartment = apartmentService.findById(editId);
@@ -103,6 +107,9 @@ public class AgentController {
             apartmentService.createApartment(apartment, agent.getId(), imageFiles);
             return "redirect:/agent/listings?saved";
         } catch (ResponseStatusException ex) {
+            if ("agent_not_verified".equals(ex.getReason())) {
+                return "redirect:/agent/listings?saveError=verificationRequired";
+            }
             return "redirect:/agent/listings?saveError=invalid";
         } catch (DataIntegrityViolationException ex) {
             return "redirect:/agent/listings?saveError=invalid";
@@ -185,6 +192,7 @@ public class AgentController {
     @GetMapping("/profile")
     public String profile(Model model) {
         User agent = currentUser();
+        AgentProfile verificationProfile = userService.findAgentProfileByUserId(agent.getId());
         var agentReviews = reviewService.getAgentReviews(agent.getId());
         double averageRating = agentReviews.stream()
                 .mapToInt(review -> review.getRating())
@@ -192,9 +200,23 @@ public class AgentController {
                 .orElse(0.0);
 
         model.addAttribute("agentProfile", agent);
+        model.addAttribute("verificationProfile", verificationProfile);
         model.addAttribute("agentReviewCount", agentReviews.size());
         model.addAttribute("agentAverageRating", String.format(Locale.US, "%.1f", averageRating));
         return "agent/profile";
+    }
+
+    @PostMapping("/verification")
+    public String submitVerification(
+            @RequestParam("idCardFile") MultipartFile idCardFile,
+            @RequestParam("portraitFile") MultipartFile portraitFile) {
+        User agent = currentUser();
+        try {
+            userService.submitAgentVerification(agent.getId(), idCardFile, portraitFile);
+            return "redirect:/agent/profile?verifySubmitted";
+        } catch (ResponseStatusException ex) {
+            return "redirect:/agent/profile?verifyError=" + mapVerificationErrorCode(ex.getReason());
+        }
     }
 
     @GetMapping("/points")
@@ -279,5 +301,21 @@ public class AgentController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
         return userService.findByEmail(email);
+    }
+
+    private String mapVerificationErrorCode(String reason) {
+        if (reason == null || reason.isBlank()) {
+            return "failed";
+        }
+        return switch (reason) {
+            case "verification_api_key_missing" -> "config";
+            case "verification_not_id_card", "verification_front_side_required", "verification_ocr_failed" -> "notIdCard";
+            case "verification_file_required",
+                    "verification_invalid_image_type",
+                    "verification_invalid_image_data",
+                    "verification_id_card_file_too_large",
+                    "verification_id_card_resolution_too_low" -> "invalidImage";
+            default -> "failed";
+        };
     }
 }

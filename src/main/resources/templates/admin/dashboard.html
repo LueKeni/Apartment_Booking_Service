@@ -18,8 +18,12 @@
             </div>
             <div class="flex flex-wrap gap-3">
               <a href="/admin/users" class="rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-midnight-900 hover:bg-slate-100">Manage Users</a>
+              <a href="/admin/agent-verifications" class="rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-bold text-midnight-900 hover:bg-amber-200">Review Verifications</a>
               <a href="/admin/listings" class="rounded-xl border border-white/40 bg-black/20 px-4 py-2.5 text-sm font-bold text-white hover:bg-black/35">Moderate Listings</a>
             </div>
+          </div>
+          <div class="mt-4 rounded-xl border border-white/25 bg-black/20 px-4 py-3 text-sm text-white/90">
+            Pending verification profiles: <span class="font-bold" th:text="${pendingVerificationCount}">0</span>
           </div>
         </section>
 

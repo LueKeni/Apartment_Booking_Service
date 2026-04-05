@@ -19,6 +19,7 @@
 
         <div th:if="${param.saved}" class="rounded-xl bg-green-50 p-4 ring-1 ring-green-600/20 text-sm font-medium text-green-800">Listing created successfully.</div>
         <div th:if="${param.saveError == 'invalid'}" class="rounded-xl bg-red-50 p-4 ring-1 ring-red-600/20 text-sm font-medium text-red-800">Cannot create listing. Please check required fields and image format.</div>
+        <div th:if="${param.saveError == 'verificationRequired'}" class="rounded-xl bg-amber-50 p-4 ring-1 ring-amber-500/30 text-sm font-medium text-amber-900">Your collaborator account must be approved by admin before publishing listings.</div>
         <div th:if="${param.updated}" class="rounded-xl bg-blue-50 p-4 ring-1 ring-blue-600/20 text-sm font-medium text-blue-800">Listing updated successfully.</div>
         <div th:if="${param.updateError == 'invalid'}" class="rounded-xl bg-red-50 p-4 ring-1 ring-red-600/20 text-sm font-medium text-red-800">Cannot update listing. Please check required fields and image format.</div>
         <div th:if="${param.statusUpdated}" class="rounded-xl bg-yellow-50 p-4 ring-1 ring-yellow-600/20 text-sm font-medium text-yellow-800">Listing visibility updated.</div>
@@ -27,7 +28,15 @@
         <div th:if="${param.boostError == 'invalid'}" class="rounded-xl bg-red-50 p-4 ring-1 ring-red-600/20 text-sm font-medium text-red-800">Boost points must be greater than 0.</div>
         <div th:if="${param.boostError == 'insufficient'}" class="rounded-xl bg-red-50 p-4 ring-1 ring-red-600/20 text-sm font-medium text-red-800">Not enough points to boost this listing.</div>
 
-        <div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <div th:if="${!canPublishListing}" class="rounded-2xl border border-amber-300 bg-amber-50 p-6 shadow-sm">
+          <h2 class="text-lg font-semibold text-amber-900">Listing publishing is locked</h2>
+          <p th:if="${verificationProfile.verificationSubmittedAt == null}" class="mt-2 text-sm text-amber-800">Submit CMND/CCCD and portrait photos in your profile so admin can review your collaborator account.</p>
+          <p th:if="${verificationProfile.verificationSubmittedAt != null and verificationProfile.verificationReviewedAt == null}" class="mt-2 text-sm text-amber-800">Your verification request is pending admin approval. You can publish listings after approval.</p>
+          <p th:if="${verificationProfile.verificationSubmittedAt != null and verificationProfile.verificationReviewedAt != null and !verificationProfile.verifiedStatus}" class="mt-2 text-sm text-amber-800">Your latest verification request was not approved. Please resubmit clear CMND/CCCD and portrait photos.</p>
+          <a href="/agent/profile" class="mt-4 inline-flex rounded-lg bg-amber-700 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-800">Open verification form</a>
+        </div>
+
+        <div th:if="${canPublishListing}" class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
           <h2 class="text-lg font-semibold text-slate-900 border-b border-slate-200 pb-4 mb-4">Create New Listing</h2>
           <form action="/agent/listings" method="post" enctype="multipart/form-data" class="grid gap-x-6 gap-y-5 md:grid-cols-2">
             <div>

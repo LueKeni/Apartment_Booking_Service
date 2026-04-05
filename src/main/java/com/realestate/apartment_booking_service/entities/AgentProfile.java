@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -56,6 +57,39 @@ public class  AgentProfile {
 
     @Column(nullable = false)
     private Integer reviewCount;
+
+    @Column(length = 500)
+    private String idCardImage;
+
+    @Column(length = 500)
+    private String portraitImage;
+
+    @Column(length = 40)
+    private String idCardNumber;
+
+    @Column(length = 180)
+    private String idCardName;
+
+    @Column(length = 60)
+    private String idCardDob;
+
+    @Column(length = 40)
+    private String idCardType;
+
+    @Column(length = 40)
+    private String idCardTypeNew;
+
+    @Column(columnDefinition = "TEXT")
+    private String idCardAddress;
+
+    @Column
+    private LocalDateTime verificationSubmittedAt;
+
+    @Column
+    private LocalDateTime verificationReviewedAt;
+
+    @Column(length = 255)
+    private String verificationNote;
 
     @PrePersist
     public void prePersist() {

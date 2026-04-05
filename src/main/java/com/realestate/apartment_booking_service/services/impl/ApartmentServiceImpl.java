@@ -15,6 +15,7 @@ import com.realestate.apartment_booking_service.repositories.FavoriteRepository;
 import com.realestate.apartment_booking_service.repositories.PointUsageRepository;
 import com.realestate.apartment_booking_service.repositories.ReviewRepository;
 import com.realestate.apartment_booking_service.repositories.UserRepository;
+import com.realestate.apartment_booking_service.repositories.AgentProfileRepository;
 import com.realestate.apartment_booking_service.services.interfaces.ApartmentService;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
@@ -46,6 +47,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     private final FavoriteRepository favoriteRepository;
     private final ReviewRepository reviewRepository;
     private final PointUsageRepository pointUsageRepository;
+    private final AgentProfileRepository agentProfileRepository;
     private static final List<String> ALLOWED_IMAGE_CONTENT_TYPES = List.of("image/jpeg", "image/jpg", "image/png",
             "image/webp", "image/gif");
     private static final String UPLOAD_DIR = "uploads";
@@ -54,6 +56,7 @@ public class ApartmentServiceImpl implements ApartmentService {
     public Apartment createApartment(Apartment apartment, Long agentId, List<MultipartFile> imageFiles) {
         User agent = userRepository.findById(agentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Agent not found"));
+        ensureAgentIsVerified(agentId);
 
         validateListingPayload(apartment);
         normalizeLocationFields(apartment);
@@ -65,6 +68,15 @@ public class ApartmentServiceImpl implements ApartmentService {
         }
 
         return apartmentRepository.save(apartment);
+    }
+
+    private void ensureAgentIsVerified(Long agentId) {
+        boolean verified = agentProfileRepository.findByUserId(agentId)
+                .map(profile -> Boolean.TRUE.equals(profile.getVerifiedStatus()))
+                .orElse(false);
+        if (!verified) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "agent_not_verified");
+        }
     }
 
     @Override
